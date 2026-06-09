@@ -11,7 +11,7 @@ WEATHER_API_KEY = "25c9a61b99a4842679a8983536494752"
 TRUE_HOST_NATIONS = ["Mexico", "Canada", "USA"]
 
 # =====================================================================
-# 1. EXPANDED UNIVERSAL FIXTURE REGISTRY
+# 1. FIXED TOURNAMENT REGISTRY MATRIX
 # =====================================================================
 TEAM_STAT_DATABASE = {
     "Mexico":        {"base_xg": 1.65, "shots_avg": 13.4, "shots_conceded_avg": 9.8,  "shot_accuracy": 0.36, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 2.2, "offsides_avg": 1.9},
@@ -23,21 +23,16 @@ TEAM_STAT_DATABASE = {
     "USA":           {"base_xg": 1.58, "shots_avg": 13.1, "shots_conceded_avg": 9.9,  "shot_accuracy": 0.37, "gk_save_pct": 0.74, "corners_avg": 5.6, "cards_avg": 1.7, "offsides_avg": 2.0},
     "Paraguay":      {"base_xg": 1.08, "shots_avg": 9.5,  "shots_conceded_avg": 10.8, "shot_accuracy": 0.29, "gk_save_pct": 0.75, "corners_avg": 3.8, "cards_avg": 2.8, "offsides_avg": 1.4},
     "Qatar":         {"base_xg": 1.20, "shots_avg": 10.5, "shots_conceded_avg": 13.8, "shot_accuracy": 0.32, "gk_save_pct": 0.66, "corners_avg": 4.3, "cards_avg": 1.8, "offsides_avg": 1.9},
-    "Switzerland":   {"base_xg": 1.42, "shots_avg": 12.0, "shots_conceded_avg": 10.5, "shot_accuracy": 0.34, "gk_save_pct": 0.71, "corners_avg": 5.0, "cards_avg": 2.1, "offsides_avg": 1.7},
-    "Slavia Prague": {"base_xg": 1.72, "shots_avg": 14.1, "shots_conceded_avg": 8.9,  "shot_accuracy": 0.38, "gk_save_pct": 0.74, "corners_avg": 6.2, "cards_avg": 1.8, "offsides_avg": 2.2},
-    "Sparta Prague": {"base_xg": 1.68, "shots_avg": 13.8, "shots_conceded_avg": 9.2,  "shot_accuracy": 0.36, "gk_save_pct": 0.71, "corners_avg": 5.9, "cards_avg": 2.1, "offsides_avg": 1.9},
-    "Arsenal":       {"base_xg": 1.95, "shots_avg": 15.6, "shots_conceded_avg": 8.2,  "shot_accuracy": 0.41, "gk_save_pct": 0.76, "corners_avg": 6.8, "cards_avg": 1.4, "offsides_avg": 2.0},
-    "Chelsea":       {"base_xg": 1.62, "shots_avg": 12.9, "shots_conceded_avg": 11.4, "shot_accuracy": 0.35, "gk_save_pct": 0.69, "corners_avg": 5.2, "cards_avg": 2.4, "offsides_avg": 1.8}
+    "Switzerland":   {"base_xg": 1.42, "shots_avg": 12.0, "shots_conceded_avg": 10.5, "shot_accuracy": 0.34, "gk_save_pct": 0.71, "corners_avg": 5.0, "cards_avg": 2.1, "offsides_avg": 1.7}
 }
 
+# FIXED: Removed club derbies and cleaned duplicate group mappings
 TOURNAMENT_SCHEDULE = [
-    {"id": 101, "date": "11/06 — 19:00", "iso_date": "2026-06-11", "group": "Group A", "day": "Day 1", "home": "Mexico", "away": "South Africa", "stadium": "Estadio Azteca", "city": "Mexico City", "host_country": "Mexico"},
-    {"id": 102, "date": "12/06 — 02:00", "iso_date": "2026-06-12", "group": "Group A", "day": "Day 2", "home": "South Korea", "away": "Czech Republic", "stadium": "Estadio Guadalajara", "city": "Guadalajara", "host_country": "Mexico"},
-    {"id": 103, "date": "12/06 — 19:00", "iso_date": "2026-06-12", "group": "Group B", "day": "Day 2", "home": "Canada", "away": "Bosnia", "stadium": "BMO Field", "city": "Toronto", "host_country": "Canada"},
-    {"id": 104, "date": "13/06 — 01:00", "iso_date": "2026-06-13", "group": "Group B", "day": "Day 3", "home": "USA", "away": "Paraguay", "stadium": "SoFi Stadium", "city": "Los Angeles", "host_country": "USA"},
-    {"id": 105, "date": "13/06 — 19:00", "iso_date": "2026-06-13", "group": "Group C", "day": "Day 3", "home": "Qatar", "away": "Switzerland", "stadium": "BC Place", "city": "Vancouver", "host_country": "Canada"},
-    {"id": 106, "date": "16/06 — 21:00", "iso_date": "2026-06-16", "group": "Club Derby", "day": "Day 6", "home": "Slavia Prague", "away": "Sparta Prague", "stadium": "Fortuna Arena", "city": "Prague", "host_country": "Czechia"},
-    {"id": 107, "date": "17/06 — 20:00", "iso_date": "2026-06-17", "group": "Premier League", "day": "Day 7", "home": "Arsenal", "away": "Chelsea", "stadium": "Emirates Stadium", "city": "London", "host_country": "United Kingdom"}
+    {"id": 101, "date": "11/06 — 19:00", "iso_date": "2026-06-11", "group": "Group A", "home": "Mexico", "away": "South Africa", "stadium": "Estadio Azteca", "city": "Mexico City", "host_country": "Mexico"},
+    {"id": 102, "date": "12/06 — 02:00", "iso_date": "2026-06-12", "group": "Group A", "home": "South Korea", "away": "Czech Republic", "stadium": "Estadio Guadalajara", "city": "Guadalajara", "host_country": "Mexico"},
+    {"id": 103, "date": "12/06 — 19:00", "iso_date": "2026-06-12", "group": "Group B", "home": "Canada", "away": "Bosnia", "stadium": "BMO Field", "city": "Toronto", "host_country": "Canada"},
+    {"id": 104, "date": "13/06 — 01:00", "iso_date": "2026-06-13", "group": "Group B", "home": "USA", "away": "Paraguay", "stadium": "SoFi Stadium", "city": "Los Angeles", "host_country": "USA"},
+    {"id": 105, "date": "13/06 — 19:00", "iso_date": "2026-06-13", "group": "Group C", "home": "Qatar", "away": "Switzerland", "stadium": "BC Place", "city": "Vancouver", "host_country": "Canada"}
 ]
 
 # =====================================================================
@@ -157,17 +152,16 @@ HTML_TEMPLATE = """
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif; 
             background: var(--bg-main); 
             color: var(--text-primary); 
-            padding: 20px 16px 120px 16px; 
+            padding: 20px 16px 140px 16px; 
             margin: 0; 
             -webkit-font-smoothing: antialiased;
         }
         
-        /* Apple Premium Header Branding */
         .app-header { text-align: left; margin-bottom: 24px; padding-top: env(safe-area-inset-top); }
         .app-header h1 { font-size: 34px; font-weight: 800; margin: 0; letter-spacing: -1px; color: var(--text-primary); }
         .app-header p { font-size: 14px; color: var(--text-secondary); margin: 4px 0 0 0; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* Premium Segmented Segment Switcher Tabs */
+        /* Premium Segmented Controls tabs styling */
         .navigation-tabs { 
             display: flex; 
             background: #1c1c1e; 
@@ -185,15 +179,14 @@ HTML_TEMPLATE = """
             font-weight: 600; 
             border-radius: 7px; 
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
         .tab-btn.active { 
             background: #636366; 
             color: var(--text-primary); 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
         
-        /* Minimalist Structural Containers */
         .card { 
             background: var(--bg-card); 
             border: 1px solid var(--border-card); 
@@ -212,8 +205,8 @@ HTML_TEMPLATE = """
             border: 1px solid var(--border-card); 
             font-size: 16px; 
             font-weight: 500; 
-            appearance: none;
             margin-bottom: 12px;
+            outline: none;
         }
         button.action-btn { 
             width: 100%; 
@@ -230,7 +223,6 @@ HTML_TEMPLATE = """
         .log-line { font-size: 13px; color: #e5e5ea; line-height: 1.5; margin-bottom: 6px; }
         pre { background: #000000; padding: 14px; border-radius: 10px; overflow-x: auto; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 11px; line-height: 1.6; color: #f2f2f7; border: 1px solid var(--border-card); margin: 0; }
         
-        /* Micro-Interaction Bet Slip Buttons */
         .add-slip-container { display: flex; gap: 8px; margin-top: 12px; }
         .slip-add-btn { 
             flex: 1;
@@ -242,30 +234,28 @@ HTML_TEMPLATE = """
             font-weight: 700;
             border-radius: 8px;
             cursor: pointer;
-            text-align: center;
         }
 
-        /* Persistent Dynamic Apple Sticky Drawer */
+        /* Fixed Bet Slip Drawer Component styling */
         .bet-slip-drawer {
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            background: rgba(28, 28, 30, 0.94);
+            background: rgba(28, 28, 30, 0.95);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-top: 1px solid #38383a;
             padding: 16px 16px calc(16px + env(safe-area-inset-bottom)) 16px;
             border-top-left-radius: 16px;
             border-top-right-radius: 16px;
-            box-shadow: 0 -8px 24px rgba(0,0,0,0.5);
+            box-shadow: 0 -8px 24px rgba(0,0,0,0.6);
             z-index: 999;
         }
         .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .drawer-header h2 { font-size: 18px; font-weight: 700; margin: 0; }
         .clear-slip { font-size: 13px; color: var(--accent-red); font-weight: 600; cursor: pointer; }
         
-        /* Gauge Component Framework */
         .gauge-track { width: 100%; height: 6px; background: #3a3a3c; border-radius: 3px; overflow: hidden; margin-top: 8px; }
-        .gauge-fill { height: 100%; width: 0%; transition: width 0.4s ease; }
+        .gauge-fill { height: 100%; width: 0%; transition: width 0.3s ease; }
         .slip-item { font-size: 13px; padding: 6px 0; border-bottom: 1px solid #2c2c2e; color: #e5e5ea; }
     </style>
 </head>
@@ -273,23 +263,23 @@ HTML_TEMPLATE = """
 
     <div class='app-header'>
         <h1>FC</h1>
-        <p>Football Core — Model Dashboard</p>
+        <p>Football Core — Cup Tracker</p>
     </div>
 
     <div class='navigation-tabs'>
-        <button class='tab-btn active' onclick='filterSchedule("all")'>All Matches</button>
-        <button class='tab-btn' onclick='filterSchedule("Group A")'>Group A</button>
-        <button class='tab-btn' onclick='filterSchedule("Group B")'>Group B</button>
-        <button class='tab-btn' onclick='filterSchedule("Club Derby")'>Derby / Club</button>
+        <button class='tab-btn active' onclick='filterSchedule("all", event)'>All Groups</button>
+        <button class='tab-btn' onclick='filterSchedule("Group A", event)'>Group A</button>
+        <button class='tab-btn' onclick='filterSchedule("Group B", event)'>Group B</button>
+        <button class='tab-btn' onclick='filterSchedule("Group C", event)'>Group C</button>
     </div>
 
     <div class='card'>
-        <h3>Select Inspected Fixture Matrix</h3>
+        <h3>Select Scheduled Fixture Matrix</h3>
         <form method='POST' id='analysis-form'>
             <select name='match_idx' id='match-select'>
                 {% for match in schedule %}
                     <option value='{{ loop.index0 }}' data-group='{{ match.group }}' {% if selected_idx == loop.index0 %}selected{% endif %}>
-                        {{ match.date }} | {{ match.home }} vs {{ match.away }}
+                        {{ match.group }} | {{ match.home }} vs {{ match.away }}
                     </option>
                 {% endfor %}
             </select>
@@ -303,7 +293,7 @@ HTML_TEMPLATE = """
             {% for log in logs %}
                 <div class='log-line'>{{ log }}</div>
             {% else %}
-                <div class='log-line' style='color: var(--text-secondary);'>✅ Clean Wire: No operational risk variants or market line distortions detected.</div>
+                <div class='log-line' style='color: var(--text-secondary);'>✅ Clean Wire: No risk variables or market distortions tracked.</div>
             {% endfor %}
         </div>
 
@@ -335,15 +325,14 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
-        // Persistent Memory Container Array
         let currentSlip = JSON.parse(localStorage.getItem('fc_slip')) || [];
 
-        function filterSchedule(groupFilter) {
+        // FIXED: Re-engineered dynamic filter execution logic
+        function filterSchedule(groupFilter, event) {
             const select = document.getElementById('match-select');
             const options = select.options;
-            let firstVisible = -1;
+            let firstSelected = false;
             
-            // Set Tab Button Styling Layout State
             const tabs = document.querySelectorAll('.tab-btn');
             tabs.forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
@@ -352,7 +341,10 @@ HTML_TEMPLATE = """
                 const optGroup = options[i].getAttribute('data-group');
                 if (groupFilter === 'all' || optGroup === groupFilter) {
                     options[i].style.display = 'block';
-                    if (firstVisible === -1) firstVisible = i;
+                    if (!firstSelected) {
+                        select.value = i;
+                        firstSelected = true;
+                    }
                 } else {
                     options[i].style.display = 'none';
                 }
@@ -398,7 +390,6 @@ HTML_TEMPLATE = """
             document.getElementById('slip-odds-display').innerText = accumulatedOdds.toFixed(2);
             document.getElementById('slip-prob-display').innerText = totalPct.toFixed(1) + '%';
             
-            // Manage Risk Gauges Colour Shifts
             const fill = document.getElementById('slip-gauge');
             fill.style.width = currentSlip.length === 0 ? '0%' : totalPct + '%';
             
@@ -414,7 +405,6 @@ HTML_TEMPLATE = """
             }
         }
 
-        // Run Initial Render Check Lifecycle
         document.addEventListener('DOMContentLoaded', updateSlipUI);
     </script>
 </body>
@@ -432,7 +422,6 @@ def home():
         match = TOURNAMENT_SCHEDULE[selected_idx]
         h_name, a_name, city, country, stadium, target_iso = match["home"], match["away"], match["city"], match["host_country"], match["stadium"], match["iso_date"]
         
-        # Home Advantage Logic Assignment Check
         if h_name in TRUE_HOST_NATIONS and h_name.lower().strip() == country.lower().strip():
             venue_status = "TRUE_HOME_HOST"
             logs.append(f"🏟️ HOST GROUND ACCREDITATION: {h_name} verified on native soil. (+12% Matrix Bump Checked)")
@@ -443,10 +432,9 @@ def home():
         h_att, a_att, c_agg, f_fat, news_logs = harvest_live_sports_wire(h_name, a_name)
         logs.extend(news_logs)
 
-        home_db = TEAM_STAT_DATABASE.get(h_name, TEAM_STAT_DATABASE["Mexico"])
-        away_db = TEAM_STAT_DATABASE.get(a_name, TEAM_STAT_DATABASE["South Africa"])
+        home_db = TEAM_STAT_DATABASE.get(h_name)
+        away_db = TEAM_STAT_DATABASE.get(a_name)
 
-        # Weather Forecast Pipeline Execution
         weather_desc, weather_mod = "Forecast Baseline Default", 1.0
         try:
             forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?q={city}&appid={WEATHER_API_KEY}&units=metric"
@@ -472,7 +460,7 @@ def home():
         report += f"MARKET COMP ODDS         [ BASE ]     [ BEHAVED ]\n"
         report += f"--------------------------------------------------\n"
         report += f"  * 1 (Home Win):          {base['odds'][0]:.2f}          {behav['odds'][0]:.2f}\n"
-        report += f"  * X (Match Draw):        {base['odds'][1]:.2f}          {behav['odds'][1]:.2f}\n"
+        report += f"  * X (Match Draw):          {base['odds'][1]:.2f}          {behav['odds'][1]:.2f}\n"
         report += f"  * 2 (Away Win):          {base['odds'][2]:.2f}          {behav['odds'][2]:.2f}\n"
         report += f"  * 01 (Double H/X):       {base['dc_odds'][0]:.2f}          {behav['dc_odds'][0]:.2f}\n"
         report += f"  * 02 (Double A/X):       {base['dc_odds'][1]:.2f}          {behav['dc_odds'][1]:.2f}\n"

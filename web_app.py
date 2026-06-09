@@ -1,20 +1,17 @@
-from flask import Flask, render_template_string, request
+from flask import Flask, render_template_string, request, jsonify
 import math
 import requests
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import datetime
 
 app = Flask(__name__)
 
 # Active Gateway Security Tokens
 WEATHER_API_KEY = "25c9a61b99a4842679a8983536494752"
-
-# True Tournament Host Nations Group
 TRUE_HOST_NATIONS = ["Mexico", "Canada", "USA"]
 
 # =====================================================================
-# 1. LIVE SQUAD REGISTRY MATRIX
+# 1. EXPANDED UNIVERSAL FIXTURE REGISTRY
 # =====================================================================
 TEAM_STAT_DATABASE = {
     "Mexico":        {"base_xg": 1.65, "shots_avg": 13.4, "shots_conceded_avg": 9.8,  "shot_accuracy": 0.36, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 2.2, "offsides_avg": 1.9},
@@ -26,20 +23,25 @@ TEAM_STAT_DATABASE = {
     "USA":           {"base_xg": 1.58, "shots_avg": 13.1, "shots_conceded_avg": 9.9,  "shot_accuracy": 0.37, "gk_save_pct": 0.74, "corners_avg": 5.6, "cards_avg": 1.7, "offsides_avg": 2.0},
     "Paraguay":      {"base_xg": 1.08, "shots_avg": 9.5,  "shots_conceded_avg": 10.8, "shot_accuracy": 0.29, "gk_save_pct": 0.75, "corners_avg": 3.8, "cards_avg": 2.8, "offsides_avg": 1.4},
     "Qatar":         {"base_xg": 1.20, "shots_avg": 10.5, "shots_conceded_avg": 13.8, "shot_accuracy": 0.32, "gk_save_pct": 0.66, "corners_avg": 4.3, "cards_avg": 1.8, "offsides_avg": 1.9},
-    "Switzerland":   {"base_xg": 1.42, "shots_avg": 12.0, "shots_conceded_avg": 10.5, "shot_accuracy": 0.34, "gk_save_pct": 0.71, "corners_avg": 5.0, "cards_avg": 2.1, "offsides_avg": 1.7}
+    "Switzerland":   {"base_xg": 1.42, "shots_avg": 12.0, "shots_conceded_avg": 10.5, "shot_accuracy": 0.34, "gk_save_pct": 0.71, "corners_avg": 5.0, "cards_avg": 2.1, "offsides_avg": 1.7},
+    "Slavia Prague": {"base_xg": 1.72, "shots_avg": 14.1, "shots_conceded_avg": 8.9,  "shot_accuracy": 0.38, "gk_save_pct": 0.74, "corners_avg": 6.2, "cards_avg": 1.8, "offsides_avg": 2.2},
+    "Sparta Prague": {"base_xg": 1.68, "shots_avg": 13.8, "shots_conceded_avg": 9.2,  "shot_accuracy": 0.36, "gk_save_pct": 0.71, "corners_avg": 5.9, "cards_avg": 2.1, "offsides_avg": 1.9},
+    "Arsenal":       {"base_xg": 1.95, "shots_avg": 15.6, "shots_conceded_avg": 8.2,  "shot_accuracy": 0.41, "gk_save_pct": 0.76, "corners_avg": 6.8, "cards_avg": 1.4, "offsides_avg": 2.0},
+    "Chelsea":       {"base_xg": 1.62, "shots_avg": 12.9, "shots_conceded_avg": 11.4, "shot_accuracy": 0.35, "gk_save_pct": 0.69, "corners_avg": 5.2, "cards_avg": 2.4, "offsides_avg": 1.8}
 }
 
-# Added ISO Timestamps for the match slots to map exactly into the meteorology data streams
 TOURNAMENT_SCHEDULE = [
-    {"id": 101, "date": "11/06 — 19:00", "iso_date": "2026-06-11", "home": "Mexico", "away": "South Africa", "stadium": "Estadio Azteca", "city": "Mexico City", "host_country": "Mexico"},
-    {"id": 102, "date": "12/06 — 02:00", "iso_date": "2026-06-12", "home": "South Korea", "away": "Czech Republic", "stadium": "Estadio Guadalajara", "city": "Guadalajara", "host_country": "Mexico"},
-    {"id": 103, "date": "12/06 — 19:00", "iso_date": "2026-06-12", "home": "Canada", "away": "Bosnia", "stadium": "BMO Field", "city": "Toronto", "host_country": "Canada"},
-    {"id": 104, "date": "13/06 — 01:00", "iso_date": "2026-06-13", "home": "USA", "away": "Paraguay", "stadium": "SoFi Stadium", "city": "Los Angeles", "host_country": "USA"},
-    {"id": 105, "date": "13/06 — 19:00", "iso_date": "2026-06-13", "home": "Qatar", "away": "Switzerland", "stadium": "BC Place", "city": "Vancouver", "host_country": "Canada"}
+    {"id": 101, "date": "11/06 — 19:00", "iso_date": "2026-06-11", "group": "Group A", "day": "Day 1", "home": "Mexico", "away": "South Africa", "stadium": "Estadio Azteca", "city": "Mexico City", "host_country": "Mexico"},
+    {"id": 102, "date": "12/06 — 02:00", "iso_date": "2026-06-12", "group": "Group A", "day": "Day 2", "home": "South Korea", "away": "Czech Republic", "stadium": "Estadio Guadalajara", "city": "Guadalajara", "host_country": "Mexico"},
+    {"id": 103, "date": "12/06 — 19:00", "iso_date": "2026-06-12", "group": "Group B", "day": "Day 2", "home": "Canada", "away": "Bosnia", "stadium": "BMO Field", "city": "Toronto", "host_country": "Canada"},
+    {"id": 104, "date": "13/06 — 01:00", "iso_date": "2026-06-13", "group": "Group B", "day": "Day 3", "home": "USA", "away": "Paraguay", "stadium": "SoFi Stadium", "city": "Los Angeles", "host_country": "USA"},
+    {"id": 105, "date": "13/06 — 19:00", "iso_date": "2026-06-13", "group": "Group C", "day": "Day 3", "home": "Qatar", "away": "Switzerland", "stadium": "BC Place", "city": "Vancouver", "host_country": "Canada"},
+    {"id": 106, "date": "16/06 — 21:00", "iso_date": "2026-06-16", "group": "Club Derby", "day": "Day 6", "home": "Slavia Prague", "away": "Sparta Prague", "stadium": "Fortuna Arena", "city": "Prague", "host_country": "Czechia"},
+    {"id": 107, "date": "17/06 — 20:00", "iso_date": "2026-06-17", "group": "Premier League", "day": "Day 7", "home": "Arsenal", "away": "Chelsea", "stadium": "Emirates Stadium", "city": "London", "host_country": "United Kingdom"}
 ]
 
 # =====================================================================
-# 2. REAL-TIME LIVE NEWS FEED SCRAPER
+# 2. REAL-TIME SPORTS FEED SCRAPER
 # =====================================================================
 def harvest_live_sports_wire(home_team, away_team):
     scraped_text_blob = ""
@@ -58,16 +60,13 @@ def harvest_live_sports_wire(home_team, away_team):
             with urllib.request.urlopen(req, timeout=4) as response:
                 xml_data = response.read()
                 root = ET.fromstring(xml_data)
-                
                 for item in root.findall('.//item'):
                     title = item.find('title').text if item.find('title') is not None else ""
                     desc = item.find('description').text if item.find('description') is not None else ""
                     combined = f"{title} {desc}".lower()
-                    
                     if home_team.lower() in combined or away_team.lower() in combined:
                         scraped_text_blob += f" {combined}"
-        except:
-            pass 
+        except: pass 
             
     h_att, a_att, c_agg, f_fat = 1.0, 1.0, 1.0, 1.0
     
@@ -92,7 +91,6 @@ def poisson_probability(k, lamb):
     return (math.exp(-lamb) * (lamb ** k)) / math.factorial(k)
 
 def run_simulation_variant(home_stats, away_stats, venue_status, weather_mod, behavior_mods=None):
-    # CRITICAL REFINE: Home advantage is only unlocked if the team is a true host country playing on their native soil
     home_advantage = 1.12 if venue_status == "TRUE_HOME_HOST" else 1.00
     
     h_att = behavior_mods['home_attacks'] if behavior_mods else 1.0
@@ -133,78 +131,314 @@ def run_simulation_variant(home_stats, away_stats, venue_status, weather_mod, be
         "saves": (round(pred_home_saves, 1), round(pred_away_saves, 1))
     }
 
+# =====================================================================
+# 4. LUXURY APPLE-STYLE PRESENTATION INTERFACE (HTML/CSS)
+# =====================================================================
 HTML_TEMPLATE = """
 <!DOCTYPE html>
-<html>
+<html lang='en'>
 <head>
     <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
-    <title>QuantX Pro Live</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'>
+    <title>FC — Football Core</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 16px; margin: 0; }
-        h2 { color: #38bdf8; font-size: 20px; text-align: center; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
-        h3 { font-size: 14px; color: #94a3b8; text-transform: uppercase; margin-top: 0; margin-bottom: 12px; letter-spacing: 1px; }
-        .card { background: #1e293b; padding: 18px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid #334155; }
-        label { font-size: 13px; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 6px; }
-        select { width: 100%; padding: 14px; border-radius: 12px; background: #334155; color: white; border: 1px solid #475569; font-size: 15px; font-weight: 500; appearance: none; margin-bottom: 4px; }
-        button { width: 100%; padding: 14px; border-radius: 12px; background: #10b981; color: white; font-size: 15px; font-weight: 700; border: none; margin-top: 8px; }
-        .log-box { background: #020617; padding: 12px; border-radius: 10px; border-left: 3px solid #38bdf8; margin-bottom: 16px; font-size: 12px; color: #cbd5e1; line-height: 1.5; }
-        pre { background: #020617; padding: 14px; border-radius: 12px; overflow-x: auto; font-family: "Courier New", Courier, monospace; font-size: 11px; line-height: 1.6; color: #f8fafc; border: 1px solid #1e293b; margin: 0; }
+        :root {
+            --bg-main: #000000;
+            --bg-card: #0a0f1d;
+            --border-card: #1c2538;
+            --text-primary: #ffffff;
+            --text-secondary: #86868b;
+            --accent-green: #30d158;
+            --accent-blue: #0a84ff;
+            --accent-orange: #ff9f0a;
+            --accent-red: #ff453a;
+        }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif; 
+            background: var(--bg-main); 
+            color: var(--text-primary); 
+            padding: 20px 16px 120px 16px; 
+            margin: 0; 
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Apple Premium Header Branding */
+        .app-header { text-align: left; margin-bottom: 24px; padding-top: env(safe-area-inset-top); }
+        .app-header h1 { font-size: 34px; font-weight: 800; margin: 0; letter-spacing: -1px; color: var(--text-primary); }
+        .app-header p { font-size: 14px; color: var(--text-secondary); margin: 4px 0 0 0; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        /* Premium Segmented Segment Switcher Tabs */
+        .navigation-tabs { 
+            display: flex; 
+            background: #1c1c1e; 
+            padding: 2px; 
+            border-radius: 9px; 
+            margin-bottom: 20px;
+        }
+        .tab-btn { 
+            flex: 1; 
+            background: transparent; 
+            border: none; 
+            color: var(--text-secondary); 
+            padding: 8px 0; 
+            font-size: 13px; 
+            font-weight: 600; 
+            border-radius: 7px; 
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active { 
+            background: #636366; 
+            color: var(--text-primary); 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+        
+        /* Minimalist Structural Containers */
+        .card { 
+            background: var(--bg-card); 
+            border: 1px solid var(--border-card); 
+            border-radius: 14px; 
+            padding: 16px; 
+            margin-bottom: 16px; 
+        }
+        .card h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin: 0 0 12px 0; letter-spacing: 0.5px; }
+        
+        select { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 10px; 
+            background: #1c1c1e; 
+            color: var(--text-primary); 
+            border: 1px solid var(--border-card); 
+            font-size: 16px; 
+            font-weight: 500; 
+            appearance: none;
+            margin-bottom: 12px;
+        }
+        button.action-btn { 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 10px; 
+            background: var(--accent-blue); 
+            color: white; 
+            font-size: 16px; 
+            font-weight: 600; 
+            border: none; 
+            cursor: pointer;
+        }
+        
+        .log-line { font-size: 13px; color: #e5e5ea; line-height: 1.5; margin-bottom: 6px; }
+        pre { background: #000000; padding: 14px; border-radius: 10px; overflow-x: auto; font-family: "SF Mono", SFMono-Regular, Consolas, monospace; font-size: 11px; line-height: 1.6; color: #f2f2f7; border: 1px solid var(--border-card); margin: 0; }
+        
+        /* Micro-Interaction Bet Slip Buttons */
+        .add-slip-container { display: flex; gap: 8px; margin-top: 12px; }
+        .slip-add-btn { 
+            flex: 1;
+            background: #1c1c1e;
+            border: 1px solid var(--border-card);
+            color: var(--accent-green);
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        /* Persistent Dynamic Apple Sticky Drawer */
+        .bet-slip-drawer {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(28, 28, 30, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid #38383a;
+            padding: 16px 16px calc(16px + env(safe-area-inset-bottom)) 16px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            box-shadow: 0 -8px 24px rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .drawer-header h2 { font-size: 18px; font-weight: 700; margin: 0; }
+        .clear-slip { font-size: 13px; color: var(--accent-red); font-weight: 600; cursor: pointer; }
+        
+        /* Gauge Component Framework */
+        .gauge-track { width: 100%; height: 6px; background: #3a3a3c; border-radius: 3px; overflow: hidden; margin-top: 8px; }
+        .gauge-fill { height: 100%; width: 0%; transition: width 0.4s ease; }
+        .slip-item { font-size: 13px; padding: 6px 0; border-bottom: 1px solid #2c2c2e; color: #e5e5ea; }
     </style>
 </head>
 <body>
-    <h2>🏆 QuantX Pro Live</h2>
+
+    <div class='app-header'>
+        <h1>FC</h1>
+        <p>Football Core — Model Dashboard</p>
+    </div>
+
+    <div class='navigation-tabs'>
+        <button class='tab-btn active' onclick='filterSchedule("all")'>All Matches</button>
+        <button class='tab-btn' onclick='filterSchedule("Group A")'>Group A</button>
+        <button class='tab-btn' onclick='filterSchedule("Group B")'>Group B</button>
+        <button class='tab-btn' onclick='filterSchedule("Club Derby")'>Derby / Club</button>
+    </div>
+
     <div class='card'>
-        <form method='POST'>
-            <label>Select Scheduled World Cup Match:</label>
-            <select name='match_idx'>
+        <h3>Select Inspected Fixture Matrix</h3>
+        <form method='POST' id='analysis-form'>
+            <select name='match_idx' id='match-select'>
                 {% for match in schedule %}
-                    <option value='{{ loop.index0 }}' {% if selected_idx == loop.index0 %}selected{% endif %}>{{ match.date }} | {{ match.home }} vs {{ match.away }}</option>
+                    <option value='{{ loop.index0 }}' data-group='{{ match.group }}' {% if selected_idx == loop.index0 %}selected{% endif %}>
+                        {{ match.date }} | {{ match.home }} vs {{ match.away }}
+                    </option>
                 {% endfor %}
             </select>
-            <button type='submit'>Scrape & Compute Metrics</button>
+            <button type='submit' class='action-btn'>Compute Precision Metrics</button>
         </form>
     </div>
 
     {% if report %}
+        <div class='card' id='logs-section'>
+            <h3>📡 Contextual Overlays</h3>
+            {% for log in logs %}
+                <div class='log-line'>{{ log }}</div>
+            {% else %}
+                <div class='log-line' style='color: var(--text-secondary);'>✅ Clean Wire: No operational risk variants or market line distortions detected.</div>
+            {% endfor %}
+        </div>
+
         <div class='card'>
-            <h3>📡 Real-Time News Scraper Activity</h3>
-            <div class='log-box'>
-                {% for log in logs %}
-                    • {{ log }}<br>
-                {% else %}
-                    ✅ Clean Wire: No breaking news warnings, injuries, or fatigue alerts located for these squads.
-                {% endfor %}
+            <h3>📊 Baseline vs Behavioral Compilers</h3>
+            <pre>{{ report }}</pre>
+            
+            <div class='add-slip-container'>
+                <button class='slip-add-btn' onclick='addToSlip("{{ h_name }} Win", {{ h_odds }})'>+ Add {{ h_name }} Win ({{ h_odds }})</button>
+                <button class='slip-add-btn' onclick='addToSlip("{{ a_name }} Win", {{ a_odds }})'>+ Add {{ a_name }} Win ({{ a_odds }})</button>
             </div>
         </div>
-        <div class='card'>
-            <h3>📊 Analysis Matrix Results</h3>
-            <pre>{{ report }}</pre>
-        </div>
     {% endif %}
+
+    <div class='bet-slip-drawer'>
+        <div class='drawer-header'>
+            <h2>FC Bet Builder</h2>
+            <span class='clear-slip' onclick='clearSlip()'>Clear</span>
+        </div>
+        <div id='slip-items-container'></div>
+        
+        <div style='margin-top: 12px; display: flex; justify-content: space-between; font-size: 14px; font-weight: 600;'>
+            <span>Total Odds: <span id='slip-odds-display' style='color: var(--accent-blue);'>1.00</span></span>
+            <span>Likelihood: <span id='slip-prob-display'>100%</span></span>
+        </div>
+        <div class='gauge-track'>
+            <div id='slip-gauge' class='gauge-fill'></div>
+        </div>
+    </div>
+
+    <script>
+        // Persistent Memory Container Array
+        let currentSlip = JSON.parse(localStorage.getItem('fc_slip')) || [];
+
+        function filterSchedule(groupFilter) {
+            const select = document.getElementById('match-select');
+            const options = select.options;
+            let firstVisible = -1;
+            
+            // Set Tab Button Styling Layout State
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            for (let i = 0; i < options.length; i++) {
+                const optGroup = options[i].getAttribute('data-group');
+                if (groupFilter === 'all' || optGroup === groupFilter) {
+                    options[i].style.display = 'block';
+                    if (firstVisible === -1) firstVisible = i;
+                } else {
+                    options[i].style.display = 'none';
+                }
+            }
+        }
+
+        function addToSlip(marketName, decimalOdds) {
+            if (currentSlip.some(item => item.market === marketName)) return;
+            currentSlip.push({ market: marketName, odds: parseFloat(decimalOdds) });
+            updateSlipUI();
+        }
+
+        function clearSlip() {
+            currentSlip = [];
+            updateSlipUI();
+        }
+
+        function updateSlipUI() {
+            localStorage.setItem('fc_slip', JSON.stringify(currentSlip));
+            const container = document.getElementById('slip-items-container');
+            container.innerHTML = '';
+            
+            let accumulatedOdds = 1.0;
+            let compoundedProb = 1.0;
+
+            currentSlip.forEach(item => {
+                accumulatedOdds *= item.odds;
+                compoundedProb *= (1.0 / item.odds);
+                
+                const div = document.createElement('div');
+                div.className = 'slip-item';
+                div.innerText = `• ${item.market} (${item.odds.toFixed(2)})`;
+                container.appendChild(div);
+            });
+
+            if (currentSlip.length === 0) {
+                container.innerHTML = "<div style='color: var(--text-secondary); font-size:12px;'>No selections active in accumulator core.</div>";
+                accumulatedOdds = 1.0;
+                compoundedProb = 1.0;
+            }
+
+            const totalPct = compoundedProb * 100;
+            document.getElementById('slip-odds-display').innerText = accumulatedOdds.toFixed(2);
+            document.getElementById('slip-prob-display').innerText = totalPct.toFixed(1) + '%';
+            
+            // Manage Risk Gauges Colour Shifts
+            const fill = document.getElementById('slip-gauge');
+            fill.style.width = currentSlip.length === 0 ? '0%' : totalPct + '%';
+            
+            if (totalPct > 45) {
+                fill.style.background = 'var(--accent-green)';
+                document.getElementById('slip-prob-display').style.color = 'var(--accent-green)';
+            } else if (totalPct > 20) {
+                fill.style.background = 'var(--accent-orange)';
+                document.getElementById('slip-prob-display').style.color = 'var(--accent-orange)';
+            } else {
+                fill.style.background = 'var(--accent-red)';
+                document.getElementById('slip-prob-display').style.color = 'var(--accent-red)';
+            }
+        }
+
+        // Run Initial Render Check Lifecycle
+        document.addEventListener('DOMContentLoaded', updateSlipUI);
+    </script>
 </body>
 </html>
 """
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    report = None
-    logs = []
-    selected_idx = 1
+    report, logs = None, []
+    selected_idx = 0
+    h_name, a_name, h_odds, a_odds = "", "", 1.0, 1.0
     
     if request.method == 'POST':
         selected_idx = int(request.form['match_idx'])
         match = TOURNAMENT_SCHEDULE[selected_idx]
         h_name, a_name, city, country, stadium, target_iso = match["home"], match["away"], match["city"], match["host_country"], match["stadium"], match["iso_date"]
         
-        # CORE REFINE: Evaluate true host home status. 
-        # Gives advantage only if the team name matches a host country AND they are playing inside their actual host border.
+        # Home Advantage Logic Assignment Check
         if h_name in TRUE_HOST_NATIONS and h_name.lower().strip() == country.lower().strip():
             venue_status = "TRUE_HOME_HOST"
-            logs.append(f"🏟️ HOST ADVANTAGE LOCKED: {h_name} is playing on true native soil at {stadium}. (+12% Performance Multiplier Applied)")
+            logs.append(f"🏟️ HOST GROUND ACCREDITATION: {h_name} verified on native soil. (+12% Matrix Bump Checked)")
         else:
             venue_status = "NEUTRAL_GROUND"
-            logs.append(f"🌍 NEUTRAL GROUND VERIFIED: {h_name} vs {a_name} slated for a neutral venue in {city}. (Zero Home Bias Calculated)")
+            logs.append(f"🌍 NEUTRAL VENUE CONFIRMED: Match calculated at a neutral location in {city}.")
         
         h_att, a_att, c_agg, f_fat, news_logs = harvest_live_sports_wire(h_name, a_name)
         logs.extend(news_logs)
@@ -212,44 +446,27 @@ def home():
         home_db = TEAM_STAT_DATABASE.get(h_name, TEAM_STAT_DATABASE["Mexico"])
         away_db = TEAM_STAT_DATABASE.get(a_name, TEAM_STAT_DATABASE["South Africa"])
 
-        # =====================================================================
-        # UPGRADED WEATHER MODULE: PULLS 5-DAY / 3-HOUR PREDICTED FORECAST MATRIX
-        # =====================================================================
-        weather_desc, weather_mod = "Forecast Unavailable (Default Baselines Evaluated)", 1.0
+        # Weather Forecast Pipeline Execution
+        weather_desc, weather_mod = "Forecast Baseline Default", 1.0
         try:
-            # Query the 5-Day Forecast Endpoint
             forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?q={city}&appid={WEATHER_API_KEY}&units=metric"
             f_res = requests.get(forecast_url, timeout=4).json()
-            
             if f_res.get("list"):
-                matched_forecast = None
-                # Scan the 40 future projection blocks looking for the calendar match date
-                for time_block in f_res["list"]:
-                    block_date_str = time_block.get("dt_txt", "") # Formatted as "YYYY-MM-DD HH:MM:SS"
-                    if target_iso in block_date_str:
-                        matched_forecast = time_block
-                        break # Grab the earliest forecast window available for that match day
-                
-                # If a calendar day prediction isn't generated yet by the satellite, fall back to the closest timeline block
-                if not matched_forecast:
-                    matched_forecast = f_res["list"][0]
-                
-                main_condition = matched_forecast["weather"][0]["main"]
-                temp_val = matched_forecast["main"]["temp"]
-                weather_desc = f"Predicted Match-Day: {main_condition} ({temp_val}°C)"
-                
-                # Apply wet canvas penalty modifiers to tactical accuracy lines
-                if "Rain" in main_condition or "Drizzle" in main_condition or "Snow" in main_condition: 
+                matched_block = next((b for b in f_res["list"] if target_iso in b.get("dt_txt", "")), f_res["list"][0])
+                main_cond = matched_block["weather"][0]["main"]
+                weather_desc = f"Match Day Forecast: {main_cond} ({matched_block['main']['temp']}°C)"
+                if main_cond in ["Rain", "Drizzle", "Snow"]:
                     weather_mod = 0.85
-                    logs.append(f"🌧️ WEATHER PENALTY ENFORCED: Match-day forecast calls for precipitation in {city}. (-15% Expected Scoring Convergence)")
-        except Exception as e:
-            pass
+                    logs.append(f"🌧️ CLIMATE MITIGATION: Ball drag penalty enforced due to predicted rain in {city}.")
+        except: pass
 
         base = run_simulation_variant(home_db, away_db, venue_status, weather_mod, None)
         behav = run_simulation_variant(home_db, away_db, venue_status, weather_mod, {'home_attacks': h_att, 'away_attacks': a_att, 'aggression_stakes': c_agg, 'fitness_fatigue': f_fat})
 
+        h_odds, a_odds = behav['odds'][0], behav['odds'][2]
+
         report =  f"FIXTURE: {h_name} vs {a_name}\n"
-        report += f"Venue:   {stadium} ({city})\n"
+        report += f"Stadium: {stadium} ({city})\n"
         report += f"Climate: {weather_desc}\n"
         report += f"--------------------------------------------------\n"
         report += f"MARKET COMP ODDS         [ BASE ]     [ BEHAVED ]\n"
@@ -268,10 +485,8 @@ def home():
         report += f"  * Total Goal Kicks Line:  {base['goal_kicks']}          {behav['goal_kicks']}\n"
         report += f"  * Shots on Target (H):    {base['shots_on_target'][0]}           {behav['shots_on_target'][0]}\n"
         report += f"  * Shots on Target (A):    {base['shots_on_target'][1]}           {behav['shots_on_target'][1]}\n"
-        report += f"  * Goalie Saves (Home):    {base['saves'][0]}           {behav['saves'][0]}\n"
-        report += f"  * Goalie Saves (Away):    {base['saves'][1]}           {behav['saves'][1]}\n"
 
-    return render_template_string(HTML_TEMPLATE, schedule=TOURNAMENT_SCHEDULE, report=report, logs=logs, selected_idx=selected_idx)
+    return render_template_string(HTML_TEMPLATE, schedule=TOURNAMENT_SCHEDULE, report=report, logs=logs, selected_idx=selected_idx, h_name=h_name, a_name=a_name, h_odds=f"{h_odds:.2f}", a_odds=f"{a_odds:.2f}")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

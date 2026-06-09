@@ -10,7 +10,7 @@ WEATHER_API_KEY = "25c9a61b99a4842679a8983536494752"
 TRUE_HOST_NATIONS = ["Mexico", "Canada", "USA"]
 
 # =====================================================================
-# 1. LIVE MASTER SQUAD STAT PERFORMANCE MATRIX (ALL 48+ TEAMS INTEGRATED)
+# 1. LIVE MASTER SQUAD STAT PERFORMANCE MATRIX (GLOBAL SQUAD MATRIX)
 # =====================================================================
 TEAM_STAT_DATABASE = {
     # Nations
@@ -58,13 +58,13 @@ TEAM_STAT_DATABASE = {
     "Al Hilal": {"base_xg": 1.90, "shots_avg": 14.8, "shots_conceded_avg": 9.5, "shot_accuracy": 0.38, "gk_save_pct": 0.72, "corners_avg": 5.9, "cards_avg": 1.8, "offsides_avg": 2.0, "goal_kicks_avg": 6.4},
     "Yokohama F. Marinos": {"base_xg": 1.65, "shots_avg": 13.2, "shots_conceded_avg": 10.8, "shot_accuracy": 0.36, "gk_save_pct": 0.69, "corners_avg": 5.3, "cards_avg": 1.4, "offsides_avg": 1.7, "goal_kicks_avg": 7.2},
     "Al Ahly": {"base_xg": 1.70, "shots_avg": 13.5, "shots_conceded_avg": 9.9, "shot_accuracy": 0.37, "gk_save_pct": 0.74, "corners_avg": 5.4, "cards_avg": 2.1, "offsides_avg": 1.6, "goal_kicks_avg": 7.0},
-    "Mamelodi Sundowns": {"base_xg": 1.58, "shots_avg": 12.9, "shots_conceded_avg": 10.3, "shot_accuracy": 0.35, "gk_save_pct": 0.71, "corners_avg": 5.1, "cards_avg": 1.9, "offsides_avg": 1.5, "goal_kicks_avg": 7.5},
+    "Mamelodi Sundowns": {"base_xg": 1.58, "shots_avg": 12.9, "shots_conceded_avg": 10.3, "shot_accuracy": 0.35, "gk_save_pct": 0.71, "corners_avg": 5.1, "club_cards_avg": 1.9, "offsides_avg": 1.5, "goal_kicks_avg": 7.5},
     "River Plate": {"base_xg": 1.85, "shots_avg": 14.6, "shots_conceded_avg": 9.8, "shot_accuracy": 0.38, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 2.2, "offsides_avg": 1.9, "goal_kicks_avg": 6.6},
     "Palmeiras": {"base_xg": 1.80, "shots_avg": 14.1, "shots_conceded_avg": 9.2, "shot_accuracy": 0.37, "gk_save_pct": 0.75, "corners_avg": 5.6, "cards_avg": 2.4, "offsides_avg": 1.8, "goal_kicks_avg": 6.8}
 }
 
 # =====================================================================
-# 2. MASTER GLOBAL DATABASE SYSTEM (AUTHENTIC CORE BRACKETS)
+# 2. MASTER GLOBAL DATABASE SYSTEM (ALL PATHWAYS SYNCED)
 # =====================================================================
 GLOBAL_MATCH_DATABASE = [
     # --- 1. WORLD CUP ENTIRE PYRAMID GRID (GROUPS A TO L INTEGRATED) ---
@@ -82,7 +82,7 @@ GLOBAL_MATCH_DATABASE = [
     {"id": 11, "cat": "WC", "home": "Ghana", "away": "Panama", "filter1": "Group L", "filter2": "Ghana", "filter3": "17/06", "city": "Toronto", "hours_to_kick": 156, "country": "Canada"},
     {"id": 12, "cat": "WC", "home": "Czech Republic", "away": "South Africa", "filter1": "Group A", "filter2": "Czech Republic", "filter3": "18/06", "city": "Atlanta", "hours_to_kick": 176, "country": "USA"},
 
-    # --- 2. DOMESTIC LEAGUES Pyramid (COUNTRY -> TIER DRILLDOWN) ---
+    # --- 2. DOMESTIC LEAGUES CORE PYRAMIDS ---
     {"id": 13, "cat": "Leagues", "home": "Arsenal", "away": "Chelsea", "filter1": "England", "filter2": "Premier League (Tier 1)", "filter3": "Round 36", "date": "12/06", "city": "London", "hours_to_kick": 14, "country": "England"},
     {"id": 14, "cat": "Leagues", "home": "Leeds United", "away": "Aston Villa", "filter1": "England", "filter2": "Championship (Tier 2)", "filter3": "Round 44", "date": "12/06", "city": "Leeds", "hours_to_kick": 16, "country": "England"},
     {"id": 15, "cat": "Leagues", "home": "Sunderland", "away": "Wigan Athletic", "filter1": "England", "filter2": "League One (Tier 3)", "filter3": "Round 44", "date": "13/06", "city": "Sunderland", "hours_to_kick": 38, "country": "England"},
@@ -93,13 +93,13 @@ GLOBAL_MATCH_DATABASE = [
     {"id": 20, "cat": "Leagues", "home": "Viktoria Plzeň", "away": "Zbrojovka Brno", "filter1": "Czechia", "filter2": "FNL (Tier 2)", "filter3": "Round 28", "date": "12/06", "city": "Plzen", "hours_to_kick": 24, "country": "Czechia"},
     {"id": 21, "cat": "Leagues", "home": "Viktoria Žižkov", "away": "Sparta Prague B", "filter1": "Czechia", "filter2": "ČFL (Tier 3)", "filter3": "Round 26", "date": "13/06", "city": "Prague", "hours_to_kick": 48, "country": "Czechia"},
 
-    # --- 3. DOMESTIC CUPS Pyramid ---
+    # --- 3. DOMESTIC CUPS ---
     {"id": 22, "cat": "Cup", "home": "Arsenal", "away": "Chelsea", "filter1": "England", "filter2": "FA Cup", "filter3": "Semifinal", "date": "14/06", "city": "London", "hours_to_kick": 64, "country": "England"},
     {"id": 23, "cat": "Cup", "home": "Aston Villa", "away": "Liverpool", "filter1": "England", "filter2": "EFL Cup", "filter3": "Final", "date": "15/06", "city": "London", "hours_to_kick": 88, "country": "England"},
     {"id": 24, "cat": "Cup", "home": "Real Madrid", "away": "Barcelona", "filter1": "Spain", "filter2": "Copa del Rey", "filter3": "Final", "date": "14/06", "city": "Madrid", "hours_to_kick": 68, "country": "Spain"},
     {"id": 25, "cat": "Cup", "home": "Sparta Prague", "away": "Viktoria Plzeň", "filter1": "Czechia", "filter2": "MOL Cup", "filter3": "Final", "date": "11/06", "city": "Prague", "hours_to_kick": 2, "country": "Czechia"},
 
-    # --- 4. ELITE COMPETITIONS REALITY PORTFOLIO ---
+    # --- 4. ELITE TOURNAMENTS ---
     {"id": 26, "cat": "Elite", "home": "Real Madrid", "away": "Arsenal", "filter1": "UEFA Champions League", "filter2": "League Phase", "filter3": "Matchday 1", "date": "15/06", "city": "Madrid", "hours_to_kick": 22, "country": "Europe"},
     {"id": 27, "cat": "Elite", "home": "Al Hilal", "away": "Yokohama F. Marinos", "filter1": "Asian Champions League", "filter2": "Knockout Stage", "filter3": "Quarter-Final", "date": "16/06", "city": "Riyadh", "hours_to_kick": 44, "country": "Asia"},
     {"id": 28, "cat": "Elite", "home": "Chelsea", "away": "Villarreal", "filter1": "UEFA Europa League", "filter2": "League Phase", "filter3": "Matchday 1", "date": "16/06", "city": "London", "hours_to_kick": 46, "country": "Europe"},
@@ -107,7 +107,7 @@ GLOBAL_MATCH_DATABASE = [
     {"id": 30, "cat": "Elite", "home": "River Plate", "away": "Palmeiras", "filter1": "Copa Libertadores (South American)", "filter2": "Knockout Phase", "filter3": "Semi-Final", "date": "18/06", "city": "Buenos Aires", "hours_to_kick": 94, "country": "South America"},
     {"id": 31, "cat": "Elite", "home": "Mexico", "away": "USA", "filter1": "CONCACAF Champions Cup (North American)", "filter2": "Finals", "filter3": "Final Leg 1", "date": "19/06", "city": "Mexico City", "hours_to_kick": 118, "country": "North America"},
 
-    # --- 5. INTERNATIONALS WINDOW SEGREGATION ---
+    # --- 5. INTERNATIONAL WINDOWS ---
     {"id": 32, "cat": "International", "home": "Brazil", "away": "England", "filter1": "Brazil", "filter2": "Friendlies", "filter3": "June Window", "date": "11/06", "city": "Rio de Janeiro", "hours_to_kick": 1, "country": "Global"},
     {"id": 33, "cat": "International", "home": "Italy", "away": "Germany", "filter1": "Italy", "filter2": "Competition (Nations League)", "filter3": "Round 1", "date": "12/06", "city": "Rome", "hours_to_kick": 26, "country": "Global"}
 ]
@@ -117,7 +117,7 @@ ALL_TEAMS = sorted(list(set(m["home"] for m in GLOBAL_MATCH_DATABASE) | set(m["a
 ALL_DATES = sorted(list(set(m["date"] for m in GLOBAL_MATCH_DATABASE)), key=lambda x: [int(i) for i in x.split('/')])
 
 # =====================================================================
-# 3. BACKGROUND COMPILERS & MATHEMATICAL POISSON MODELS
+# 3. BACKGROUND HARVESTERS & MATHEMATICAL POISSON ALGORITHMS
 # =====================================================================
 def harvest_live_sports_wire(home_team, away_team):
     scraped_text_blob = ""
@@ -193,7 +193,7 @@ def run_simulation_variant(home_stats, away_stats, venue_status, weather_mod, be
     }
 
 # =====================================================================
-# 4. LUXURY PRESENTATION LAYER DESIGN
+# 4. LUXURY PRESENTATION LAYER DESIGN (HTML/CSS)
 # =====================================================================
 HTML_TEMPLATE = """
 <!DOCTYPE html>

@@ -1,4 +1,4 @@
-kfrom flask import Flask, render_template_string, request, jsonify
+from flask import Flask, render_template_string, request, jsonify
 import math
 import requests
 import urllib.request
@@ -10,7 +10,7 @@ WEATHER_API_KEY = "25c9a61b99a4842679a8983536494752"
 TRUE_HOST_NATIONS = ["Mexico", "Canada", "USA"]
 
 # =====================================================================
-# 1. LIVE MASTER SQUAD STAT PERFORMANCE MATRIX (GLOBAL ATTRIBUTES)
+# 1. LIVE MASTER SQUAD ATTR REGISTRY MATRIX (GLOBAL ATTRIBUTES)
 # =====================================================================
 TEAM_STAT_DATABASE = {
     "Mexico":        {"base_xg": 1.65, "shots_avg": 13.4, "shots_conceded_avg": 9.8,  "shot_accuracy": 0.36, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 2.2, "offsides_avg": 1.9, "goal_kicks_avg": 7.2},
@@ -67,22 +67,13 @@ TEAM_STAT_DATABASE = {
 # 2. MASTER GLOBAL DATABASE SYSTEM (ALL CHANNELS INTEGRATED)
 # =====================================================================
 GLOBAL_MATCH_DATABASE = [
-    # Category: World Cup (WC)
     {"id": 0, "cat": "WC", "home": "Mexico", "away": "South Africa", "country": "Mexico", "tier": "Group A", "round": "Matchday 1", "date": "11/06", "city": "Mexico City", "hours_to_kick": 4},
     {"id": 1, "cat": "WC", "home": "South Korea", "away": "Czech Republic", "country": "Mexico", "tier": "Group A", "round": "Matchday 1", "date": "11/06", "city": "Guadalajara", "hours_to_kick": 8},
-    
-    # Category: Leagues (Leagues)
     {"id": 2, "cat": "Leagues", "home": "Arsenal", "away": "Chelsea", "country": "England", "tier": "Premier League", "round": "Round 32", "date": "12/06", "city": "London", "hours_to_kick": 14},
     {"id": 3, "cat": "Leagues", "home": "Slavia Prague", "away": "Sparta Prague", "country": "Czechia", "tier": "First League", "round": "Round 28", "date": "13/06", "city": "Prague", "hours_to_kick": 36},
-    
-    # Category: Cup (Cup)
     {"id": 4, "cat": "Cup", "home": "Arsenal", "away": "Chelsea", "country": "England", "tier": "FA Cup", "round": "Semifinal", "date": "14/06", "city": "London", "hours_to_kick": 18},
-    
-    # Category: Elite Competitions (Elite)
     {"id": 5, "cat": "Elite", "home": "Real Madrid", "away": "Arsenal", "country": "Europe", "tier": "Champions League", "round": "Group Week 1", "date": "15/06", "city": "Madrid", "hours_to_kick": 22},
     {"id": 6, "cat": "Elite", "home": "Czech Republic", "away": "France", "country": "Europe", "tier": "Euro Nations", "round": "Matchday 1", "date": "16/06", "city": "Prague", "hours_to_kick": 48},
-    
-    # Category: International Friendlies (International)
     {"id": 7, "cat": "International", "home": "Brazil", "away": "England", "country": "Global", "tier": "International Friendly", "round": "Friendly Window", "date": "17/06", "city": "Rio de Janeiro", "hours_to_kick": 2}
 ]
 
@@ -438,7 +429,6 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
-        // MASTER DYNAMIC DATA OBJECT ARRAY FOR ALL DOMESTIC PYRAMIDS
         const GLOBAL_PYRAMID_CONTEXT_DATA = [
             {% for match in schedule %}
                 {
@@ -477,7 +467,6 @@ HTML_TEMPLATE = """
 
         function returnToLandingScreen() { window.location.href = '/'; }
 
-        // CORE FIX: Dynamic initialization sync routine that binds the top ribbon button classes
         function switchAppScopeCategory(categoryKey) {
             activeAppCategory = categoryKey;
             localStorage.setItem('fc_active_cat', categoryKey);
@@ -673,7 +662,7 @@ HTML_TEMPLATE = """
             if (totalPct > 45) fill.style.background = 'var(--accent-green)'; else if (totalPct > 20) fill.style.background = 'var(--accent-orange)'; else fill.style.background = 'var(--accent-red)';
         }
 
-        // FIXED: Explicitly sync layout views on page instantiation lifecycle
+        // FIXED: Rebuilt brackets listener hooks securely to avoid compiler leaks
         document.addEventListener('DOMContentLoaded', () => {
             switchAppScopeCategory(activeAppCategory);
             updateSlipUI();
@@ -684,7 +673,7 @@ HTML_TEMPLATE = """
 """
 
 # =====================================================================
-# 5. MASTER BRAIN HOME GATEWAY GATE ROUTE
+# 5. RESTORED MASTER BRAIN HOME GATEWAY GATE ROUTE
 # =====================================================================
 @app.route('/', methods=['GET', 'POST'])
 def home():

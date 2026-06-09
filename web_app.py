@@ -6,12 +6,11 @@ import xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 
-# Active Gateway Security Tokens
 WEATHER_API_KEY = "25c9a61b99a4842679a8983536494752"
 TRUE_HOST_NATIONS = ["Mexico", "Canada", "USA"]
 
 # =====================================================================
-# 1. LIVE MASTER SQUAD STAT PERFORMANCE MATRIX (ALL 48 COUNTRIES)
+# 1. LIVE MASTER SQUAD PERFORMANCE ATTRIBUTE MATRIX
 # =====================================================================
 TEAM_STAT_DATABASE = {
     "Mexico":        {"base_xg": 1.65, "shots_avg": 13.4, "shots_conceded_avg": 9.8,  "shot_accuracy": 0.36, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 2.2, "offsides_avg": 1.9},
@@ -24,12 +23,6 @@ TEAM_STAT_DATABASE = {
     "Paraguay":      {"base_xg": 1.08, "shots_avg": 9.5,  "shots_conceded_avg": 10.8, "shot_accuracy": 0.29, "gk_save_pct": 0.75, "corners_avg": 3.8, "cards_avg": 2.8, "offsides_avg": 1.4},
     "Qatar":         {"base_xg": 1.20, "shots_avg": 10.5, "shots_conceded_avg": 13.8, "shot_accuracy": 0.32, "gk_save_pct": 0.66, "corners_avg": 4.3, "cards_avg": 1.8, "offsides_avg": 1.9},
     "Switzerland":   {"base_xg": 1.42, "shots_avg": 12.0, "shots_conceded_avg": 10.5, "shot_accuracy": 0.34, "gk_save_pct": 0.71, "corners_avg": 5.0, "cards_avg": 2.1, "offsides_avg": 1.7},
-    "Brazil":        {"base_xg": 2.15, "shots_avg": 16.8, "shots_conceded_avg": 7.8,  "shot_accuracy": 0.42, "gk_save_pct": 0.76, "corners_avg": 6.7, "cards_avg": 1.6, "offsides_avg": 2.2},
-    "Morocco":       {"base_xg": 1.62, "shots_avg": 13.9, "shots_conceded_avg": 9.5,  "shot_accuracy": 0.37, "gk_save_pct": 0.75, "corners_avg": 5.4, "cards_avg": 2.0, "offsides_avg": 1.7},
-    "Haiti":         {"base_xg": 1.05, "shots_avg": 9.2,  "shots_conceded_avg": 14.1, "shot_accuracy": 0.28, "gk_save_pct": 0.64, "corners_avg": 3.5, "cards_avg": 2.5, "offsides_avg": 1.3},
-    "Scotland":      {"base_xg": 1.28, "shots_avg": 11.2, "shots_conceded_avg": 12.0, "shot_accuracy": 0.32, "gk_save_pct": 0.69, "corners_avg": 4.6, "cards_avg": 2.2, "offsides_avg": 1.5},
-    "Australia":     {"base_xg": 1.31, "shots_avg": 11.8, "shots_conceded_avg": 11.9, "shot_accuracy": 0.33, "gk_save_pct": 0.70, "corners_avg": 4.8, "cards_avg": 1.9, "offsides_avg": 1.6},
-    "Türkiye":       {"base_xg": 1.54, "shots_avg": 13.6, "shots_conceded_avg": 10.4, "shot_accuracy": 0.36, "gk_save_pct": 0.72, "corners_avg": 5.5, "cards_avg": 2.3, "offsides_avg": 1.8},
     "Germany":       {"base_xg": 1.98, "shots_avg": 15.9, "shots_conceded_avg": 8.6,  "shot_accuracy": 0.39, "gk_save_pct": 0.74, "corners_avg": 6.3, "cards_avg": 1.5, "offsides_avg": 2.0},
     "Curaçao":       {"base_xg": 1.02, "shots_avg": 8.9,  "shots_conceded_avg": 15.2, "shot_accuracy": 0.27, "gk_save_pct": 0.63, "corners_avg": 3.2, "cards_avg": 1.8, "offsides_avg": 1.2},
     "Netherlands":   {"base_xg": 1.85, "shots_avg": 14.8, "shots_conceded_avg": 9.2,  "shot_accuracy": 0.38, "gk_save_pct": 0.75, "corners_avg": 6.0, "cards_avg": 1.6, "offsides_avg": 2.1},
@@ -65,10 +58,9 @@ TEAM_STAT_DATABASE = {
 }
 
 # =====================================================================
-# 2. COMPREHENSIVE TOURNAMENT ROUND SCHEDULE (GROUPS A TO L)
+# 2. COMPLETE WORLD CUP GROUP FIXTURE SYSTEM
 # =====================================================================
 TOURNAMENT_SCHEDULE = [
-    # --- MATCHDAY 1 WIRE BRACKETS ---
     {"id": 1, "date": "11/06", "iso_date": "2026-06-11", "group": "Group A", "round": "Matchday 1", "home": "Mexico", "away": "South Africa", "city": "Mexico City", "host_country": "Mexico"},
     {"id": 2, "date": "11/06", "iso_date": "2026-06-11", "group": "Group A", "round": "Matchday 1", "home": "South Korea", "away": "Czech Republic", "city": "Guadalajara", "host_country": "Mexico"},
     {"id": 3, "date": "12/06", "iso_date": "2026-06-12", "group": "Group B", "round": "Matchday 1", "home": "Canada", "away": "Bosnia", "city": "Toronto", "host_country": "Canada"},
@@ -93,8 +85,6 @@ TOURNAMENT_SCHEDULE = [
     {"id": 22, "date": "17/06", "iso_date": "2026-06-17", "group": "Group L", "round": "Matchday 1", "home": "England", "away": "Croatia", "city": "Dallas", "host_country": "USA"},
     {"id": 23, "date": "17/06", "iso_date": "2026-06-17", "group": "Group L", "round": "Matchday 1", "home": "Ghana", "away": "Panama", "city": "Toronto", "host_country": "Canada"},
     {"id": 24, "date": "17/06", "iso_date": "2026-06-17", "group": "Group K", "round": "Matchday 1", "home": "Uzbekistan", "away": "Colombia", "city": "Mexico City", "host_country": "Mexico"},
-    
-    # --- MATCHDAY 2 WIRE BRACKETS ---
     {"id": 25, "date": "18/06", "iso_date": "2026-06-18", "group": "Group A", "round": "Matchday 2", "home": "Czech Republic", "away": "South Africa", "city": "Atlanta", "host_country": "USA"},
     {"id": 26, "date": "18/06", "iso_date": "2026-06-18", "group": "Group B", "round": "Matchday 2", "home": "Switzerland", "away": "Bosnia", "city": "Los Angeles", "host_country": "USA"},
     {"id": 27, "date": "18/06", "iso_date": "2026-06-18", "group": "Group B", "round": "Matchday 2", "home": "Canada", "away": "Qatar", "city": "Vancouver", "host_country": "Canada"},
@@ -119,8 +109,6 @@ TOURNAMENT_SCHEDULE = [
     {"id": 46, "date": "23/06", "iso_date": "2026-06-23", "group": "Group L", "round": "Matchday 2", "home": "England", "away": "Ghana", "city": "Boston", "host_country": "USA"},
     {"id": 47, "date": "23/06", "iso_date": "2026-06-23", "group": "Group L", "round": "Matchday 2", "home": "Panama", "away": "Croatia", "city": "Toronto", "host_country": "Canada"},
     {"id": 48, "date": "23/06", "iso_date": "2026-06-23", "group": "Group K", "round": "Matchday 2", "home": "Colombia", "away": "Congo DR", "city": "Guadalajara", "host_country": "Mexico"},
-    
-    # --- MATCHDAY 3 WIRE BRACKETS ---
     {"id": 49, "date": "24/06", "iso_date": "2026-06-24", "group": "Group B", "round": "Matchday 3", "home": "Switzerland", "away": "Canada", "city": "Vancouver", "host_country": "Canada"},
     {"id": 50, "date": "24/06", "iso_date": "2026-06-24", "group": "Group B", "round": "Matchday 3", "home": "Bosnia", "away": "Qatar", "city": "Seattle", "host_country": "USA"},
     {"id": 51, "date": "24/06", "iso_date": "2026-06-24", "group": "Group C", "round": "Matchday 3", "home": "Scotland", "away": "Brazil", "city": "Miami", "host_country": "USA"},
@@ -135,7 +123,6 @@ TOURNAMENT_SCHEDULE = [
     {"id": 60, "date": "25/06", "iso_date": "2026-06-25", "group": "Group D", "round": "Matchday 3", "home": "Paraguay", "away": "Australia", "city": "San Francisco", "host_country": "USA"}
 ]
 
-# Clean automated comprehension sorting hooks
 ALL_GROUPS = sorted(list(set(m["group"] for m in TOURNAMENT_SCHEDULE)), key=lambda x: x.split()[-1])
 ALL_TEAMS = sorted(list(set(m["home"] for m in TOURNAMENT_SCHEDULE) | set(m["away"] for m in TOURNAMENT_SCHEDULE)))
 ALL_DATES = sorted(list(set(m["date"] for m in TOURNAMENT_SCHEDULE)), key=lambda x: [int(i) for i in x.split('/')])
@@ -235,7 +222,7 @@ HTML_TEMPLATE = """
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; 
             background: var(--bg-main); color: var(--text-primary); 
-            padding: 20px 16px 145px 16px; margin: 0; 
+            padding: 20px 16px 175px 16px; margin: 0; 
             -webkit-font-smoothing: antialiased;
         }
         
@@ -271,18 +258,53 @@ HTML_TEMPLATE = """
         .add-slip-container { display: flex; gap: 8px; margin-top: 12px; }
         .slip-add-btn { flex: 1; background: #1c1c1e; border: 1px solid var(--border-card); color: var(--accent-green); padding: 10px; font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; text-align: center;}
 
+        /* FIXED: Persistent Compact Drawer Layout Architecture */
         .bet-slip-drawer {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(28, 28, 30, 0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid #38383a; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)) 16px;
-            border-top-left-radius: 16px; border-top-right-radius: 16px; box-shadow: 0 -8px 24px rgba(0,0,0,0.6); z-index: 999;
+            background: rgba(20, 20, 22, 0.96); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid #2c2c2e; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)) 16px;
+            border-top-left-radius: 20px; border-top-right-radius: 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.7); z-index: 999;
         }
-        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .drawer-header h2 { font-size: 18px; font-weight: 700; margin: 0; }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .drawer-header h2 { font-size: 17px; font-weight: 700; margin: 0; letter-spacing: -0.3px; }
         .clear-slip { font-size: 13px; color: var(--accent-red); font-weight: 600; cursor: pointer; }
-        .gauge-track { width: 100%; height: 6px; background: #3a3a3c; border-radius: 3px; overflow: hidden; margin-top: 8px; }
+        
+        /* FIXED: Horizontal Swiping Row Framework Container */
+        .horizontal-slip-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+        /* Style scrollbar dynamically for clean minimalist integration */
+        .horizontal-slip-container::-webkit-scrollbar { height: 4px; }
+        .horizontal-slip-container::-webkit-scrollbar-track { background: transparent; }
+        .horizontal-slip-container::-webkit-scrollbar-thumb { background: #3a3a3c; border-radius: 2px; }
+
+        /* Premium Micro-Card Components inside Row */
+        .slip-item-card {
+            flex: 0 0 auto;
+            background: #1c1c1e;
+            border: 1px solid #2c2c2e;
+            border-radius: 10px;
+            padding: 10px 14px;
+            min-width: 180px;
+            max-width: 240px;
+            scroll-snap-align: start;
+            font-size: 13px;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .slip-card-title { font-weight: 500; color: #e5e5ea; line-height: 1.3; }
+        .slip-card-odds { font-weight: 700; color: var(--accent-green); margin-top: 6px; font-size: 14px; }
+        
+        .gauge-track { width: 100%; height: 6px; background: #2c2c2e; border-radius: 3px; overflow: hidden; margin-top: 6px; }
         .gauge-fill { height: 100%; width: 0%; transition: width 0.3s ease; }
-        .slip-item { font-size: 13px; padding: 6px 0; border-bottom: 1px solid #2c2c2e; color: #e5e5ea; }
     </style>
 </head>
 <body>
@@ -355,8 +377,10 @@ HTML_TEMPLATE = """
             <h2>FC Bet Builder</h2>
             <span class='clear-slip' onclick='clearSlip()'>Clear</span>
         </div>
-        <div id='slip-items-container'></div>
-        <div style='margin-top: 12px; display: flex; justify-content: space-between; font-size: 14px; font-weight: 600;'>
+        
+        <div id='slip-items-container' class='horizontal-slip-container'></div>
+        
+        <div style='display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; padding-top: 2px;'>
             <span>Total Odds: <span id='slip-odds-display' style='color: var(--accent-blue);'>1.00</span></span>
             <span>Likelihood: <span id='slip-prob-display'>100%</span></span>
         </div>
@@ -366,7 +390,6 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
-        // Master JSON Registry structured straight from Python
         const MASTER_SCHEDULE_DATA = [
             {% for match in schedule %}
                 {
@@ -383,9 +406,7 @@ HTML_TEMPLATE = """
         let currentSlip = JSON.parse(localStorage.getItem('fc_slip')) || [];
         const rememberedIndex = "{{ selected_idx }}";
 
-        // COMPLETE FIX: Absolute clean DOM blueprint pruning method script
         function executeFilter(activeTrigger) {
-            // Force clean state clearing on unselected dropdown menus to stop cross-contamination leaks
             if (activeTrigger === 'group') { document.getElementById('team-filter').value = 'all'; document.getElementById('date-filter').value = 'all'; }
             if (activeTrigger === 'team') { document.getElementById('group-filter').value = 'all'; document.getElementById('date-filter').value = 'all'; }
             if (activeTrigger === 'date') { document.getElementById('group-filter').value = 'all'; document.getElementById('team-filter').value = 'all'; }
@@ -395,11 +416,8 @@ HTML_TEMPLATE = """
             const dateVal = document.getElementById('date-filter').value;
 
             const selectBox = document.getElementById('match-select');
-            
-            // Completely slice away old options inside the dropdown box so nothing stale is left behind
             selectBox.innerHTML = '';
 
-            // Rebuild selection arrays from the master registry tracking parameters
             MASTER_SCHEDULE_DATA.forEach(match => {
                 const matchGroup = (groupVal === 'all' || match.group === groupVal);
                 const matchTeam = (teamVal === 'all' || match.home === teamVal || match.away === teamVal);
@@ -409,11 +427,7 @@ HTML_TEMPLATE = """
                     const opt = document.createElement('option');
                     opt.value = match.index;
                     opt.innerText = `[${match.group}] ${match.date} | ${match.home} vs ${match.away} (${match.round})`;
-                    
-                    // Maintain previous memory selection state stability if applicable
-                    if (match.index == rememberedIndex && activeTrigger === 'init') {
-                        opt.selected = true;
-                    }
+                    if (match.index == rememberedIndex && activeTrigger === 'init') { opt.selected = true; }
                     selectBox.appendChild(opt);
                 }
             });
@@ -426,6 +440,7 @@ HTML_TEMPLATE = """
         }
         function clearSlip() { currentSlip = []; updateSlipUI(); }
 
+        // FIXED: UI updates are rendered into clean horizontal micro-cards
         function updateSlipUI() {
             localStorage.setItem('fc_slip', JSON.stringify(currentSlip));
             const container = document.getElementById('slip-items-container');
@@ -435,14 +450,18 @@ HTML_TEMPLATE = """
             currentSlip.forEach(item => {
                 accumulatedOdds *= item.odds;
                 compoundedProb *= (1.0 / item.odds);
-                const div = document.createElement('div');
-                div.className = 'slip-item';
-                div.innerText = `• ${item.market} (${item.odds.toFixed(2)})`;
-                container.appendChild(div);
+                
+                const card = document.createElement('div');
+                card.className = 'slip-item-card';
+                card.innerHTML = `
+                    <div class="slip-card-title">${item.market}</div>
+                    <div class="slip-card-odds">@ ${item.odds.toFixed(2)}</div>
+                `;
+                container.appendChild(card);
             });
 
             if (currentSlip.length === 0) {
-                container.innerHTML = "<div style='color: var(--text-secondary); font-size:12px;'>No selections active in accumulator core.</div>";
+                container.innerHTML = "<div style='color: var(--text-secondary); font-size:12px; padding: 12px 0;'>No selections active in accumulator core.</div>";
                 accumulatedOdds = 1.0; compoundedProb = 1.0;
             }
 
@@ -457,7 +476,6 @@ HTML_TEMPLATE = """
             else { fill.style.background = 'var(--accent-red)'; document.getElementById('slip-prob-display').style.color = 'var(--accent-red)'; }
         }
 
-        // Initialize clean render check lifecycle
         document.addEventListener('DOMContentLoaded', () => {
             executeFilter('init');
             updateSlipUI();

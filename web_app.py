@@ -244,7 +244,7 @@ HTML_TEMPLATE = """
         }
 
         .card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
-        .card h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin: 0 0 12px 0; }
+        .card h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin: 0 0 12px 0; letter-spacing: 0.3px; }
         
         select.master-select {
             width: 100%; padding: 14px; border-radius: 10px;
@@ -253,11 +253,26 @@ HTML_TEMPLATE = """
             margin-bottom: 14px; outline: none;
         }
 
-        button.action-btn { width: 100%; padding: 14px; border-radius: 10px; background: var(--accent-blue); color: white; font-size: 16px; font-weight: 600; border: none; cursor: pointer; }
+        button.action-btn { width: 100%; padding: 14px; border-radius: 10px; background: var(--accent-blue); color: white; font-size: 16px; font-weight: 600; border: none; cursor: pointer; letter-spacing: -0.2px;}
         .log-line { font-size: 13px; color: #e5e5ea; margin-bottom: 6px; }
-        pre { background: #000000; padding: 14px; border-radius: 10px; overflow-x: auto; font-family: "SF Mono", monospace; font-size: 11px; line-height: 1.6; color: #f2f2f7; border: 1px solid var(--border-card); margin: 0; }
         
-        .add-slip-container { display: flex; gap: 8px; margin-top: 12px; }
+        /* FIXED: Rebuilt Premium Apple-Style UI Metrics Sheet Components instead of MS-DOS */
+        .meta-detail-row { display: flex; justify-content: space-between; font-size: 14px; color: var(--text-secondary); padding: 4px 0; }
+        .meta-detail-row span:last-child { color: var(--text-primary); font-weight: 500; }
+        
+        .sheet-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 12px 0; }
+        
+        .matrix-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+        .matrix-hdr { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; text-align: left; padding-bottom: 8px; }
+        .matrix-row { border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .matrix-row:last-child { border-bottom: none; }
+        .matrix-cell { padding: 10px 0; text-align: left; vertical-align: middle; }
+        .cell-label { font-weight: 500; color: #e5e5ea; }
+        .cell-val-base { color: var(--text-secondary); font-weight: 400; }
+        .cell-val-behav { color: var(--accent-blue); font-weight: 700; }
+        .odds-tint { color: var(--accent-green) !important; }
+
+        .add-slip-container { display: flex; gap: 8px; margin-top: 16px; }
         .slip-add-btn { flex: 1; background: #1c1c1e; border: 1px solid var(--border-card); color: var(--accent-green); padding: 10px; font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; text-align: center;}
 
         .bet-slip-drawer {
@@ -330,10 +345,10 @@ HTML_TEMPLATE = """
     </div>
 
     <div class='card'>
-        <h3>Inspected Tournament Pipeline</h3>
+        <h3>Game Core</h3>
         <form method='POST' id='analysis-form' action='/'>
             <select name='match_idx' id='match-select' class='master-select'></select>
-            <button type='submit' class='action-btn'>Compute Precision Metrics</button>
+            <button type='submit' class='action-btn'>Calculate</button>
         </form>
     </div>
 
@@ -348,11 +363,79 @@ HTML_TEMPLATE = """
         </div>
 
         <div class='card'>
-            <h3>📊 Matrix Analytical Compilers</h3>
-            <pre>{{ report }}</pre>
+            <h3>📊 Computed Matrix Sheet</h3>
+            
+            <div class='meta-detail-row'><span>Fixture</span><span>{{ report.h_name }} vs {{ report.a_name }}</span></div>
+            <div class='meta-detail-row'><span>Location</span><span>{{ report.city }}</span></div>
+            <div class='meta-detail-row'><span>Climate Data</span><span>{{ report.weather_desc }}</span></div>
+            
+            <div class='sheet-divider'></div>
+            
+            <table class='matrix-table'>
+                <thead>
+                    <tr>
+                        <th class='matrix-hdr' style='width: 46%;'>Market Line</th>
+                        <th class='matrix-hdr' style='width: 27%;'>[ Base ]</th>
+                        <th class='matrix-hdr' style='width: 27%; text-align: right;'>[ Behaved ]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class='matrix-row'>
+                        <td class='matrix-cell cell-label'>1 (Home Win)</td>
+                        <td class='matrix-cell cell-val-base odds-tint'>{{ report.b_odds_0 }}</td>
+                        <td class='matrix-cell cell-val-behav odds-tint' style='text-align: right;'>{{ report.behav_odds_0 }}</td>
+                    </tr>
+                    <tr class='matrix-row'>
+                        <td class='matrix-cell cell-label'>X (Match Draw)</td>
+                        <td class='matrix-cell cell-val-base odds-tint'>{{ report.b_odds_1 }}</td>
+                        <td class='matrix-cell cell-val-behav odds-tint' style='text-align: right;'>{{ report.behav_odds_1 }}</td>
+                    </tr>
+                    <tr class='matrix-row'>
+                        <td class='matrix-cell cell-label'>2 (Away Win)</td>
+                        <td class='matrix-cell cell-val-base odds-tint'>{{ report.b_odds_2 }}</td>
+                        <td class='matrix-cell cell-val-behav odds-tint' style='text-align: right;'>{{ report.behav_odds_2 }}</td>
+                    </tr>
+                    <tr class='matrix-row'>
+                        <td class='matrix-cell cell-label'>01 (Double Home)</td>
+                        <td class='matrix-cell cell-val-base'>{{ report.b_dc_0 }}</td>
+                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_dc_0 }}</td>
+                    </tr>
+                    <tr class='matrix-row'>
+                        <td class='matrix-cell cell-label'>02 (Double Away)</td>
+                        <td class='matrix-cell cell-val-base'>{{ report.b_dc_1 }}</td>
+                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_dc_1 }}</td>
+                    </tr>
+                    <tr class='matrix-row'>
+                        <td class='matrix-cell cell-label'>Expected Cards</td>
+                        <td class='matrix-cell cell-val-base'>{{ report.b_cards }}</td>
+                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_cards }}</td>
+                    </tr>
+                    <tr class='matrix-row'>
+                        <td class='matrix-cell cell-label'>Projected Corners</td>
+                        <td class='matrix-cell cell-val-base'>{{ report.b_corners }}</td>
+                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_corners }}</td>
+                    </tr>
+                    <tr class='matrix-row'>
+                        <td class='matrix-cell cell-label'>Offsides Target</td>
+                        <td class='matrix-cell cell-val-base'>{{ report.b_offsides }}</td>
+                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_offsides }}</td>
+                    </tr>
+                    <tr class='matrix-row'>
+                        <td class='matrix-cell cell-label'>Shots on Target (Home)</td>
+                        <td class='matrix-cell cell-val-base'>{{ report.b_sot_h }}</td>
+                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_sot_h }}</td>
+                    </tr>
+                    <tr class='matrix-row'>
+                        <td class='matrix-cell cell-label'>Shots on Target (Away)</td>
+                        <td class='matrix-cell cell-val-base'>{{ report.b_sot_a }}</td>
+                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_sot_a }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
             <div class='add-slip-container'>
-                <button class='slip-add-btn' onclick='addToSlip("{{ h_name }} Win", {{ h_odds }})'>+ Add {{ h_name }} Win ({{ h_odds }})</button>
-                <button class='slip-add-btn' onclick='addToSlip("{{ a_name }} Win", {{ a_odds }})'>+ Add {{ a_name }} Win ({{ a_odds }})</button>
+                <button class='slip-add-btn' onclick='addToSlip("{{ report.h_name }} Win", {{ report.behav_odds_0 }})'>+ Add {{ report.h_name }} Win ({{ report.behav_odds_0 }})</button>
+                <button class='slip-add-btn' onclick='addToSlip("{{ report.a_name }} Win", {{ report.behav_odds_2 }})'>+ Add {{ report.a_name }} Win ({{ report.behav_odds_2 }})</button>
             </div>
         </div>
     {% endif %}
@@ -471,7 +554,7 @@ HTML_TEMPLATE = """
 """
 
 # =====================================================================
-# 5. RESTORED MASTER BRAIN HOME GATEWAY GATE ROUTE
+# 5. MASTER BRAIN HOME GATEWAY GATE ROUTE
 # =====================================================================
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -513,29 +596,22 @@ def home():
         base = run_simulation_variant(home_db, away_db, venue_status, weather_mod, None)
         behav = run_simulation_variant(home_db, away_db, venue_status, weather_mod, {'home_attacks': h_att, 'away_attacks': a_att, 'aggression_stakes': c_agg, 'fitness_fatigue': f_fat})
 
-        h_odds, a_odds = behav['odds'][0], behav['odds'][2]
+        # Process the nested structured data map dictionary specifically to match our new clean HTML template rows
+        report = {
+            "h_name": h_name, "a_name": a_name, "city": city, "weather_desc": weather_desc,
+            "b_odds_0": f"{base['odds'][0]:.2f}", "behav_odds_0": f"{behav['odds'][0]:.2f}",
+            "b_odds_1": f"{base['odds'][1]:.2f}", "behav_odds_1": f"{behav['odds'][1]:.2f}",
+            "b_odds_2": f"{base['odds'][2]:.2f}", "behav_odds_2": f"{behav['odds'][2]:.2f}",
+            "b_dc_0": f"{base['dc_odds'][0]:.2f}", "behav_dc_0": f"{behav['dc_odds'][0]:.2f}",
+            "b_dc_1": f"{base['dc_odds'][1]:.2f}", "behav_dc_1": f"{behav['dc_odds'][1]:.2f}",
+            "b_cards": f"{base['cards']}", "behav_cards": f"{behav['cards']}",
+            "b_corners": f"{base['corners']}", "behav_corners": f"{behav['corners']}",
+            "b_offsides": f"{base['offsides']}", "behav_offsides": f"{behav['offsides']}",
+            "b_sot_h": f"{base['shots_on_target'][0]}", "behav_sot_h": f"{behav['shots_on_target'][0]}",
+            "b_sot_a": f"{base['shots_on_target'][1]}", "behav_sot_a": f"{behav['shots_on_target'][1]}"
+        }
 
-        report =  f"FIXTURE: {h_name} vs {a_name}\n"
-        report += f"Location: {city} ({country})\n"
-        report += f"Climate: {weather_desc}\n"
-        report += f"--------------------------------------------------\n"
-        report += f"MARKET COMP ODDS         [ BASE ]     [ BEHAVED ]\n"
-        report += f"--------------------------------------------------\n"
-        report += f"  * 1 (Home Win):          {base['odds'][0]:.2f}          {behav['odds'][0]:.2f}\n"
-        report += f"  * X (Match Draw):        {base['odds'][1]:.2f}          {behav['odds'][1]:.2f}\n"
-        report += f"  * 2 (Away Win):          {base['odds'][2]:.2f}          {behav['odds'][2]:.2f}\n"
-        report += f"  * 01 (Double H/X):       {base['dc_odds'][0]:.2f}          {behav['dc_odds'][0]:.2f}\n"
-        report += f"  * 02 (Double A/X):       {base['dc_odds'][1]:.2f}          {behav['dc_odds'][1]:.2f}\n"
-        report += f"--------------------------------------------------\n"
-        report += f"PROP LINES PROJECTIONS   [ BASE ]     [ BEHAVED ]\n"
-        report += f"--------------------------------------------------\n"
-        report += f"  * Expected Total Cards:   {base['cards']}           {behav['cards']}\n"
-        report += f"  * Projected Corners:      {base['corners']}          {behav['corners']}\n"
-        report += f"  * Expected Offsides:      {base['offsides']}           {behav['offsides']}\n"
-        report += f"  * Shots on Target (H):    {base['shots_on_target'][0]}           {behav['shots_on_target'][0]}\n"
-        report += f"  * Shots on Target (A):    {base['shots_on_target'][1]}           {behav['shots_on_target'][1]}\n"
-
-    return render_template_string(HTML_TEMPLATE, schedule=TOURNAMENT_SCHEDULE, groups=ALL_GROUPS, teams=ALL_TEAMS, dates=ALL_DATES, report=report, logs=logs, selected_idx=selected_idx, h_name=h_name, a_name=a_name, h_odds=f"{h_odds:.2f}", a_odds=f"{a_odds:.2f}")
+    return render_template_string(HTML_TEMPLATE, schedule=TOURNAMENT_SCHEDULE, groups=ALL_GROUPS, teams=ALL_TEAMS, dates=ALL_DATES, report=report, logs=logs, selected_idx=selected_idx)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

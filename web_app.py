@@ -228,7 +228,7 @@ HTML_TEMPLATE = """
         </button>
     </div>
     <div class='category-ribbon'>
-        <button class='cat-btn active' id='cat-WC' onclick='switchAppScopeCategory("WC")'>🏆 Cup</button>
+        <button class='cat-btn active' id='cat-WC' onclick='switchAppScopeCategory("WC")'>🏆 World Cup</button>
         <button class='cat-btn' id='cat-Leagues' onclick='switchAppScopeCategory("Leagues")'>⚽ Leagues</button>
         <button class='cat-btn' id='cat-Cup' onclick='switchAppScopeCategory("Cup")'>🛡️ Cups</button>
         <button class='cat-btn' id='cat-Elite' onclick='switchAppScopeCategory("Elite")'>✨ Elite</button>

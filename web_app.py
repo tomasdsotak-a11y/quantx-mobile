@@ -81,7 +81,7 @@ TOURNAMENT_SCHEDULE = [
     {"id": 18, "date": "16/06", "iso_date": "2026-06-16", "group": "Group I", "round": "Matchday 1", "home": "Iraq", "away": "Norway", "city": "Boston", "host_country": "USA"},
     {"id": 19, "date": "16/06", "iso_date": "2026-06-16", "group": "Group J", "round": "Matchday 1", "home": "Argentina", "away": "Algeria", "city": "Kansas City", "host_country": "USA"},
     {"id": 20, "date": "16/06", "iso_date": "2026-06-16", "group": "Group J", "round": "Matchday 1", "home": "Austria", "away": "Jordan", "city": "San Francisco", "host_country": "USA"},
-    {"id": 21, "date": "17/06", "iso_date": "2026-06-17", "group": "Group K", "round": "Matchday 1", "home": "Portugal", "away": "Congo DR", "city": "Houston", "host_country": "USA"},
+    {"id": 21, "date": "17/06", "iso_date": "2026-06-17", "group": "Group I", "round": "Matchday 1", "home": "Portugal", "away": "Congo DR", "city": "Houston", "host_country": "USA"},
     {"id": 22, "date": "17/06", "iso_date": "2026-06-17", "group": "Group L", "round": "Matchday 1", "home": "England", "away": "Croatia", "city": "Dallas", "host_country": "USA"},
     {"id": 23, "date": "17/06", "iso_date": "2026-06-17", "group": "Group L", "round": "Matchday 1", "home": "Ghana", "away": "Panama", "city": "Toronto", "host_country": "Canada"},
     {"id": 24, "date": "17/06", "iso_date": "2026-06-17", "group": "Group K", "round": "Matchday 1", "home": "Uzbekistan", "away": "Colombia", "city": "Mexico City", "host_country": "Mexico"},
@@ -226,8 +226,10 @@ HTML_TEMPLATE = """
             -webkit-font-smoothing: antialiased;
         }
         
+        /* FIXED: Added premium Apple cursor interactive focus effects on app-header logo */
         .app-header { text-align: left; margin-bottom: 24px; padding-top: env(safe-area-inset-top); }
-        .app-header h1 { font-size: 34px; font-weight: 800; margin: 0; letter-spacing: -1px; }
+        .app-header-brand { display: inline-block; cursor: pointer; background: transparent; border: none; padding: 0; text-align: left; outline: none; }
+        .app-header h1 { font-size: 34px; font-weight: 800; margin: 0; letter-spacing: -1px; color: var(--text-primary); }
         .app-header p { font-size: 14px; color: var(--text-secondary); margin: 4px 0 0 0; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         
         .filter-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px; }
@@ -258,7 +260,6 @@ HTML_TEMPLATE = """
         .add-slip-container { display: flex; gap: 8px; margin-top: 12px; }
         .slip-add-btn { flex: 1; background: #1c1c1e; border: 1px solid var(--border-card); color: var(--accent-green); padding: 10px; font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; text-align: center;}
 
-        /* FIXED: Persistent Compact Drawer Layout Architecture */
         .bet-slip-drawer {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: rgba(20, 20, 22, 0.96); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
@@ -269,36 +270,18 @@ HTML_TEMPLATE = """
         .drawer-header h2 { font-size: 17px; font-weight: 700; margin: 0; letter-spacing: -0.3px; }
         .clear-slip { font-size: 13px; color: var(--accent-red); font-weight: 600; cursor: pointer; }
         
-        /* FIXED: Horizontal Swiping Row Framework Container */
         .horizontal-slip-container {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 8px;
-            margin-bottom: 8px;
+            display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch; padding-bottom: 8px; margin-bottom: 8px;
         }
-        /* Style scrollbar dynamically for clean minimalist integration */
         .horizontal-slip-container::-webkit-scrollbar { height: 4px; }
         .horizontal-slip-container::-webkit-scrollbar-track { background: transparent; }
         .horizontal-slip-container::-webkit-scrollbar-thumb { background: #3a3a3c; border-radius: 2px; }
 
-        /* Premium Micro-Card Components inside Row */
         .slip-item-card {
-            flex: 0 0 auto;
-            background: #1c1c1e;
-            border: 1px solid #2c2c2e;
-            border-radius: 10px;
-            padding: 10px 14px;
-            min-width: 180px;
-            max-width: 240px;
-            scroll-snap-align: start;
-            font-size: 13px;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            flex: 0 0 auto; background: #1c1c1e; border: 1px solid #2c2c2e; border-radius: 10px;
+            padding: 10px 14px; min-width: 180px; max-width: 240px; scroll-snap-align: start;
+            font-size: 13px; color: #ffffff; display: flex; flex-direction: column; justify-content: space-between;
         }
         .slip-card-title { font-weight: 500; color: #e5e5ea; line-height: 1.3; }
         .slip-card-odds { font-weight: 700; color: var(--accent-green); margin-top: 6px; font-size: 14px; }
@@ -310,8 +293,10 @@ HTML_TEMPLATE = """
 <body>
 
     <div class='app-header'>
-        <h1>FC</h1>
-        <p>Football Core — Cup Dashboard</p>
+        <button class='app-header-brand' onclick='returnToLandingScreen()'>
+            <h1>FC</h1>
+            <p>Football Core — Cup Dashboard</p>
+        </button>
     </div>
 
     <div class='filter-row'>
@@ -346,7 +331,7 @@ HTML_TEMPLATE = """
 
     <div class='card'>
         <h3>Inspected Tournament Pipeline</h3>
-        <form method='POST' id='analysis-form'>
+        <form method='POST' id='analysis-form' action='/'>
             <select name='match_idx' id='match-select' class='master-select'></select>
             <button type='submit' class='action-btn'>Compute Precision Metrics</button>
         </form>
@@ -377,7 +362,6 @@ HTML_TEMPLATE = """
             <h2>FC Bet Builder</h2>
             <span class='clear-slip' onclick='clearSlip()'>Clear</span>
         </div>
-        
         <div id='slip-items-container' class='horizontal-slip-container'></div>
         
         <div style='display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; padding-top: 2px;'>
@@ -405,6 +389,12 @@ HTML_TEMPLATE = """
 
         let currentSlip = JSON.parse(localStorage.getItem('fc_slip')) || [];
         const rememberedIndex = "{{ selected_idx }}";
+
+        // FIXED: Universal touch reset redirect function hook
+        function returnToLandingScreen() {
+            // Instantly clear the storage indicators and reload back to native root state configurations
+            window.location.href = '/';
+        }
 
         function executeFilter(activeTrigger) {
             if (activeTrigger === 'group') { document.getElementById('team-filter').value = 'all'; document.getElementById('date-filter').value = 'all'; }
@@ -440,7 +430,6 @@ HTML_TEMPLATE = """
         }
         function clearSlip() { currentSlip = []; updateSlipUI(); }
 
-        // FIXED: UI updates are rendered into clean horizontal micro-cards
         function updateSlipUI() {
             localStorage.setItem('fc_slip', JSON.stringify(currentSlip));
             const container = document.getElementById('slip-items-container');
@@ -484,70 +473,6 @@ HTML_TEMPLATE = """
 </body>
 </html>
 """
-
-@app.route('/', methods=['GET', 'POST'])
-def home():
-    report, logs = None, []
-    selected_idx = 0
-    h_name, a_name, h_odds, a_odds = "", "", 1.0, 1.0
-    
-    if request.method == 'POST':
-        selected_idx = int(request.form['match_idx'])
-        match = TOURNAMENT_SCHEDULE[selected_idx]
-        h_name, a_name, city, country, target_iso = match["home"], match["away"], match["city"], match["host_country"], match["iso_date"]
-        
-        if h_name in TRUE_HOST_NATIONS and h_name.lower().strip() == country.lower().strip():
-            venue_status = "TRUE_HOME_HOST"
-            logs.append(f"🏟️ HOST GROUND ACCREDITATION: {h_name} verified on native soil. (+12% Variance Imbalance)")
-        else:
-            venue_status = "NEUTRAL_GROUND"
-            logs.append(f"🌍 NEUTRAL VENUE CONFIRMED: Match evaluated at a neutral stadium in {city}.")
-        
-        h_att, a_att, c_agg, f_fat, news_logs = harvest_live_sports_wire(h_name, a_name)
-        logs.extend(news_logs)
-
-        home_db = TEAM_STAT_DATABASE.get(h_name, {"base_xg": 1.35, "shots_avg": 11.5, "shots_conceded_avg": 11.5, "shot_accuracy": 0.33, "gk_save_pct": 0.70, "corners_avg": 4.8, "cards_avg": 2.0, "offsides_avg": 1.7})
-        away_db = TEAM_STAT_DATABASE.get(a_name, {"base_xg": 1.35, "shots_avg": 11.5, "shots_conceded_avg": 11.5, "shot_accuracy": 0.33, "gk_save_pct": 0.70, "corners_avg": 4.8, "cards_avg": 2.0, "offsides_avg": 1.7})
-
-        weather_desc, weather_mod = "Forecast Baseline Default", 1.0
-        try:
-            forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?q={city}&appid={WEATHER_API_KEY}&units=metric"
-            f_res = requests.get(forecast_url, timeout=4).json()
-            if f_res.get("list"):
-                matched_block = next((b for b in f_res["list"] if target_iso in b.get("dt_txt", "")), f_res["list"][0])
-                main_cond = matched_block["weather"][0]["main"]
-                weather_desc = f"Match Day Forecast: {main_cond} ({matched_block['main']['temp']}°C)"
-                if main_cond in ["Rain", "Drizzle", "Snow"]:
-                    weather_mod = 0.85
-                    logs.append(f"🌧️ CLIMATE MITIGATION: Friction scaling factor enforced due to weather parameters in {city}.")
-        except: pass
-
-        base = run_simulation_variant(home_db, away_db, venue_status, weather_mod, None)
-        behav = run_simulation_variant(home_db, away_db, venue_status, weather_mod, {'home_attacks': h_att, 'away_attacks': a_att, 'aggression_stakes': c_agg, 'fitness_fatigue': f_fat})
-
-        h_odds, a_odds = behav['odds'][0], behav['odds'][2]
-
-        report =  f"FIXTURE: {h_name} vs {a_name}\n"
-        report += f"Location: {city} ({country})\n"
-        report += f"Climate: {weather_desc}\n"
-        report += f"--------------------------------------------------\n"
-        report += f"MARKET COMP ODDS         [ BASE ]     [ BEHAVED ]\n"
-        report += f"--------------------------------------------------\n"
-        report += f"  * 1 (Home Win):          {base['odds'][0]:.2f}          {behav['odds'][0]:.2f}\n"
-        report += f"  * X (Match Draw):        {base['odds'][1]:.2f}          {behav['odds'][1]:.2f}\n"
-        report += f"  * 2 (Away Win):          {base['odds'][2]:.2f}          {behav['odds'][2]:.2f}\n"
-        report += f"  * 01 (Double H/X):       {base['dc_odds'][0]:.2f}          {behav['dc_odds'][0]:.2f}\n"
-        report += f"  * 02 (Double A/X):       {base['dc_odds'][1]:.2f}          {behav['dc_odds'][1]:.2f}\n"
-        report += f"--------------------------------------------------\n"
-        report += f"PROP LINES PROJECTIONS   [ BASE ]     [ BEHAVED ]\n"
-        report += f"--------------------------------------------------\n"
-        report += f"  * Expected Total Cards:   {base['cards']}           {behav['cards']}\n"
-        report += f"  * Projected Corners:      {base['corners']}          {behav['corners']}\n"
-        report += f"  * Expected Offsides:      {base['offsides']}           {behav['offsides']}\n"
-        report += f"  * Shots on Target (H):    {base['shots_on_target'][0]}           {behav['shots_on_target'][0]}\n"
-        report += f"  * Shots on Target (A):    {base['shots_on_target'][1]}           {behav['shots_on_target'][1]}\n"
-
-    return render_template_string(HTML_TEMPLATE, schedule=TOURNAMENT_SCHEDULE, groups=ALL_GROUPS, teams=ALL_TEAMS, dates=ALL_DATES, report=report, logs=logs, selected_idx=selected_idx, h_name=h_name, a_name=a_name, h_odds=f"{h_odds:.2f}", a_odds=f"{a_odds:.2f}")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

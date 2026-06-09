@@ -1,4 +1,4 @@
-from flask import Flask, render_template_string, request, jsonify
+kfrom flask import Flask, render_template_string, request, jsonify
 import math
 import requests
 import urllib.request
@@ -6,12 +6,11 @@ import xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 
-# Active Gateway Security Tokens
 WEATHER_API_KEY = "25c9a61b99a4842679a8983536494752"
 TRUE_HOST_NATIONS = ["Mexico", "Canada", "USA"]
 
 # =====================================================================
-# 1. LIVE MASTER SQUAD ATTR REGISTRY MATRIX
+# 1. LIVE MASTER SQUAD STAT PERFORMANCE MATRIX (GLOBAL ATTRIBUTES)
 # =====================================================================
 TEAM_STAT_DATABASE = {
     "Mexico":        {"base_xg": 1.65, "shots_avg": 13.4, "shots_conceded_avg": 9.8,  "shot_accuracy": 0.36, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 2.2, "offsides_avg": 1.9, "goal_kicks_avg": 7.2},
@@ -55,75 +54,42 @@ TEAM_STAT_DATABASE = {
     "England":       {"base_xg": 2.04, "shots_avg": 15.8, "shots_conceded_avg": 8.3,  "shot_accuracy": 0.40, "gk_save_pct": 0.75, "corners_avg": 6.3, "cards_avg": 1.4, "offsides_avg": 2.1, "goal_kicks_avg": 6.1},
     "Croatia":       {"base_xg": 1.60, "shots_avg": 13.4, "shots_conceded_avg": 9.7,  "shot_accuracy": 0.36, "gk_save_pct": 0.74, "corners_avg": 5.3, "cards_avg": 1.6, "offsides_avg": 1.8, "goal_kicks_avg": 7.2},
     "Ghana":         {"base_xg": 1.38, "shots_avg": 12.0, "shots_conceded_avg": 11.9, "shot_accuracy": 0.34, "gk_save_pct": 0.70, "corners_avg": 4.8, "cards_avg": 2.4, "offsides_avg": 1.7, "goal_kicks_avg": 7.8},
-    "Panama":        {"base_xg": 1.22, "shots_avg": 10.7, "shots_conceded_avg": 12.8, "shot_accuracy": 0.32, "gk_save_pct": 0.68, "corners_avg": 4.3, "cards_avg": 2.1, "offsides_avg": 1.5, "goal_kicks_avg": 8.5}
+    "Panama":        {"base_xg": 1.22, "shots_avg": 10.7, "shots_conceded_avg": 12.8, "shot_accuracy": 0.32, "gk_save_pct": 0.68, "corners_avg": 4.3, "cards_avg": 2.1, "offsides_avg": 1.5, "goal_kicks_avg": 8.5},
+    "Arsenal":       {"base_xg": 2.20, "shots_avg": 16.1, "shots_conceded_avg": 8.0,  "shot_accuracy": 0.41, "gk_save_pct": 0.76, "corners_avg": 6.8, "cards_avg": 1.3, "offsides_avg": 2.0, "goal_kicks_avg": 6.4},
+    "Chelsea":       {"base_xg": 1.72, "shots_avg": 13.5, "shots_conceded_avg": 10.9, "shot_accuracy": 0.35, "gk_save_pct": 0.71, "corners_avg": 5.4, "cards_avg": 2.2, "offsides_avg": 1.7, "goal_kicks_avg": 7.3},
+    "Real Madrid":   {"base_xg": 2.30, "shots_avg": 16.9, "shots_conceded_avg": 8.2,  "shot_accuracy": 0.43, "gk_save_pct": 0.78, "corners_avg": 6.5, "cards_avg": 1.5, "offsides_avg": 2.2, "goal_kicks_avg": 6.1},
+    "Barcelona":     {"base_xg": 2.05, "shots_avg": 15.4, "shots_conceded_avg": 9.1,  "shot_accuracy": 0.39, "gk_save_pct": 0.73, "corners_avg": 5.9, "cards_avg": 1.9, "offsides_avg": 2.4, "goal_kicks_avg": 6.8},
+    "Slavia Prague": {"base_xg": 1.82, "shots_avg": 14.4, "shots_conceded_avg": 8.5,  "shot_accuracy": 0.37, "gk_save_pct": 0.75, "corners_avg": 6.2, "cards_avg": 1.6, "offsides_avg": 1.9, "goal_kicks_avg": 6.5},
+    "Sparta Prague": {"base_xg": 1.75, "shots_avg": 13.9, "shots_conceded_avg": 9.0,  "shot_accuracy": 0.36, "gk_save_pct": 0.72, "corners_avg": 5.8, "cards_avg": 2.0, "offsides_avg": 1.8, "goal_kicks_avg": 7.0}
 }
 
-TOURNAMENT_SCHEDULE = [
-    {"id": 1, "date": "11/06", "iso_date": "2026-06-11", "group": "Group A", "round": "Matchday 1", "home": "Mexico", "away": "South Africa", "city": "Mexico City", "host_country": "Mexico"},
-    {"id": 2, "date": "11/06", "iso_date": "2026-06-11", "group": "Group A", "round": "Matchday 1", "home": "South Korea", "away": "Czech Republic", "city": "Guadalajara", "host_country": "Mexico"},
-    {"id": 3, "date": "12/06", "iso_date": "2026-06-12", "group": "Group B", "round": "Matchday 1", "home": "Canada", "away": "Bosnia", "city": "Toronto", "host_country": "Canada"},
-    {"id": 4, "date": "12/06", "iso_date": "2026-06-12", "group": "Group D", "round": "Matchday 1", "home": "USA", "away": "Paraguay", "city": "Los Angeles", "host_country": "USA"},
-    {"id": 5, "date": "13/06", "iso_date": "2026-06-13", "group": "Group B", "round": "Matchday 1", "home": "Qatar", "away": "Switzerland", "city": "San Francisco", "host_country": "USA"},
-    {"id": 6, "date": "13/06", "iso_date": "2026-06-13", "group": "Group C", "round": "Matchday 1", "home": "Brazil", "away": "Morocco", "city": "New York", "host_country": "USA"},
-    {"id": 7, "date": "13/06", "iso_date": "2026-06-13", "group": "Group C", "round": "Matchday 1", "home": "Haiti", "away": "Scotland", "city": "Boston", "host_country": "USA"},
-    {"id": 8, "date": "13/06", "iso_date": "2026-06-13", "group": "Group D", "round": "Matchday 1", "home": "Australia", "away": "Türkiye", "city": "Vancouver", "host_country": "Canada"},
-    {"id": 9, "date": "14/06", "iso_date": "2026-06-14", "group": "Group E", "round": "Matchday 1", "home": "Germany", "away": "Curaçao", "city": "Houston", "host_country": "USA"},
-    {"id": 10, "date": "14/06", "iso_date": "2026-06-14", "group": "Group F", "round": "Matchday 1", "home": "Netherlands", "away": "Japan", "city": "Dallas", "host_country": "USA"},
-    {"id": 11, "date": "14/06", "iso_date": "2026-06-14", "group": "Group E", "round": "Matchday 1", "home": "Ivory Coast", "away": "Ecuador", "city": "Philadelphia", "host_country": "USA"},
-    {"id": 12, "date": "14/06", "iso_date": "2026-06-14", "group": "Group F", "round": "Matchday 1", "home": "Sweden", "away": "Tunisia", "city": "Monterrey", "host_country": "Mexico"},
-    {"id": 13, "date": "15/06", "iso_date": "2026-06-15", "group": "Group H", "round": "Matchday 1", "home": "Spain", "away": "Cape Verde", "city": "Atlanta", "host_country": "USA"},
-    {"id": 14, "date": "15/06", "iso_date": "2026-06-15", "group": "Group G", "round": "Matchday 1", "home": "Belgium", "away": "Egypt", "city": "Seattle", "host_country": "USA"},
-    {"id": 15, "date": "15/06", "iso_date": "2026-06-15", "group": "Group H", "round": "Matchday 1", "home": "Saudi Arabia", "away": "Uruguay", "city": "Miami", "host_country": "USA"},
-    {"id": 16, "date": "15/06", "iso_date": "2026-06-15", "group": "Group G", "round": "Matchday 1", "home": "Iran", "away": "New Zealand", "city": "Los Angeles", "host_country": "USA"},
-    {"id": 17, "date": "16/06", "iso_date": "2026-06-16", "group": "Group I", "round": "Matchday 1", "home": "France", "away": "Senegal", "city": "New York", "host_country": "USA"},
-    {"id": 18, "date": "16/06", "iso_date": "2026-06-16", "group": "Group I", "round": "Matchday 1", "home": "Iraq", "away": "Norway", "city": "Boston", "host_country": "USA"},
-    {"id": 19, "date": "16/06", "iso_date": "2026-06-16", "group": "Group J", "round": "Matchday 1", "home": "Argentina", "away": "Algeria", "city": "Kansas City", "host_country": "USA"},
-    {"id": 20, "date": "16/06", "iso_date": "2026-06-16", "group": "Group J", "round": "Matchday 1", "home": "Austria", "away": "Jordan", "city": "San Francisco", "host_country": "USA"},
-    {"id": 21, "date": "17/06", "iso_date": "2026-06-17", "group": "Group K", "round": "Matchday 1", "home": "Portugal", "away": "Congo DR", "city": "Houston", "host_country": "USA"},
-    {"id": 22, "date": "17/06", "iso_date": "2026-06-17", "group": "Group L", "round": "Matchday 1", "home": "England", "away": "Croatia", "city": "Dallas", "host_country": "USA"},
-    {"id": 23, "date": "17/06", "iso_date": "2026-06-17", "group": "Group L", "round": "Matchday 1", "home": "Ghana", "away": "Panama", "city": "Toronto", "host_country": "Canada"},
-    {"id": 24, "date": "17/06", "iso_date": "2026-06-17", "group": "Group K", "round": "Matchday 1", "home": "Uzbekistan", "away": "Colombia", "city": "Mexico City", "host_country": "Mexico"},
-    {"id": 25, "date": "18/06", "iso_date": "2026-06-18", "group": "Group A", "round": "Matchday 2", "home": "Czech Republic", "away": "South Africa", "city": "Atlanta", "host_country": "USA"},
-    {"id": 26, "date": "18/06", "iso_date": "2026-06-18", "group": "Group B", "round": "Matchday 2", "home": "Switzerland", "away": "Bosnia", "city": "Los Angeles", "host_country": "USA"},
-    {"id": 27, "date": "18/06", "iso_date": "2026-06-18", "group": "Group B", "round": "Matchday 2", "home": "Canada", "away": "Qatar", "city": "Vancouver", "host_country": "Canada"},
-    {"id": 28, "date": "18/06", "iso_date": "2026-06-18", "group": "Group A", "round": "Matchday 2", "home": "Mexico", "away": "South Korea", "city": "Guadalajara", "host_country": "Mexico"},
-    {"id": 29, "date": "19/06", "iso_date": "2026-06-19", "group": "Group D", "round": "Matchday 2", "home": "USA", "away": "Australia", "city": "Seattle", "host_country": "USA"},
-    {"id": 30, "date": "19/06", "iso_date": "2026-06-19", "group": "Group C", "round": "Matchday 2", "home": "Scotland", "away": "Morocco", "city": "Boston", "host_country": "USA"},
-    {"id": 31, "date": "19/06", "iso_date": "2026-06-19", "group": "Group C", "round": "Matchday 2", "home": "Brazil", "away": "Haiti", "city": "Philadelphia", "host_country": "USA"},
-    {"id": 32, "date": "19/06", "iso_date": "2026-06-19", "group": "Group D", "round": "Matchday 2", "home": "Türkiye", "away": "Paraguay", "city": "San Francisco", "host_country": "USA"},
-    {"id": 33, "date": "20/06", "iso_date": "2026-06-20", "group": "Group F", "round": "Matchday 2", "home": "Netherlands", "away": "Sweden", "city": "Houston", "host_country": "USA"},
-    {"id": 34, "date": "20/06", "iso_date": "2026-06-20", "group": "Group E", "round": "Matchday 2", "home": "Germany", "away": "Ivory Coast", "city": "Toronto", "host_country": "Canada"},
-    {"id": 35, "date": "20/06", "iso_date": "2026-06-20", "group": "Group E", "round": "Matchday 2", "home": "Ecuador", "away": "Curaçao", "city": "Kansas City", "host_country": "USA"},
-    {"id": 36, "date": "20/06", "iso_date": "2026-06-20", "group": "Group F", "round": "Matchday 2", "home": "Tunisia", "away": "Japan", "city": "Monterrey", "host_country": "Mexico"},
-    {"id": 37, "date": "21/06", "iso_date": "2026-06-21", "group": "Group H", "round": "Matchday 2", "home": "Spain", "away": "Saudi Arabia", "city": "Atlanta", "host_country": "USA"},
-    {"id": 38, "date": "21/06", "iso_date": "2026-06-21", "group": "Group G", "round": "Matchday 2", "home": "Belgium", "away": "Iran", "city": "Los Angeles", "host_country": "USA"},
-    {"id": 39, "date": "21/06", "iso_date": "2026-06-21", "group": "Group H", "round": "Matchday 2", "home": "Uruguay", "away": "Cape Verde", "city": "Miami", "host_country": "USA"},
-    {"id": 40, "date": "21/06", "iso_date": "2026-06-21", "group": "Group G", "round": "Matchday 2", "home": "New Zealand", "away": "Egypt", "city": "Vancouver", "host_country": "Canada"},
-    {"id": 41, "date": "22/06", "iso_date": "2026-06-22", "group": "Group J", "round": "Matchday 2", "home": "Argentina", "away": "Austria", "city": "Dallas", "host_country": "USA"},
-    {"id": 42, "date": "22/06", "iso_date": "2026-06-22", "group": "Group I", "round": "Matchday 2", "home": "France", "away": "Iraq", "city": "Philadelphia", "host_country": "USA"},
-    {"id": 43, "date": "22/06", "iso_date": "2026-06-22", "group": "Group I", "round": "Matchday 2", "home": "Norway", "away": "Senegal", "city": "New York", "host_country": "USA"},
-    {"id": 44, "date": "22/06", "iso_date": "2026-06-22", "group": "Group J", "round": "Matchday 2", "home": "Jordan", "away": "Algeria", "city": "San Francisco", "host_country": "USA"},
-    {"id": 45, "date": "23/06", "iso_date": "2026-06-23", "group": "Group K", "round": "Matchday 2", "home": "Portugal", "away": "Uzbekistan", "city": "Houston", "host_country": "USA"},
-    {"id": 46, "date": "23/06", "iso_date": "2026-06-23", "group": "Group L", "round": "Matchday 2", "home": "England", "away": "Ghana", "city": "Boston", "host_country": "USA"},
-    {"id": 47, "date": "23/06", "iso_date": "2026-06-23", "group": "Group L", "round": "Matchday 2", "home": "Panama", "away": "Croatia", "city": "Toronto", "host_country": "Canada"},
-    {"id": 48, "date": "23/06", "iso_date": "2026-06-23", "group": "Group K", "round": "Matchday 2", "home": "Colombia", "away": "Congo DR", "city": "Guadalajara", "host_country": "Mexico"},
-    {"id": 49, "date": "24/06", "iso_date": "2026-06-24", "group": "Group B", "round": "Matchday 3", "home": "Switzerland", "away": "Canada", "city": "Vancouver", "host_country": "Canada"},
-    {"id": 50, "date": "24/06", "iso_date": "2026-06-24", "group": "Group B", "round": "Matchday 3", "home": "Bosnia", "away": "Qatar", "city": "Seattle", "host_country": "USA"},
-    {"id": 51, "date": "24/06", "iso_date": "2026-06-24", "group": "Group C", "round": "Matchday 3", "home": "Scotland", "away": "Brazil", "city": "Miami", "host_country": "USA"},
-    {"id": 52, "date": "24/06", "iso_date": "2026-06-24", "group": "Group C", "round": "Matchday 3", "home": "Morocco", "away": "Haiti", "city": "Atlanta", "host_country": "USA"},
-    {"id": 53, "date": "24/06", "iso_date": "2026-06-24", "group": "Group A", "round": "Matchday 3", "home": "Czech Republic", "away": "Mexico", "city": "Mexico City", "host_country": "Mexico"},
-    {"id": 54, "date": "24/06", "iso_date": "2026-06-24", "group": "Group A", "round": "Matchday 3", "home": "South Africa", "away": "South Korea", "city": "Monterrey", "host_country": "Mexico"},
-    {"id": 55, "date": "25/06", "iso_date": "2026-06-25", "group": "Group E", "round": "Matchday 3", "home": "Ecuador", "away": "Germany", "city": "New York", "host_country": "USA"},
-    {"id": 56, "date": "25/06", "iso_date": "2026-06-25", "group": "Group E", "round": "Matchday 3", "home": "Curaçao", "away": "Ivory Coast", "city": "Philadelphia", "host_country": "USA"},
-    {"id": 57, "date": "25/06", "iso_date": "2026-06-25", "group": "Group F", "round": "Matchday 3", "home": "Japan", "away": "Sweden", "city": "Dallas", "host_country": "USA"},
-    {"id": 58, "date": "25/06", "iso_date": "2026-06-25", "group": "Group F", "round": "Matchday 3", "home": "Tunisia", "away": "Netherlands", "city": "Kansas City", "host_country": "USA"},
-    {"id": 59, "date": "25/06", "iso_date": "2026-06-25", "group": "Group D", "round": "Matchday 3", "home": "Türkiye", "away": "USA", "city": "Los Angeles", "host_country": "USA"},
-    {"id": 60, "date": "25/06", "iso_date": "2026-06-25", "group": "Group D", "round": "Matchday 3", "home": "Paraguay", "away": "Australia", "city": "San Francisco", "host_country": "USA"}
+# =====================================================================
+# 2. MASTER GLOBAL DATABASE SYSTEM (ALL CHANNELS INTEGRATED)
+# =====================================================================
+GLOBAL_MATCH_DATABASE = [
+    # Category: World Cup (WC)
+    {"id": 0, "cat": "WC", "home": "Mexico", "away": "South Africa", "country": "Mexico", "tier": "Group A", "round": "Matchday 1", "date": "11/06", "city": "Mexico City", "hours_to_kick": 4},
+    {"id": 1, "cat": "WC", "home": "South Korea", "away": "Czech Republic", "country": "Mexico", "tier": "Group A", "round": "Matchday 1", "date": "11/06", "city": "Guadalajara", "hours_to_kick": 8},
+    
+    # Category: Leagues (Leagues)
+    {"id": 2, "cat": "Leagues", "home": "Arsenal", "away": "Chelsea", "country": "England", "tier": "Premier League", "round": "Round 32", "date": "12/06", "city": "London", "hours_to_kick": 14},
+    {"id": 3, "cat": "Leagues", "home": "Slavia Prague", "away": "Sparta Prague", "country": "Czechia", "tier": "First League", "round": "Round 28", "date": "13/06", "city": "Prague", "hours_to_kick": 36},
+    
+    # Category: Cup (Cup)
+    {"id": 4, "cat": "Cup", "home": "Arsenal", "away": "Chelsea", "country": "England", "tier": "FA Cup", "round": "Semifinal", "date": "14/06", "city": "London", "hours_to_kick": 18},
+    
+    # Category: Elite Competitions (Elite)
+    {"id": 5, "cat": "Elite", "home": "Real Madrid", "away": "Arsenal", "country": "Europe", "tier": "Champions League", "round": "Group Week 1", "date": "15/06", "city": "Madrid", "hours_to_kick": 22},
+    {"id": 6, "cat": "Elite", "home": "Czech Republic", "away": "France", "country": "Europe", "tier": "Euro Nations", "round": "Matchday 1", "date": "16/06", "city": "Prague", "hours_to_kick": 48},
+    
+    # Category: International Friendlies (International)
+    {"id": 7, "cat": "International", "home": "Brazil", "away": "England", "country": "Global", "tier": "International Friendly", "round": "Friendly Window", "date": "17/06", "city": "Rio de Janeiro", "hours_to_kick": 2}
 ]
 
-ALL_GROUPS = sorted(list(set(m["group"] for m in TOURNAMENT_SCHEDULE)), key=lambda x: x.split()[-1])
-ALL_TEAMS = sorted(list(set(m["home"] for m in TOURNAMENT_SCHEDULE) | set(m["away"] for m in TOURNAMENT_SCHEDULE)))
-ALL_DATES = sorted(list(set(m["date"] for m in TOURNAMENT_SCHEDULE)), key=lambda x: [int(i) for i in x.split('/')])
+# Extract structural categorization variables for setup
+ALL_GROUPS = sorted(list(set(m["tier"] for m in GLOBAL_MATCH_DATABASE if m["cat"] in ["WC","Elite"])))
+ALL_TEAMS = sorted(list(set(m["home"] for m in GLOBAL_MATCH_DATABASE) | set(m["away"] for m in GLOBAL_MATCH_DATABASE)))
+ALL_DATES = sorted(list(set(m["date"] for m in GLOBAL_MATCH_DATABASE)), key=lambda x: [int(i) for i in x.split('/')])
 
 # =====================================================================
 # 3. BACKGROUND HARVESTERS & MATHEMATICAL POISSON ALGORITHMS
@@ -202,7 +168,7 @@ def run_simulation_variant(home_stats, away_stats, venue_status, weather_mod, be
     }
 
 # =====================================================================
-# 4. LUXURY PRESENTATION CANVAS WITH DYNAMIC TICKET GENERATOR
+# 4. LUXURY PRESENTATION LAYER DESIGN
 # =====================================================================
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -226,7 +192,7 @@ HTML_TEMPLATE = """
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; 
             background: var(--bg-main); color: var(--text-primary); 
-            padding: 20px 16px 185px 16px; margin: 0; 
+            padding: 20px 16px 175px 16px; margin: 0; 
             -webkit-font-smoothing: antialiased;
         }
         
@@ -235,6 +201,14 @@ HTML_TEMPLATE = """
         .app-header h1 { font-size: 34px; font-weight: 800; margin: 0; letter-spacing: -1px; color: var(--text-primary); }
         .app-header p { font-size: 14px; color: var(--text-secondary); margin: 4px 0 0 0; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         
+        .category-ribbon { display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
+        .cat-btn {
+            background: #1c1c1e; border: 1px solid var(--border-card); color: var(--text-secondary);
+            padding: 10px 14px; font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer;
+            white-space: nowrap; transition: all 0.15s ease; flex: 0 0 auto;
+        }
+        .cat-btn.active { background: var(--accent-blue); color: #ffffff; border-color: var(--accent-blue); }
+
         .filter-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px; }
         .filter-menu-box { display: flex; flex-direction: column; }
         .filter-menu-box label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; }
@@ -271,10 +245,7 @@ HTML_TEMPLATE = """
             background: #1c1c1e; border: 1px solid var(--border-card); color: var(--accent-green);
             padding: 6px 12px; font-weight: 700; border-radius: 6px; cursor: pointer; font-size: 13px;
         }
-        .odds-pill-btn:active { background: rgba(48,209,88,0.15); }
-
         .builder-market-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .builder-market-row:last-child { border-bottom: none; }
         .market-meta { flex: 1; }
         .market-title { font-size: 14px; font-weight: 600; color: #ffffff; }
         .market-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
@@ -287,7 +258,6 @@ HTML_TEMPLATE = """
         select.builder-dropdown { background: #1c1c1e; color: #ffffff; border: 1px solid var(--border-card); padding: 5px 24px 5px 8px; font-size: 13px; font-weight: 600; border-radius: 6px; outline: none; }
         .builder-add-btn { background: var(--accent-blue); color: white; border: none; font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
 
-        /* FIXED: Added premium visual style elements for the AI Generator controls */
         .ai-gen-container { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
         .ai-risk-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         .risk-pick-btn { 
@@ -298,11 +268,7 @@ HTML_TEMPLATE = """
         .risk-pick-btn.selected-low { border-color: var(--accent-green); color: var(--accent-green); background: rgba(48,209,88,0.05); }
         .risk-pick-btn.selected-mod { border-color: var(--accent-orange); color: var(--accent-orange); background: rgba(255,159,10,0.05); }
         .risk-pick-btn.selected-high { border-color: var(--accent-red); color: var(--accent-red); background: rgba(255,69,58,0.05); }
-        
-        .ai-submit-trigger {
-            width: 100%; padding: 12px; border-radius: 10px; background: #ffffff; color: #000000;
-            font-size: 14px; font-weight: 700; border: none; cursor: pointer; text-align: center; margin-top: 4px;
-        }
+        .ai-submit-trigger { width: 100%; padding: 12px; border-radius: 10px; background: #ffffff; color: #000000; font-size: 14px; font-weight: 700; border: none; cursor: pointer; text-align: center; margin-top: 4px; }
 
         .bet-slip-drawer {
             position: fixed; bottom: 0; left: 0; right: 0;
@@ -327,37 +293,31 @@ HTML_TEMPLATE = """
     <div class='app-header'>
         <button class='app-header-brand' onclick='returnToLandingScreen()'>
             <h1>FC</h1>
-            <p>Football Core — Cup Dashboard</p>
+            <p>Football Core — Quant Platform</p>
         </button>
+    </div>
+
+    <div class='category-ribbon'>
+        <button class='cat-btn' id='cat-WC' onclick='switchAppScopeCategory("WC")'>🏆 World Cup</button>
+        <button class='cat-btn' id='cat-Leagues' onclick='switchAppScopeCategory("Leagues")'>⚽ Leagues</button>
+        <button class='cat-btn' id='cat-Cup' onclick='switchAppScopeCategory("Cup")'>🛡️ Cups</button>
+        <button class='cat-btn' id='cat-Elite' onclick='switchAppScopeCategory("Elite")'>✨ Elite</button>
+        <button class='cat-btn' id='cat-International' onclick='switchAppScopeCategory("International")'>🌍 Internationals</button>
+        <button class='cat-btn' id='cat-Upcoming' style='color: var(--accent-orange); font-weight:800;' onclick='switchAppScopeCategory("Upcoming")'>⏰ Upcoming 24h</button>
     </div>
 
     <div class='filter-row'>
         <div class='filter-menu-box'>
-            <label>Groups</label>
-            <select class='native-select' id='group-filter' onchange='executeFilter("group")'>
-                <option value='all'>All Groups</option>
-                {% for group in groups %}
-                    <option value='{{ group }}'>{{ group }}</option>
-                {% endfor %}
-            </select>
+            <label id='lbl-drop-1'>Groups</label>
+            <select class='native-select' id='drop-1-filter' onchange='executeUnifiedCrossFilter("drop1")'></select>
         </div>
         <div class='filter-menu-box'>
-            <label>Country</label>
-            <select class='native-select' id='team-filter' onchange='executeFilter("team")'>
-                <option value='all'>All Teams</option>
-                {% for team in teams %}
-                    <option value='{{ team }}'>{{ team }}</option>
-                {% endfor %}
-            </select>
+            <label id='lbl-drop-2'>Country</label>
+            <select class='native-select' id='drop-2-filter' onchange='executeUnifiedCrossFilter("drop2")'></select>
         </div>
         <div class='filter-menu-box'>
-            <label>By Date</label>
-            <select class='native-select' id='date-filter' onchange='executeFilter("date")'>
-                <option value='all'>All Dates</option>
-                {% for date in dates %}
-                    <option value='{{ date }}'>{{ date }}</option>
-                {% endfor %}
-            </select>
+            <label id='lbl-drop-3'>By Date</label>
+            <select class='native-select' id='drop-3-filter' onchange='executeUnifiedCrossFilter("drop3")'></select>
         </div>
     </div>
 
@@ -408,7 +368,6 @@ HTML_TEMPLATE = """
 
         <div class='card'>
             <h3>🎟️ 2. bet365 Compliant Market Price Selector</h3>
-            
             <div class='builder-market-row'>
                 <div class='market-meta'><div class='market-title'>Match Result (1X2)</div><div class='market-sub'>Full-time outcome probability matching</div></div>
                 <div class='builder-controls' style='gap:4px;'>
@@ -479,12 +438,25 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
-        const MASTER_SCHEDULE_DATA = [
+        // MASTER DYNAMIC DATA OBJECT ARRAY FOR ALL DOMESTIC PYRAMIDS
+        const GLOBAL_PYRAMID_CONTEXT_DATA = [
             {% for match in schedule %}
-                { index: {{ loop.index0 }}, group: "{{ match.group }}", home: "{{ match.home }}", away: "{{ match.away }}", date: "{{ match.date }}", round: "{{ match.round }}" }{% if not loop.last %},{% endif %}
+                {
+                    index: {{ match.id }},
+                    cat: "{{ match.cat }}",
+                    home: "{{ match.home }}",
+                    away: "{{ match.away }}",
+                    country: "{{ match.country }}",
+                    tier: "{{ match.tier }}",
+                    round: "{{ match.round }}",
+                    date: "{{ match.date }}",
+                    city: "{{ match.city }}",
+                    hoursToKick: {{ match.hours_to_kick }}
+                }{% if not loop.last %},{% endif %}
             {% endfor %}
         ];
 
+        let activeAppCategory = localStorage.getItem('fc_active_cat') || 'WC';
         let currentSlip = JSON.parse(localStorage.getItem('fc_slip')) || [];
         const rememberedIndex = "{{ selected_idx }}";
         const currentFixtureName = "{% if report %}{{ report.h_name }} vs {{ report.a_name }}{% endif %}";
@@ -492,7 +464,6 @@ HTML_TEMPLATE = """
         let marketDirections = { corners: "Over", cards: "Over", goalkicks: "Over", offsides: "Over", shots: "Over", sot_h: "Over", sot_a: "Over" };
         let selectedAIProfile = null;
 
-        // FIXED: Real-time values mapped straight from Python engine fields to build safe lines
         const dataPayloadContext = {
             homeTeam: "{% if report %}{{ report.h_name }}{% endif %}",
             awayTeam: "{% if report %}{{ report.a_name }}{% endif %}",
@@ -506,118 +477,117 @@ HTML_TEMPLATE = """
 
         function returnToLandingScreen() { window.location.href = '/'; }
 
-        // FIXED: Micro-interaction control script for AI risk profiles selection
-        function selectRiskTier(tier) {
-            selectedAIProfile = tier;
-            document.getElementById('risk-low-btn').className = 'risk-pick-btn';
-            document.getElementById('risk-mod-btn').className = 'risk-pick-btn';
-            document.getElementById('risk-high-btn').className = 'risk-pick-btn';
+        // CORE FIX: Dynamic initialization sync routine that binds the top ribbon button classes
+        function switchAppScopeCategory(categoryKey) {
+            activeAppCategory = categoryKey;
+            localStorage.setItem('fc_active_cat', categoryKey);
             
-            if (tier === 'low') document.getElementById('risk-low-btn').classList.add('selected-low');
-            if (tier === 'mod') document.getElementById('risk-mod-btn').classList.add('selected-mod');
-            if (tier === 'high') document.getElementById('risk-high-btn').classList.add('selected-high');
-        }
-
-        // FIXED: Automated cross-matrix generation algorithm meeting bet365 limits
-        function triggerAIScoutCompilation() {
-            if (!selectedAIProfile) { alert("Selection Required: Please pick a risk profile tier baseline first."); return; }
-            clearSlip(); // Wipe old slate to build pure compliant sheet combo
-
-            const hName = dataPayloadContext.homeTeam;
-            const aName = dataPayloadContext.awayTeam;
-
-            if (selectedAIProfile === 'low') {
-                // Compile Conservative Multi-Bet Slip Layers
-                const preferredDC = dataPayloadContext.hOdds <= dataPayloadContext.aOdds ? 
-                    { code: "1X", label: `Double Chance: ${hName}/Draw`, odds: dataPayloadContext.dcHome } :
-                    { code: "2X", label: `Double Chance: ${aName}/Draw`, odds: dataPayloadContext.dcAway };
-                
-                addOutcomeToSlip(preferredDC.code, preferredDC.label, preferredDC.odds);
-                
-                // Add conservative under ceiling cushion lines
-                const safeCornerThreshold = Math.ceil(dataPayloadContext.avgCorners + 3) + ".5";
-                currentSlip.push({
-                    id: `${currentFixtureName} - corners`, fixture: currentFixtureName,
-                    market: `${currentFixtureName} | Under ${safeCornerThreshold} Total Corners`, odds: 1.32, category: "corners", dir: "Under", lineVal: safeCornerThreshold
-                });
-            } 
-            else if (selectedAIProfile === 'mod') {
-                // Compile Standard Value Optimization Layers
-                if (dataPayloadContext.hOdds !== dataPayloadContext.aOdds) {
-                    const favorite = dataPayloadContext.hOdds < dataPayloadContext.aOdds ? 
-                        { code: "1", label: `${hName} Win`, odds: dataPayloadContext.hOdds } :
-                        { code: "2", label: `${aName} Win`, odds: dataPayloadContext.aOdds };
-                    addOutcomeToSlip(favorite.code, favorite.label, favorite.odds);
-                } else {
-                    addOutcomeToSlip("X", "Match Draw", dataPayloadContext.hOdds);
-                }
-
-                // Append standardized rolling averages lines
-                const valueCornerThreshold = Math.floor(dataPayloadContext.avgCorners - 1) + ".5";
-                currentSlip.push({
-                    id: `${currentFixtureName} - corners`, fixture: currentFixtureName,
-                    market: `${currentFixtureName} | Over ${valueCornerThreshold} Total Corners`, odds: 1.68, category: "corners", dir: "Over", lineVal: valueCornerThreshold
-                });
-            } 
-            else if (selectedAIProfile === 'high') {
-                // Compile Aggressive Yield Maximization String Layers
-                const underdog = dataPayloadContext.hOdds > dataPayloadContext.aOdds ? 
-                    { code: "1", label: `${hName} Win (Underdog Boost)`, odds: dataPayloadContext.hOdds } :
-                    { code: "2", label: `${aName} Win (Underdog Boost)`, odds: dataPayloadContext.aOdds };
-                
-                addOutcomeToSlip(underdog.code, underdog.label, underdog.odds);
-
-                // Force tight, maximizing over thresholds lines
-                const aggressiveCornerThreshold = Math.floor(dataPayloadContext.avgCorners + 1) + ".5";
-                currentSlip.push({
-                    id: `${currentFixtureName} - corners`, fixture: currentFixtureName,
-                    market: `${currentFixtureName} | Over ${aggressiveCornerThreshold} Total Corners`, odds: 2.35, category: "corners", dir: "Over", lineVal: aggressiveCornerThreshold
-                });
-                const aggressiveCardThreshold = Math.floor(dataPayloadContext.avgCards) + ".5";
-                currentSlip.push({
-                    id: `${currentFixtureName} - cards`, fixture: currentFixtureName,
-                    market: `${currentFixtureName} | Over ${aggressiveCardThreshold} Total Cards`, odds: 2.10, category: "cards", dir: "Over", lineVal: aggressiveCardThreshold
-                });
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`cat-${categoryKey}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            const lbl1 = document.getElementById('lbl-drop-1');
+            const lbl2 = document.getElementById('lbl-drop-2');
+            const lbl3 = document.getElementById('lbl-drop-3');
+            
+            if (categoryKey === 'WC' || categoryKey === 'Elite') {
+                lbl1.innerText = "Groups / Bracket"; lbl2.innerText = "Country Venue"; lbl3.innerText = "By Date";
+            } else if (categoryKey === 'Leagues' || categoryKey === 'Cup') {
+                lbl1.innerText = "Country"; lbl2.innerText = "League Tier / Cup"; lbl3.innerText = "Round Select";
+            } else if (categoryKey === 'International') {
+                lbl1.innerText = "Country Focus"; lbl2.innerText = "Match Type"; lbl3.innerText = "By Date";
+            } else if (categoryKey === 'Upcoming') {
+                lbl1.innerText = "Scope Focus"; lbl2.innerText = "Active Group/Tier"; lbl3.innerText = "Countdown Line";
             }
-
-            updateSlipUI();
+            
+            repopulateDynamicDropdownOptions(categoryKey);
         }
 
-        function setMarketDir(marketId, direction) {
-            marketDirections[marketId] = direction;
-            const container = document.getElementById(`toggle-${marketId}`);
-            const buttons = container.getElementsByTagName('button');
-            if (direction === "Over") { buttons[0].className = 'toggle-btn selected'; buttons[1].className = 'toggle-btn'; } 
-            else { buttons[0].className = 'toggle-btn'; buttons[1].className = 'toggle-btn selected'; }
+        function repopulateDynamicDropdownOptions(category) {
+            const d1 = document.getElementById('drop-1-filter');
+            const d2 = document.getElementById('drop-2-filter');
+            const d3 = document.getElementById('drop-3-filter');
+            
+            let set1 = new Set(), set2 = new Set(), set3 = new Set();
+
+            if (category === 'Upcoming') {
+                GLOBAL_PYRAMID_CONTEXT_DATA.forEach(m => {
+                    if (m.hoursToKick <= 24) {
+                        const scopeType = (m.cat === 'Leagues' || m.cat === 'Cup') ? "Domestic Leagues" : "Tournaments / Cups";
+                        set1.add(scopeType); set2.add(m.tier); set3.add(`${m.hoursToKick}h to Kick`);
+                    }
+                });
+                buildSelectOptions(d1, set1, "All 24h Blocks");
+                buildSelectOptions(d2, set2, "All Active Divisions");
+                buildSelectOptions(d3, set3, "All Timelines");
+            } else {
+                let scopeMatches = GLOBAL_PYRAMID_CONTEXT_DATA.filter(m => m.cat === category);
+                scopeMatches.forEach(m => {
+                    if (category === 'Leagues' || category === 'Cup') {
+                        set1.add(m.country); set2.add(m.tier); set3.add(m.round);
+                    } else {
+                        set1.add(m.tier); set2.add(m.country); set3.add(m.date);
+                    }
+                });
+                buildSelectOptions(d1, set1, "All Options");
+                buildSelectOptions(d2, set2, "All Tiers");
+                buildSelectOptions(d3, set3, "All Lists");
+            }
+            
+            executeUnifiedCrossFilter('init');
         }
 
-        function executeFilter(activeTrigger) {
-            if (activeTrigger === 'group') { document.getElementById('team-filter').value = 'all'; document.getElementById('date-filter').value = 'all'; }
-            if (activeTrigger === 'team') { document.getElementById('group-filter').value = 'all'; document.getElementById('date-filter').value = 'all'; }
-            if (activeTrigger === 'date') { document.getElementById('group-filter').value = 'all'; document.getElementById('team-filter').value = 'all'; }
-
-            const selectBox = document.getElementById('match-select');
-            selectBox.innerHTML = '';
-
-            MASTER_SCHEDULE_DATA.forEach(match => {
-                if ((document.getElementById('group-filter').value === 'all' || match.group === document.getElementById('group-filter').value) &&
-                    (document.getElementById('team-filter').value === 'all' || match.home === document.getElementById('team-filter').value || match.away === document.getElementById('team-filter').value) &&
-                    (document.getElementById('date-filter').value === 'all' || match.date === document.getElementById('date-filter').value)) {
-                    const opt = document.createElement('option');
-                    opt.value = match.index;
-                    opt.innerText = `[${match.group}] ${match.date} | ${match.home} vs ${match.away}`;
-                    if (match.index == rememberedIndex && activeTrigger === 'init') { opt.selected = true; }
-                    selectBox.appendChild(opt);
-                }
+        function buildSelectOptions(element, dataSet, defaultLabel) {
+            element.innerHTML = `<option value="all">${defaultLabel}</option>`;
+            Array.from(dataSet).sort().forEach(v => {
+                element.innerHTML += `<option value="${v}">${v}</option>`;
             });
         }
+
+        function executeUnifiedCrossFilter(triggerSource) {
+            const v1 = document.getElementById('drop-1-filter').value;
+            const v2 = document.getElementById('drop-2-filter').value;
+            const v3 = document.getElementById('drop-3-filter').value;
+            const masterSelect = document.getElementById('match-select');
+            
+            masterSelect.innerHTML = '';
+            let matchedCount = 0;
+
+            GLOBAL_PYRAMID_CONTEXT_DATA.forEach(match => {
+                if (activeAppCategory === 'Upcoming') {
+                    if (match.hoursToKick > 24) return;
+                    const scopeType = (match.cat === 'Leagues' || match.cat === 'Cup') ? "Domestic Leagues" : "Tournaments / Cups";
+                    if ((v1 === 'all' || scopeType === v1) && (v2 === 'all' || match.tier === v2) && (v3 === 'all' || `${match.hoursToKick}h to Kick` === v3)) {
+                        const opt = document.createElement('option'); opt.value = match.index;
+                        opt.innerText = `[${match.cat}] ${match.home} vs ${match.away} — (${match.hoursToKick}h to Kickoff)`;
+                        masterSelect.appendChild(opt); matchedCount++;
+                    }
+                } else {
+                    if (match.cat !== activeAppCategory) return;
+                    let c1 = (activeAppCategory === 'Leagues' || activeAppCategory === 'Cup') ? match.country : match.tier;
+                    let c2 = (activeAppCategory === 'Leagues' || activeAppCategory === 'Cup') ? match.tier : match.country;
+                    let c3 = (activeAppCategory === 'Leagues' || activeAppCategory === 'Cup') ? match.round : match.date;
+
+                    if ((v1 === 'all' || c1 === v1) && (v2 === 'all' || c2 === v2) && (v3 === 'all' || c3 === v3)) {
+                        const opt = document.createElement('option'); opt.value = match.index;
+                        opt.innerText = `[${match.tier}] ${match.date} | ${match.home} vs ${match.away}`;
+                        if (match.index == rememberedIndex && triggerSource === 'init') opt.selected = true;
+                        masterSelect.appendChild(opt); matchedCount++;
+                    }
+                }
+            });
+
+            if (matchedCount === 0) masterSelect.innerHTML = '<option value="-1">No scheduled matches matching filter parameters</option>';
+        }
+
+        function removeSlipItem(index) { currentSlip.splice(index, 1); updateSlipUI(); }
+        function clearSlip() { currentSlip = []; updateSlipUI(); }
 
         function addOutcomeToSlip(codeKey, label, decimalOdds) {
             if (currentSlip.length >= 20) { alert("bet365 Rule Cap: Max 20 selections allowed."); return; }
             const marketID = `${currentFixtureName} - result_line`;
-            if (currentSlip.some(item => item.id === marketID && item.val !== codeKey)) return;
+            if (currentSlip.some(item => item.id === marketID && item.val !== codeKey)) { alert("Contradiction Blocked: Conflicting match outcome choice detected."); return; }
             if (currentSlip.some(item => item.id === `${currentFixtureName} - ${label}`)) return;
-
             currentSlip.push({ id: `${currentFixtureName} - ${label}`, fixture: currentFixtureName, market: `${currentFixtureName} | ${label}`, odds: decimalOdds, category: "outcome", val: codeKey });
             updateSlipUI();
         }
@@ -641,16 +611,46 @@ HTML_TEMPLATE = """
             if (direction === "Over" && selectedNumericValue > 6) variableOddsModifier += 0.45;
             if (direction === "Under" && selectedNumericValue < 4) variableOddsModifier += 0.35;
 
-            currentSlip.push({
-                id: marketKeyID, fixture: currentFixtureName,
-                market: `${currentFixtureName} | ${direction} ${thresholdValue} ${marketTitle.split(' (')[0]}`,
-                odds: parseFloat(variableOddsModifier.toFixed(2)), category: marketId, dir: direction, lineVal: thresholdValue
-            });
+            currentSlip.push({ id: marketKeyID, fixture: currentFixtureName, market: `${currentFixtureName} | ${direction} ${thresholdValue} ${marketTitle.split(' (')[0]}`, odds: parseFloat(variableOddsModifier.toFixed(2)), category: marketId, dir: direction, lineVal: thresholdValue });
             updateSlipUI();
         }
 
-        function removeSlipItem(index) { currentSlip.splice(index, 1); updateSlipUI(); }
-        function clearSlip() { currentSlip = []; updateSlipUI(); }
+        function selectRiskTier(tier) {
+            selectedAIProfile = tier;
+            document.getElementById('risk-low-btn').className = 'risk-pick-btn';
+            document.getElementById('risk-mod-btn').className = 'risk-pick-btn';
+            document.getElementById('risk-high-btn').className = 'risk-pick-btn';
+            if (tier === 'low') document.getElementById('risk-low-btn').classList.add('selected-low');
+            if (tier === 'mod') document.getElementById('risk-mod-btn').classList.add('selected-mod');
+            if (tier === 'high') document.getElementById('risk-high-btn').classList.add('selected-high');
+        }
+
+        function triggerAIScoutCompilation() {
+            if (!selectedAIProfile) { alert("Selection Required: Please pick a risk profile tier baseline first."); return; }
+            clearSlip(); const hName = dataPayloadContext.homeTeam; const aName = dataPayloadContext.awayTeam;
+
+            if (selectedAIProfile === 'low') {
+                const preferredDC = dataPayloadContext.hOdds <= dataPayloadContext.aOdds ? { code: "1X", label: `Double Chance: ${hName}/Draw`, odds: dataPayloadContext.dcHome } : { code: "2X", label: `Double Chance: ${aName}/Draw`, odds: dataPayloadContext.dcAway };
+                addOutcomeToSlip(preferredDC.code, preferredDC.label, preferredDC.odds);
+                const safeCornerThreshold = Math.ceil(dataPayloadContext.avgCorners + 3) + ".5";
+                currentSlip.push({ id: `${currentFixtureName} - corners`, fixture: currentFixtureName, market: `${currentFixtureName} | Under ${safeCornerThreshold} Total Corners`, odds: 1.32, category: "corners", dir: "Under", lineVal: safeCornerThreshold });
+            } 
+            else if (selectedAIProfile === 'mod') {
+                if (dataPayloadContext.hOdds !== dataPayloadContext.aOdds) {
+                    const favorite = dataPayloadContext.hOdds < dataPayloadContext.aOdds ? { code: "1", label: `${hName} Win`, odds: dataPayloadContext.hOdds } : { code: "2", label: `${aName} Win`, odds: dataPayloadContext.aOdds };
+                    addOutcomeToSlip(favorite.code, favorite.label, favorite.odds);
+                } else { addOutcomeToSlip("X", "Match Draw", dataPayloadContext.hOdds); }
+                const valueCornerThreshold = Math.floor(dataPayloadContext.avgCorners - 1) + ".5";
+                currentSlip.push({ id: `${currentFixtureName} - corners`, fixture: currentFixtureName, market: `${currentFixtureName} | Over ${valueCornerThreshold} Total Corners`, odds: 1.68, category: "corners", dir: "Over", lineVal: valueCornerThreshold });
+            } 
+            else if (selectedAIProfile === 'high') {
+                const underdog = dataPayloadContext.hOdds > dataPayloadContext.aOdds ? { code: "1", label: `${hName} Win (Underdog Boost)`, odds: dataPayloadContext.hOdds } : { code: "2", label: `${aName} Win (Underdog Boost)`, odds: dataPayloadContext.aOdds };
+                addOutcomeToSlip(underdog.code, underdog.label, underdog.odds);
+                const aggressiveCornerThreshold = Math.floor(dataPayloadContext.avgCorners + 1) + ".5";
+                currentSlip.push({ id: `${currentFixtureName} - corners`, fixture: currentFixtureName, market: `${currentFixtureName} | Over ${aggressiveCornerThreshold} Total Corners`, odds: 2.35, category: "corners", dir: "Over", lineVal: aggressiveCornerThreshold });
+            }
+            updateSlipUI();
+        }
 
         function updateSlipUI() {
             localStorage.setItem('fc_slip', JSON.stringify(currentSlip));
@@ -665,10 +665,7 @@ HTML_TEMPLATE = """
                 container.appendChild(card);
             });
 
-            if (currentSlip.length === 0) {
-                container.innerHTML = "<div style='color: var(--text-secondary); font-size:12px; padding: 12px 0;'>Select over/under threshold spreads to compile slip components.</div>";
-                accumulatedOdds = 1.0; compoundedProb = 1.0;
-            }
+            if (currentSlip.length === 0) { container.innerHTML = "<div style='color: var(--text-secondary); font-size:12px; padding: 12px 0;'>Select over/under threshold spreads to compile slip components.</div>"; accumulatedOdds = 1.0; compoundedProb = 1.0; }
             const totalPct = compoundedProb * 100;
             document.getElementById('slip-odds-display').innerText = accumulatedOdds.toFixed(2);
             document.getElementById('slip-prob-display').innerText = totalPct.toFixed(1) + '%';
@@ -676,7 +673,11 @@ HTML_TEMPLATE = """
             if (totalPct > 45) fill.style.background = 'var(--accent-green)'; else if (totalPct > 20) fill.style.background = 'var(--accent-orange)'; else fill.style.background = 'var(--accent-red)';
         }
 
-        document.addEventListener('DOMContentLoaded', () => { executeFilter('init'); updateSlipUI(); });
+        // FIXED: Explicitly sync layout views on page instantiation lifecycle
+        document.addEventListener('DOMContentLoaded', () => {
+            switchAppScopeCategory(activeAppCategory);
+            updateSlipUI();
+        });
     </script>
 </body>
 </html>
@@ -692,8 +693,9 @@ def home():
     
     if request.method == 'POST':
         selected_idx = int(request.form['match_idx'])
-        match = TOURNAMENT_SCHEDULE[selected_idx]
-        h_name, a_name, city, country, target_iso = match["home"], match["away"], match["city"], match["host_country"], match["iso_date"]
+        match = GLOBAL_MATCH_DATABASE[selected_idx]
+        h_name, a_name, city, country = match["home"], match["away"], match["city"], match["country"]
+        target_iso = "2026-06-11"
         
         if h_name in TRUE_HOST_NATIONS and h_name.lower().strip() == country.lower().strip():
             venue_status = "TRUE_HOME_HOST"
@@ -741,7 +743,7 @@ def home():
             "b_offsides": f"{base['offsides']}", "behav_offsides": f"{behav['offsides']}"
         }
 
-    return render_template_string(HTML_TEMPLATE, schedule=TOURNAMENT_SCHEDULE, groups=ALL_GROUPS, teams=ALL_TEAMS, dates=ALL_DATES, report=report, logs=logs, selected_idx=selected_idx)
+    return render_template_string(HTML_TEMPLATE, schedule=GLOBAL_MATCH_DATABASE, groups=ALL_GROUPS, teams=ALL_TEAMS, dates=ALL_DATES, report=report, logs=logs, selected_idx=selected_idx)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

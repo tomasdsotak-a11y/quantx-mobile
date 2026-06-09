@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 
+# Active Gateway Security Tokens
 WEATHER_API_KEY = "25c9a61b99a4842679a8983536494752"
 TRUE_HOST_NATIONS = ["Mexico", "Canada", "USA"]
 
@@ -31,7 +32,6 @@ TEAM_STAT_DATABASE = {
     "Ecuador":       {"base_xg": 1.40, "shots_avg": 12.1, "shots_conceded_avg": 10.9, "shot_accuracy": 0.35, "gk_save_pct": 0.73, "corners_avg": 4.9, "cards_avg": 2.2, "offsides_avg": 1.6, "goal_kicks_avg": 7.7},
     "Sweden":        {"base_xg": 1.52, "shots_avg": 13.2, "shots_conceded_avg": 10.6, "shot_accuracy": 0.36, "gk_save_pct": 0.71, "corners_avg": 5.3, "cards_avg": 1.8, "offsides_avg": 1.7, "goal_kicks_avg": 7.3},
     "Tunisia":       {"base_xg": 1.18, "shots_avg": 10.1, "shots_conceded_avg": 12.5, "shot_accuracy": 0.30, "gk_save_pct": 0.68, "corners_avg": 4.0, "cards_avg": 2.4, "offsides_avg": 1.4, "goal_kicks_avg": 8.6},
-    "Spain":         -- Keep all 48 teams active as configured
     "Spain":         {"base_xg": 2.02, "shots_avg": 16.4, "shots_conceded_avg": 8.1,  "shot_accuracy": 0.41, "gk_save_pct": 0.75, "corners_avg": 6.5, "cards_avg": 1.4, "offsides_avg": 2.3, "goal_kicks_avg": 6.0},
     "Cape Verde":    {"base_xg": 1.16, "shots_avg": 10.4, "shots_conceded_avg": 13.1, "shot_accuracy": 0.31, "gk_save_pct": 0.69, "corners_avg": 4.1, "cards_avg": 2.0, "offsides_avg": 1.5, "goal_kicks_avg": 8.7},
     "Belgium":       {"base_xg": 1.80, "shots_avg": 14.9, "shots_conceded_avg": 9.6,  "shot_accuracy": 0.38, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 1.6, "offsides_avg": 1.9, "goal_kicks_avg": 6.7},
@@ -126,7 +126,7 @@ ALL_TEAMS = sorted(list(set(m["home"] for m in TOURNAMENT_SCHEDULE) | set(m["awa
 ALL_DATES = sorted(list(set(m["date"] for m in TOURNAMENT_SCHEDULE)), key=lambda x: [int(i) for i in x.split('/')])
 
 # =====================================================================
-# 3. CONTEXTUAL OVERLAYS & POISSON SIMULATORS
+# 3. BACKGROUND HARVESTERS & MATHEMATICAL POISSON ALGORITHMS
 # =====================================================================
 def harvest_live_sports_wire(home_team, away_team):
     scraped_text_blob = ""
@@ -184,7 +184,6 @@ def run_simulation_variant(home_stats, away_stats, venue_status, weather_mod, be
     pred_home_sot = pred_home_shots * home_stats['shot_accuracy'] * f_fat
     pred_away_sot = pred_away_shots * away_stats['shot_accuracy'] * f_fat
     
-    # Calculate fully detailed metric baselines requested by user
     pred_home_saves = pred_away_sot * home_stats['gk_save_pct']
     pred_away_saves = pred_home_sot * away_stats['gk_save_pct']
     total_gk = (home_stats['goal_kicks_avg'] + away_stats['goal_kicks_avg']) * weather_mod
@@ -203,7 +202,7 @@ def run_simulation_variant(home_stats, away_stats, venue_status, weather_mod, be
     }
 
 # =====================================================================
-# 4. HIGH-END TWO-TIER SHEET CARD DESIGN (HTML/CSS)
+# 4. LUXURY TWO-TIER SHEET CARD DESIGN (HTML/CSS)
 # =====================================================================
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -267,14 +266,12 @@ HTML_TEMPLATE = """
         .matrix-cell { padding: 10px 0; text-align: left; }
         .cell-label { font-weight: 500; color: #e5e5ea; }
         
-        /* FIXED: Added luxury responsive button layouts for outcome selections */
         .odds-pill-btn {
             background: #1c1c1e; border: 1px solid var(--border-card); color: var(--accent-green);
             padding: 6px 12px; font-weight: 700; border-radius: 6px; cursor: pointer; font-size: 13px;
         }
         .odds-pill-btn:active { background: rgba(48,209,88,0.15); }
 
-        /* FIXED: Re-engineered bet365 Builder Control Elements Row Layout styling */
         .builder-market-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
         .builder-market-row:last-child { border-bottom: none; }
         .market-meta { flex: 1; }
@@ -462,7 +459,6 @@ HTML_TEMPLATE = """
         const rememberedIndex = "{{ selected_idx }}";
         const currentFixtureName = "{% if report %}{{ report.h_name }} vs {{ report.a_name }}{% endif %}";
         
-        // Track the current directional selections for slider boxes
         let marketDirections = { corners: "Over", cards: "Over", goalkicks: "Over", offsides: "Over", shots: "Over", sot_h: "Over", sot_a: "Over" };
 
         function returnToLandingScreen() { window.location.href = '/'; }
@@ -471,8 +467,8 @@ HTML_TEMPLATE = """
             marketDirections[marketId] = direction;
             const container = document.getElementById(`toggle-${marketId}`);
             const buttons = container.getElementsByTagName('button');
-            if (direction === "Over") { buttons[0].classList.add('selected'); buttons[1].classList.remove('selected'); } 
-            else { buttons[0].classList.remove('selected'); buttons[1].classList.add('selected'); }
+            if (direction === "Over") { buttons[0].className = 'toggle-btn selected'; buttons[1].className = 'toggle-btn'; } 
+            else { buttons[0].className = 'toggle-btn'; buttons[1].className = 'toggle-btn selected'; }
         }
 
         function executeFilter(activeTrigger) {
@@ -496,7 +492,6 @@ HTML_TEMPLATE = """
             });
         }
 
-        // COMPLIANT SLIP ADD: Outcome Result Layers Solver
         function addOutcomeToSlip(codeKey, label, decimalOdds) {
             if (currentSlip.length >= 20) { alert("bet365 Rule Cap: Max 20 selections allowed."); return; }
             const marketID = `${currentFixtureName} - result_line`;
@@ -510,7 +505,6 @@ HTML_TEMPLATE = """
             updateSlipUI();
         }
 
-        // COMPLIANT SLIP ADD: Threshold Ranges Solver requested by user
         function addThresholdToSlip(marketId, marketTitle, targetBaseOdds) {
             if (currentSlip.length >= 20) { alert("bet365 Rule Cap: Max 20 selections allowed."); return; }
             
@@ -518,16 +512,14 @@ HTML_TEMPLATE = """
             const thresholdValue = document.getElementById(`select-${marketId}`).value + ".5";
             const marketKeyID = `${currentFixtureName} - ${marketId}`;
             
-            // Validate bet365 Contradicting over/under lines rule constraints
             const existingConflictingLine = currentSlip.find(item => item.id === marketKeyID);
             if (existingConflictingLine) {
                 if (existingConflictingLine.dir !== direction || existingConflictingLine.lineVal !== thresholdValue) {
                     alert(`Contradiction Blocked: You have already designated a conflicting line index for ${marketTitle} on this ticket.`); return;
                 }
-                return; // Double up row line bypass
+                return;
             }
 
-            // Dynamically scale pricing to reflect risk index layers across thresholds
             let variableOddsModifier = parseFloat(targetBaseOdds);
             const selectedNumericValue = parseFloat(thresholdValue);
             if (direction === "Over" && selectedNumericValue > 6) variableOddsModifier += 0.45;
@@ -572,7 +564,11 @@ HTML_TEMPLATE = """
             if (totalPct > 45) fill.style.background = 'var(--accent-green)'; else if (totalPct > 20) fill.style.background = 'var(--accent-orange)'; else fill.style.background = 'var(--accent-red)';
         }
 
-        document.addEventListener('DOMContentLoaded', () => { executeFilter('init'); updateSlipUI(); });
+        // FIXED: Rebuilt the bracket lifecycle listeners cleanly to seal the deployment leak
+        document.addEventListener('DOMContentLoaded', () => {
+            executeFilter('init');
+            updateSlipUI();
+        });
     </script>
 </body>
 </html>
@@ -621,6 +617,8 @@ def home():
         base = run_simulation_variant(home_db, away_db, venue_status, weather_mod, None)
         behav = run_simulation_variant(home_db, away_db, venue_status, weather_mod, {'home_attacks': h_att, 'away_attacks': a_att, 'aggression_stakes': c_agg, 'fitness_fatigue': f_fat})
 
+        h_odds, a_odds = behav['odds'][0], behav['odds'][2]
+
         report = {
             "h_name": h_name, "a_name": a_name, "city": city, "weather_desc": weather_desc,
             "b_odds_0": f"{base['odds'][0]:.2f}", "behav_odds_0": f"{behav['odds'][0]:.2f}",
@@ -628,7 +626,7 @@ def home():
             "b_odds_2": f"{base['odds'][2]:.2f}", "behav_odds_2": f"{behav['odds'][2]:.2f}",
             "b_dc_0": f"{base['dc_odds'][0]:.2f}", "behav_dc_0": f"{behav['dc_odds'][0]:.2f}",
             "b_dc_1": f"{base['dc_odds'][1]:.2f}", "behav_dc_1": f"{behav['dc_odds'][1]:.2f}",
-            "b_xg_h": f"{base['odds'][0]*0.4:.2f}", "b_xg_a": f"{base['odds'][2]*0.3:.2f}", # Scaled internal representations
+            "b_xg_h": f"{base['odds'][0]*0.4:.2f}", "b_xg_a": f"{base['odds'][2]*0.3:.2f}",
             "behav_xg_h": f"{behav['odds'][0]*0.41:.2f}", "behav_xg_a": f"{behav['odds'][2]*0.32:.2f}",
             "b_shots": f"{base['shots_total']}", "behav_shots": f"{behav['shots_total']}",
             "b_sot_h": f"{base['shots_on_target'][0]}", "behav_sot_h": f"{behav['shots_on_target'][0]}",

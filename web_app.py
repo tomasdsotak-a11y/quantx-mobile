@@ -71,7 +71,7 @@ TOURNAMENT_SCHEDULE = [
     {"id": 10, "date": "14/06", "iso_date": "2026-06-14", "group": "Group F", "round": "Matchday 1", "home": "Netherlands", "away": "Japan", "city": "Dallas", "host_country": "USA"},
     {"id": 11, "date": "14/06", "iso_date": "2026-06-14", "group": "Group E", "round": "Matchday 1", "home": "Ivory Coast", "away": "Ecuador", "city": "Philadelphia", "host_country": "USA"},
     {"id": 12, "date": "14/06", "iso_date": "2026-06-14", "group": "Group F", "round": "Matchday 1", "home": "Sweden", "away": "Tunisia", "city": "Monterrey", "host_country": "Mexico"},
-    {"id": 13, "date": "15/06", "iso_date": "2026-06-15", "group": "Group H", "round": "Matchday 1", "home": "Spain", "away": "Saudi Arabia", "city": "Atlanta", "host_country": "USA"},
+    {"id": 13, "date": "15/06", "iso_date": "2026-06-15", "group": "Group H", "round": "Matchday 1", "home": "Spain", "away": "Cape Verde", "city": "Atlanta", "host_country": "USA"},
     {"id": 14, "date": "15/06", "iso_date": "2026-06-15", "group": "Group G", "round": "Matchday 1", "home": "Belgium", "away": "Egypt", "city": "Seattle", "host_country": "USA"},
     {"id": 15, "date": "15/06", "iso_date": "2026-06-15", "group": "Group H", "round": "Matchday 1", "home": "Saudi Arabia", "away": "Uruguay", "city": "Miami", "host_country": "USA"},
     {"id": 16, "date": "15/06", "iso_date": "2026-06-15", "group": "Group G", "round": "Matchday 1", "home": "Iran", "away": "New Zealand", "city": "Los Angeles", "host_country": "USA"},
@@ -202,7 +202,7 @@ def run_simulation_variant(home_stats, away_stats, venue_status, weather_mod, be
     }
 
 # =====================================================================
-# 4. LUXURY TWO-TIER SHEET CARD DESIGN (HTML/CSS)
+# 4. LUXURY PRESENTATION CANVAS WITH DYNAMIC TICKET GENERATOR
 # =====================================================================
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -220,6 +220,7 @@ HTML_TEMPLATE = """
             --text-secondary: #86868b;
             --accent-blue: #0a84ff;
             --accent-green: #30d158;
+            --accent-orange: #ff9f0a;
             --accent-red: #ff453a;
         }
         body { 
@@ -285,6 +286,23 @@ HTML_TEMPLATE = """
         
         select.builder-dropdown { background: #1c1c1e; color: #ffffff; border: 1px solid var(--border-card); padding: 5px 24px 5px 8px; font-size: 13px; font-weight: 600; border-radius: 6px; outline: none; }
         .builder-add-btn { background: var(--accent-blue); color: white; border: none; font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+
+        /* FIXED: Added premium visual style elements for the AI Generator controls */
+        .ai-gen-container { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+        .ai-risk-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .risk-pick-btn { 
+            background: #1c1c1e; border: 1px solid var(--border-card); color: var(--text-secondary);
+            padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; text-align: center;
+            transition: all 0.2s ease;
+        }
+        .risk-pick-btn.selected-low { border-color: var(--accent-green); color: var(--accent-green); background: rgba(48,209,88,0.05); }
+        .risk-pick-btn.selected-mod { border-color: var(--accent-orange); color: var(--accent-orange); background: rgba(255,159,10,0.05); }
+        .risk-pick-btn.selected-high { border-color: var(--accent-red); color: var(--accent-red); background: rgba(255,69,58,0.05); }
+        
+        .ai-submit-trigger {
+            width: 100%; padding: 12px; border-radius: 10px; background: #ffffff; color: #000000;
+            font-size: 14px; font-weight: 700; border: none; cursor: pointer; text-align: center; margin-top: 4px;
+        }
 
         .bet-slip-drawer {
             position: fixed; bottom: 0; left: 0; right: 0;
@@ -436,6 +454,18 @@ HTML_TEMPLATE = """
             </div>
             {% endfor %}
         </div>
+
+        <div class='card'>
+            <h3>🧠 3. Automated AI Scout Slip Generator</h3>
+            <div class='ai-gen-container'>
+                <div class='ai-risk-row'>
+                    <button class='risk-pick-btn' id='risk-low-btn' onclick='selectRiskTier("low")'>🟢 LOW RISK<br><span style="font-size:10px;font-weight:400;color:var(--text-secondary);">Safe Lines</span></button>
+                    <button class='risk-pick-btn' id='risk-mod-btn' onclick='selectRiskTier("mod")'>🟡 MODERATE<br><span style="font-size:10px;font-weight:400;color:var(--text-secondary);">Value Edge</span></button>
+                    <button class='risk-pick-btn' id='risk-high-btn' onclick='selectRiskTier("high")'>🔴 HIGH RISK<br><span style="font-size:10px;font-weight:400;color:var(--text-secondary);">Max Return</span></button>
+                </div>
+                <button class='ai-submit-trigger' onclick='triggerAIScoutCompilation()'>Generate Smart Slip</button>
+            </div>
+        </div>
     {% endif %}
 
     <div class='bet-slip-drawer'>
@@ -460,8 +490,98 @@ HTML_TEMPLATE = """
         const currentFixtureName = "{% if report %}{{ report.h_name }} vs {{ report.a_name }}{% endif %}";
         
         let marketDirections = { corners: "Over", cards: "Over", goalkicks: "Over", offsides: "Over", shots: "Over", sot_h: "Over", sot_a: "Over" };
+        let selectedAIProfile = null;
+
+        // FIXED: Real-time values mapped straight from Python engine fields to build safe lines
+        const dataPayloadContext = {
+            homeTeam: "{% if report %}{{ report.h_name }}{% endif %}",
+            awayTeam: "{% if report %}{{ report.a_name }}{% endif %}",
+            hOdds: {% if report %}{{ report.behav_odds_0 }}{% else %}1.0{% endif %},
+            aOdds: {% if report %}{{ report.behav_odds_2 }}{% else %}1.0{% endif %},
+            dcHome: {% if report %}{{ report.behav_dc_0 }}{% else %}1.0{% endif %},
+            dcAway: {% if report %}{{ report.behav_dc_1 }}{% else %}1.0{% endif %},
+            avgCorners: {% if report %}{{ report.behav_corners }}{% else %}0.0{% endif %},
+            avgCards: {% if report %}{{ report.behav_cards }}{% else %}0.0{% endif %}
+        };
 
         function returnToLandingScreen() { window.location.href = '/'; }
+
+        // FIXED: Micro-interaction control script for AI risk profiles selection
+        function selectRiskTier(tier) {
+            selectedAIProfile = tier;
+            document.getElementById('risk-low-btn').className = 'risk-pick-btn';
+            document.getElementById('risk-mod-btn').className = 'risk-pick-btn';
+            document.getElementById('risk-high-btn').className = 'risk-pick-btn';
+            
+            if (tier === 'low') document.getElementById('risk-low-btn').classList.add('selected-low');
+            if (tier === 'mod') document.getElementById('risk-mod-btn').classList.add('selected-mod');
+            if (tier === 'high') document.getElementById('risk-high-btn').classList.add('selected-high');
+        }
+
+        // FIXED: Automated cross-matrix generation algorithm meeting bet365 limits
+        function triggerAIScoutCompilation() {
+            if (!selectedAIProfile) { alert("Selection Required: Please pick a risk profile tier baseline first."); return; }
+            clearSlip(); // Wipe old slate to build pure compliant sheet combo
+
+            const hName = dataPayloadContext.homeTeam;
+            const aName = dataPayloadContext.awayTeam;
+
+            if (selectedAIProfile === 'low') {
+                // Compile Conservative Multi-Bet Slip Layers
+                const preferredDC = dataPayloadContext.hOdds <= dataPayloadContext.aOdds ? 
+                    { code: "1X", label: `Double Chance: ${hName}/Draw`, odds: dataPayloadContext.dcHome } :
+                    { code: "2X", label: `Double Chance: ${aName}/Draw`, odds: dataPayloadContext.dcAway };
+                
+                addOutcomeToSlip(preferredDC.code, preferredDC.label, preferredDC.odds);
+                
+                // Add conservative under ceiling cushion lines
+                const safeCornerThreshold = Math.ceil(dataPayloadContext.avgCorners + 3) + ".5";
+                currentSlip.push({
+                    id: `${currentFixtureName} - corners`, fixture: currentFixtureName,
+                    market: `${currentFixtureName} | Under ${safeCornerThreshold} Total Corners`, odds: 1.32, category: "corners", dir: "Under", lineVal: safeCornerThreshold
+                });
+            } 
+            else if (selectedAIProfile === 'mod') {
+                // Compile Standard Value Optimization Layers
+                if (dataPayloadContext.hOdds !== dataPayloadContext.aOdds) {
+                    const favorite = dataPayloadContext.hOdds < dataPayloadContext.aOdds ? 
+                        { code: "1", label: `${hName} Win`, odds: dataPayloadContext.hOdds } :
+                        { code: "2", label: `${aName} Win`, odds: dataPayloadContext.aOdds };
+                    addOutcomeToSlip(favorite.code, favorite.label, favorite.odds);
+                } else {
+                    addOutcomeToSlip("X", "Match Draw", dataPayloadContext.hOdds);
+                }
+
+                // Append standardized rolling averages lines
+                const valueCornerThreshold = Math.floor(dataPayloadContext.avgCorners - 1) + ".5";
+                currentSlip.push({
+                    id: `${currentFixtureName} - corners`, fixture: currentFixtureName,
+                    market: `${currentFixtureName} | Over ${valueCornerThreshold} Total Corners`, odds: 1.68, category: "corners", dir: "Over", lineVal: valueCornerThreshold
+                });
+            } 
+            else if (selectedAIProfile === 'high') {
+                // Compile Aggressive Yield Maximization String Layers
+                const underdog = dataPayloadContext.hOdds > dataPayloadContext.aOdds ? 
+                    { code: "1", label: `${hName} Win (Underdog Boost)`, odds: dataPayloadContext.hOdds } :
+                    { code: "2", label: `${aName} Win (Underdog Boost)`, odds: dataPayloadContext.aOdds };
+                
+                addOutcomeToSlip(underdog.code, underdog.label, underdog.odds);
+
+                // Force tight, maximizing over thresholds lines
+                const aggressiveCornerThreshold = Math.floor(dataPayloadContext.avgCorners + 1) + ".5";
+                currentSlip.push({
+                    id: `${currentFixtureName} - corners`, fixture: currentFixtureName,
+                    market: `${currentFixtureName} | Over ${aggressiveCornerThreshold} Total Corners`, odds: 2.35, category: "corners", dir: "Over", lineVal: aggressiveCornerThreshold
+                });
+                const aggressiveCardThreshold = Math.floor(dataPayloadContext.avgCards) + ".5";
+                currentSlip.push({
+                    id: `${currentFixtureName} - cards`, fixture: currentFixtureName,
+                    market: `${currentFixtureName} | Over ${aggressiveCardThreshold} Total Cards`, odds: 2.10, category: "cards", dir: "Over", lineVal: aggressiveCardThreshold
+                });
+            }
+
+            updateSlipUI();
+        }
 
         function setMarketDir(marketId, direction) {
             marketDirections[marketId] = direction;
@@ -495,10 +615,7 @@ HTML_TEMPLATE = """
         function addOutcomeToSlip(codeKey, label, decimalOdds) {
             if (currentSlip.length >= 20) { alert("bet365 Rule Cap: Max 20 selections allowed."); return; }
             const marketID = `${currentFixtureName} - result_line`;
-            
-            if (currentSlip.some(item => item.id === marketID && item.val !== codeKey)) {
-                alert("Contradiction Blocked: Conflicting match outcome choice detected."); return;
-            }
+            if (currentSlip.some(item => item.id === marketID && item.val !== codeKey)) return;
             if (currentSlip.some(item => item.id === `${currentFixtureName} - ${label}`)) return;
 
             currentSlip.push({ id: `${currentFixtureName} - ${label}`, fixture: currentFixtureName, market: `${currentFixtureName} | ${label}`, odds: decimalOdds, category: "outcome", val: codeKey });
@@ -507,7 +624,6 @@ HTML_TEMPLATE = """
 
         function addThresholdToSlip(marketId, marketTitle, targetBaseOdds) {
             if (currentSlip.length >= 20) { alert("bet365 Rule Cap: Max 20 selections allowed."); return; }
-            
             const direction = marketDirections[marketId];
             const thresholdValue = document.getElementById(`select-${marketId}`).value + ".5";
             const marketKeyID = `${currentFixtureName} - ${marketId}`;
@@ -526,13 +642,9 @@ HTML_TEMPLATE = """
             if (direction === "Under" && selectedNumericValue < 4) variableOddsModifier += 0.35;
 
             currentSlip.push({
-                id: marketKeyID,
-                fixture: currentFixtureName,
+                id: marketKeyID, fixture: currentFixtureName,
                 market: `${currentFixtureName} | ${direction} ${thresholdValue} ${marketTitle.split(' (')[0]}`,
-                odds: parseFloat(variableOddsModifier.toFixed(2)),
-                category: marketId,
-                dir: direction,
-                lineVal: thresholdValue
+                odds: parseFloat(variableOddsModifier.toFixed(2)), category: marketId, dir: direction, lineVal: thresholdValue
             });
             updateSlipUI();
         }
@@ -564,11 +676,7 @@ HTML_TEMPLATE = """
             if (totalPct > 45) fill.style.background = 'var(--accent-green)'; else if (totalPct > 20) fill.style.background = 'var(--accent-orange)'; else fill.style.background = 'var(--accent-red)';
         }
 
-        // FIXED: Rebuilt the bracket lifecycle listeners cleanly to seal the deployment leak
-        document.addEventListener('DOMContentLoaded', () => {
-            executeFilter('init');
-            updateSlipUI();
-        });
+        document.addEventListener('DOMContentLoaded', () => { executeFilter('init'); updateSlipUI(); });
     </script>
 </body>
 </html>
@@ -581,7 +689,6 @@ HTML_TEMPLATE = """
 def home():
     report, logs = None, []
     selected_idx = 0
-    h_name, a_name, h_odds, a_odds = "", "", 1.0, 1.0
     
     if request.method == 'POST':
         selected_idx = int(request.form['match_idx'])
@@ -617,15 +724,10 @@ def home():
         base = run_simulation_variant(home_db, away_db, venue_status, weather_mod, None)
         behav = run_simulation_variant(home_db, away_db, venue_status, weather_mod, {'home_attacks': h_att, 'away_attacks': a_att, 'aggression_stakes': c_agg, 'fitness_fatigue': f_fat})
 
-        h_odds, a_odds = behav['odds'][0], behav['odds'][2]
-
         report = {
             "h_name": h_name, "a_name": a_name, "city": city, "weather_desc": weather_desc,
-            "b_odds_0": f"{base['odds'][0]:.2f}", "behav_odds_0": f"{behav['odds'][0]:.2f}",
-            "b_odds_1": f"{base['odds'][1]:.2f}", "behav_odds_1": f"{behav['odds'][1]:.2f}",
-            "b_odds_2": f"{base['odds'][2]:.2f}", "behav_odds_2": f"{behav['odds'][2]:.2f}",
-            "b_dc_0": f"{base['dc_odds'][0]:.2f}", "behav_dc_0": f"{behav['dc_odds'][0]:.2f}",
-            "b_dc_1": f"{base['dc_odds'][1]:.2f}", "behav_dc_1": f"{behav['dc_odds'][1]:.2f}",
+            "behav_odds_0": f"{behav['odds'][0]:.2f}", "behav_odds_1": f"{behav['odds'][1]:.2f}", "behav_odds_2": f"{behav['odds'][2]:.2f}",
+            "behav_dc_0": f"{behav['dc_odds'][0]:.2f}", "behav_dc_1": f"{behav['dc_odds'][1]:.2f}",
             "b_xg_h": f"{base['odds'][0]*0.4:.2f}", "b_xg_a": f"{base['odds'][2]*0.3:.2f}",
             "behav_xg_h": f"{behav['odds'][0]*0.41:.2f}", "behav_xg_a": f"{behav['odds'][2]*0.32:.2f}",
             "b_shots": f"{base['shots_total']}", "behav_shots": f"{behav['shots_total']}",

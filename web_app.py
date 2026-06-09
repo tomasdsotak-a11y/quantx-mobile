@@ -3,11 +3,15 @@ import math
 import requests
 import urllib.request
 import xml.etree.ElementTree as ET
+from datetime import datetime
 
 app = Flask(__name__)
 
 # Active Gateway Security Tokens
 WEATHER_API_KEY = "25c9a61b99a4842679a8983536494752"
+
+# True Tournament Host Nations Group
+TRUE_HOST_NATIONS = ["Mexico", "Canada", "USA"]
 
 # =====================================================================
 # 1. LIVE SQUAD REGISTRY MATRIX
@@ -25,16 +29,17 @@ TEAM_STAT_DATABASE = {
     "Switzerland":   {"base_xg": 1.42, "shots_avg": 12.0, "shots_conceded_avg": 10.5, "shot_accuracy": 0.34, "gk_save_pct": 0.71, "corners_avg": 5.0, "cards_avg": 2.1, "offsides_avg": 1.7}
 }
 
+# Added ISO Timestamps for the match slots to map exactly into the meteorology data streams
 TOURNAMENT_SCHEDULE = [
-    {"id": 101, "date": "11/06 — 19:00", "home": "Mexico", "away": "South Africa", "stadium": "Estadio Azteca", "city": "Mexico City", "host_country": "Mexico"},
-    {"id": 102, "date": "12/06 — 02:00", "home": "South Korea", "away": "Czech Republic", "stadium": "Estadio Guadalajara", "city": "Guadalajara", "host_country": "Mexico"},
-    {"id": 103, "date": "12/06 — 19:00", "home": "Canada", "away": "Bosnia", "stadium": "BMO Field", "city": "Toronto", "host_country": "Canada"},
-    {"id": 104, "date": "13/06 — 01:00", "home": "USA", "away": "Paraguay", "stadium": "SoFi Stadium", "city": "Los Angeles", "host_country": "USA"},
-    {"id": 105, "date": "13/06 — 19:00", "home": "Qatar", "away": "Switzerland", "stadium": "BC Place", "city": "Vancouver", "host_country": "Canada"}
+    {"id": 101, "date": "11/06 — 19:00", "iso_date": "2026-06-11", "home": "Mexico", "away": "South Africa", "stadium": "Estadio Azteca", "city": "Mexico City", "host_country": "Mexico"},
+    {"id": 102, "date": "12/06 — 02:00", "iso_date": "2026-06-12", "home": "South Korea", "away": "Czech Republic", "stadium": "Estadio Guadalajara", "city": "Guadalajara", "host_country": "Mexico"},
+    {"id": 103, "date": "12/06 — 19:00", "iso_date": "2026-06-12", "home": "Canada", "away": "Bosnia", "stadium": "BMO Field", "city": "Toronto", "host_country": "Canada"},
+    {"id": 104, "date": "13/06 — 01:00", "iso_date": "2026-06-13", "home": "USA", "away": "Paraguay", "stadium": "SoFi Stadium", "city": "Los Angeles", "host_country": "USA"},
+    {"id": 105, "date": "13/06 — 19:00", "iso_date": "2026-06-13", "home": "Qatar", "away": "Switzerland", "stadium": "BC Place", "city": "Vancouver", "host_country": "Canada"}
 ]
 
 # =====================================================================
-# 2. REAL-TIME LIVE NEWS FEED SCRAPER (THE INTAKE ENGINE)
+# 2. REAL-TIME LIVE NEWS FEED SCRAPER
 # =====================================================================
 def harvest_live_sports_wire(home_team, away_team):
     scraped_text_blob = ""
@@ -87,7 +92,8 @@ def poisson_probability(k, lamb):
     return (math.exp(-lamb) * (lamb ** k)) / math.factorial(k)
 
 def run_simulation_variant(home_stats, away_stats, venue_status, weather_mod, behavior_mods=None):
-    home_advantage = 1.12 if venue_status == "TRUE_HOME" else 1.00
+    # CRITICAL REFINE: Home advantage is only unlocked if the team is a true host country playing on their native soil
+    home_advantage = 1.12 if venue_status == "TRUE_HOME_HOST" else 1.00
     
     h_att = behavior_mods['home_attacks'] if behavior_mods else 1.0
     a_att = behavior_mods['away_attacks'] if behavior_mods else 1.0
@@ -189,32 +195,62 @@ def home():
     if request.method == 'POST':
         selected_idx = int(request.form['match_idx'])
         match = TOURNAMENT_SCHEDULE[selected_idx]
-        h_name, a_name, city, country, stadium = match["home"], match["away"], match["city"], match["host_country"], match["stadium"]
+        h_name, a_name, city, country, stadium, target_iso = match["home"], match["away"], match["city"], match["host_country"], match["stadium"], match["iso_date"]
         
-        venue_status = "TRUE_HOME" if h_name.lower().strip() == country.lower().strip() else "NEUTRAL_GROUND"
+        # CORE REFINE: Evaluate true host home status. 
+        # Gives advantage only if the team name matches a host country AND they are playing inside their actual host border.
+        if h_name in TRUE_HOST_NATIONS and h_name.lower().strip() == country.lower().strip():
+            venue_status = "TRUE_HOME_HOST"
+            logs.append(f"🏟️ HOST ADVANTAGE LOCKED: {h_name} is playing on true native soil at {stadium}. (+12% Performance Multiplier Applied)")
+        else:
+            venue_status = "NEUTRAL_GROUND"
+            logs.append(f"🌍 NEUTRAL GROUND VERIFIED: {h_name} vs {a_name} slated for a neutral venue in {city}. (Zero Home Bias Calculated)")
         
-        # Pull live metrics directly from the internet news aggregator wires
-        h_att, a_att, c_agg, f_fat, logs = harvest_live_sports_wire(h_name, a_name)
+        h_att, a_att, c_agg, f_fat, news_logs = harvest_live_sports_wire(h_name, a_name)
+        logs.extend(news_logs)
 
         home_db = TEAM_STAT_DATABASE.get(h_name, TEAM_STAT_DATABASE["Mexico"])
         away_db = TEAM_STAT_DATABASE.get(a_name, TEAM_STAT_DATABASE["South Africa"])
 
-        # Weather Radar Fetch
-        weather_desc, weather_mod = "Clear Conditions", 1.0
+        # =====================================================================
+        # UPGRADED WEATHER MODULE: PULLS 5-DAY / 3-HOUR PREDICTED FORECAST MATRIX
+        # =====================================================================
+        weather_desc, weather_mod = "Forecast Unavailable (Default Baselines Evaluated)", 1.0
         try:
-            w_res = requests.get(f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API_KEY}&units=metric", timeout=4).json()
-            if w_res.get("weather"):
-                weather_desc = f"{w_res['weather'][0]['main']} ({w_res['main']['temp']}°C)"
-                if "Rain" in w_res['weather'][0]['main'] or "Drizzle" in w_res['weather'][0]['main']: 
+            # Query the 5-Day Forecast Endpoint
+            forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?q={city}&appid={WEATHER_API_KEY}&units=metric"
+            f_res = requests.get(forecast_url, timeout=4).json()
+            
+            if f_res.get("list"):
+                matched_forecast = None
+                # Scan the 40 future projection blocks looking for the calendar match date
+                for time_block in f_res["list"]:
+                    block_date_str = time_block.get("dt_txt", "") # Formatted as "YYYY-MM-DD HH:MM:SS"
+                    if target_iso in block_date_str:
+                        matched_forecast = time_block
+                        break # Grab the earliest forecast window available for that match day
+                
+                # If a calendar day prediction isn't generated yet by the satellite, fall back to the closest timeline block
+                if not matched_forecast:
+                    matched_forecast = f_res["list"][0]
+                
+                main_condition = matched_forecast["weather"][0]["main"]
+                temp_val = matched_forecast["main"]["temp"]
+                weather_desc = f"Predicted Match-Day: {main_condition} ({temp_val}°C)"
+                
+                # Apply wet canvas penalty modifiers to tactical accuracy lines
+                if "Rain" in main_condition or "Drizzle" in main_condition or "Snow" in main_condition: 
                     weather_mod = 0.85
-        except: pass
+                    logs.append(f"🌧️ WEATHER PENALTY ENFORCED: Match-day forecast calls for precipitation in {city}. (-15% Expected Scoring Convergence)")
+        except Exception as e:
+            pass
 
         base = run_simulation_variant(home_db, away_db, venue_status, weather_mod, None)
         behav = run_simulation_variant(home_db, away_db, venue_status, weather_mod, {'home_attacks': h_att, 'away_attacks': a_att, 'aggression_stakes': c_agg, 'fitness_fatigue': f_fat})
 
         report =  f"FIXTURE: {h_name} vs {a_name}\n"
         report += f"Venue:   {stadium} ({city})\n"
-        report += f"Weather: {weather_desc}\n"
+        report += f"Climate: {weather_desc}\n"
         report += f"--------------------------------------------------\n"
         report += f"MARKET COMP ODDS         [ BASE ]     [ BEHAVED ]\n"
         report += f"--------------------------------------------------\n"

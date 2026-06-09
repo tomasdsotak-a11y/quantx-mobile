@@ -1,14 +1,16 @@
 from flask import Flask, render_template_string, request
 import math
 import requests
+import urllib.request
+import xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 
-# Active OpenWeather Data Token Gateway
+# Active Gateway Security Tokens
 WEATHER_API_KEY = "25c9a61b99a4842679a8983536494752"
 
 # =====================================================================
-# 1. LIVE TEAM PROFILES ATTRIBUTES MATRIX (THE DATA CUBES)
+# 1. LIVE SQUAD REGISTRY MATRIX
 # =====================================================================
 TEAM_STAT_DATABASE = {
     "Mexico":        {"base_xg": 1.65, "shots_avg": 13.4, "shots_conceded_avg": 9.8,  "shot_accuracy": 0.36, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 2.2, "offsides_avg": 1.9},
@@ -31,6 +33,55 @@ TOURNAMENT_SCHEDULE = [
     {"id": 105, "date": "13/06 — 19:00", "home": "Qatar", "away": "Switzerland", "stadium": "BC Place", "city": "Vancouver", "host_country": "Canada"}
 ]
 
+# =====================================================================
+# 2. REAL-TIME LIVE NEWS FEED SCRAPER (THE INTAKE ENGINE)
+# =====================================================================
+def harvest_live_sports_wire(home_team, away_team):
+    scraped_text_blob = ""
+    discovery_logs = []
+    
+    target_feeds = [
+        "https://www.skysports.com/rss/feeds/12040.xml", 
+        "https://www.independent.co.uk/sport/football/rss" 
+    ]
+    
+    headers = {'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)'}
+    
+    for feed_url in target_feeds:
+        try:
+            req = urllib.request.Request(feed_url, headers=headers)
+            with urllib.request.urlopen(req, timeout=4) as response:
+                xml_data = response.read()
+                root = ET.fromstring(xml_data)
+                
+                for item in root.findall('.//item'):
+                    title = item.find('title').text if item.find('title') is not None else ""
+                    desc = item.find('description').text if item.find('description') is not None else ""
+                    combined = f"{title} {desc}".lower()
+                    
+                    if home_team.lower() in combined or away_team.lower() in combined:
+                        scraped_text_blob += f" {combined}"
+        except:
+            pass 
+            
+    h_att, a_att, c_agg, f_fat = 1.0, 1.0, 1.0, 1.0
+    
+    if len(scraped_text_blob) > 0:
+        if "must win" in scraped_text_blob or "elimination" in scraped_text_blob:
+            c_agg = 1.45; h_att *= 1.15; a_att *= 1.15
+            discovery_logs.append("⚠️ LIVE WIRE: Must-Win context detected on news feeds! (+45% Cards, +15% Attacking Volume)")
+        if "fatigue" in scraped_text_blob or "tired" in scraped_text_blob or "rested" in scraped_text_blob:
+            f_fat = 0.90
+            discovery_logs.append("🏃‍♂️ LIVE WIRE: Squad fatigue or lineup rotation mentions found on wire. (-10% Accuracy)")
+        if "injury" in scraped_text_blob or "injured" in scraped_text_blob or "doubt" in scraped_text_blob:
+            h_att *= 0.95; a_att *= 0.95
+            discovery_logs.append("🏥 LIVE WIRE: Active injury or squad fitness updates detected. (-5% Efficiency)")
+            
+    return h_att, a_att, c_agg, f_fat, discovery_logs
+
+# =====================================================================
+# 3. MATHEMATICAL PROBABILITY ENGINE
+# =====================================================================
 def poisson_probability(k, lamb):
     if lamb <= 0: return 0.0
     return (math.exp(-lamb) * (lamb ** k)) / math.factorial(k)
@@ -82,22 +133,21 @@ HTML_TEMPLATE = """
 <head>
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
-    <title>QuantX Pro Mobile</title>
+    <title>QuantX Pro Live</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 16px; margin: 0; }
         h2 { color: #38bdf8; font-size: 20px; text-align: center; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
         h3 { font-size: 14px; color: #94a3b8; text-transform: uppercase; margin-top: 0; margin-bottom: 12px; letter-spacing: 1px; }
         .card { background: #1e293b; padding: 18px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid #334155; }
         label { font-size: 13px; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 6px; }
-        select { width: 100%; padding: 14px; border-radius: 12px; background: #334155; color: white; border: 1px solid #475569; font-size: 15px; font-weight: 500; appearance: none; -webkit-appearance: none; margin-bottom: 4px; }
-        button { width: 100%; padding: 14px; border-radius: 12px; background: #10b981; color: white; font-size: 15px; font-weight: 700; border: none; margin-top: 8px; box-shadow: 0 4px 6px -1px rgba(16,185,129,0.2); -webkit-tap-highlight-color: transparent; }
-        button:active { background: #059669; }
-        .log-box { background: #020617; padding: 12px; border-radius: 10px; border-left: 3px solid #f59e0b; margin-bottom: 16px; font-size: 12px; color: #cbd5e1; line-height: 1.5; }
+        select { width: 100%; padding: 14px; border-radius: 12px; background: #334155; color: white; border: 1px solid #475569; font-size: 15px; font-weight: 500; appearance: none; margin-bottom: 4px; }
+        button { width: 100%; padding: 14px; border-radius: 12px; background: #10b981; color: white; font-size: 15px; font-weight: 700; border: none; margin-top: 8px; }
+        .log-box { background: #020617; padding: 12px; border-radius: 10px; border-left: 3px solid #38bdf8; margin-bottom: 16px; font-size: 12px; color: #cbd5e1; line-height: 1.5; }
         pre { background: #020617; padding: 14px; border-radius: 12px; overflow-x: auto; font-family: "Courier New", Courier, monospace; font-size: 11px; line-height: 1.6; color: #f8fafc; border: 1px solid #1e293b; margin: 0; }
     </style>
 </head>
 <body>
-    <h2>🏆 QuantX Pro Mobile</h2>
+    <h2>🏆 QuantX Pro Live</h2>
     <div class='card'>
         <form method='POST'>
             <label>Select Scheduled World Cup Match:</label>
@@ -111,13 +161,13 @@ HTML_TEMPLATE = """
     </div>
 
     {% if report %}
-        <div class='card' style='border-left: 4px solid #38bdf8;'>
-            <h3>📡 Scraper News Logs</h3>
+        <div class='card'>
+            <h3>📡 Real-Time News Scraper Activity</h3>
             <div class='log-box'>
                 {% for log in logs %}
                     • {{ log }}<br>
                 {% else %}
-                    • No anomalies or psychological milestones located.<br>
+                    ✅ Clean Wire: No breaking news warnings, injuries, or fatigue alerts located for these squads.
                 {% endfor %}
             </div>
         </div>
@@ -143,35 +193,22 @@ def home():
         
         venue_status = "TRUE_HOME" if h_name.lower().strip() == country.lower().strip() else "NEUTRAL_GROUND"
         
-        # Scraper String Ingestion
-        simulated_news = f"must-win elimination scenario for {h_name}. Star forward for {h_name} welcomed a newborn baby boy. {a_name} flags fatigue."
-        text_payload = simulated_news.lower()
-        
-        h_att, a_att, c_agg, f_fat = 1.0, 1.0, 1.0, 1.0
-        if "must-win" in text_payload:
-            c_agg = 1.45; h_att *= 1.15; a_att *= 1.15
-            logs.append("Must-Win Elimination Context Detected (+45% Cards, +15% Aggression)")
-        if "baby" in text_payload:
-            h_att *= 1.10
-            logs.append(f"{h_name} Forward 'Baby Bump' Milestone Discovered (+10% Motivation)")
-        if "fatigue" in text_payload:
-            f_fat = 0.90
-            logs.append(f"{a_name} Tracking Logs Flag Significant Fatigue (-10% Accuracy)")
+        # Pull live metrics directly from the internet news aggregator wires
+        h_att, a_att, c_agg, f_fat, logs = harvest_live_sports_wire(h_name, a_name)
 
-        # Pull dynamic statistics datasets from our tournament registry dictionary matrix
         home_db = TEAM_STAT_DATABASE.get(h_name, TEAM_STAT_DATABASE["Mexico"])
         away_db = TEAM_STAT_DATABASE.get(a_name, TEAM_STAT_DATABASE["South Africa"])
 
-        # Live Weather Hook
+        # Weather Radar Fetch
         weather_desc, weather_mod = "Clear Conditions", 1.0
         try:
             w_res = requests.get(f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API_KEY}&units=metric", timeout=4).json()
             if w_res.get("weather"):
                 weather_desc = f"{w_res['weather'][0]['main']} ({w_res['main']['temp']}°C)"
-                if "Rain" in w_res['weather'][0]['main']: weather_mod = 0.85
+                if "Rain" in w_res['weather'][0]['main'] or "Drizzle" in w_res['weather'][0]['main']: 
+                    weather_mod = 0.85
         except: pass
 
-        # Run Calculations
         base = run_simulation_variant(home_db, away_db, venue_status, weather_mod, None)
         behav = run_simulation_variant(home_db, away_db, venue_status, weather_mod, {'home_attacks': h_att, 'away_attacks': a_att, 'aggression_stakes': c_agg, 'fitness_fatigue': f_fat})
 

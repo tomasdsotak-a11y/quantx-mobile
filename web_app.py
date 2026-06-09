@@ -10,10 +10,10 @@ WEATHER_API_KEY = "25c9a61b99a4842679a8983536494752"
 TRUE_HOST_NATIONS = ["Mexico", "Canada", "USA"]
 
 # =====================================================================
-# 1. COMPLETE PERFORMANCE ATTRIBUTE DATABASE (ALL TEAMS INTEGRATED)
+# 1. COMPREHENSIVE TEAMS STATISTICAL MODEL REGISTRY (GLOBAL SQUAD MATRIX)
 # =====================================================================
 TEAM_STAT_DATABASE = {
-    # World Cup & International Heavyweights
+    # Nations
     "Mexico": {"base_xg": 1.65, "shots_avg": 13.4, "shots_conceded_avg": 9.8, "shot_accuracy": 0.36, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 2.2, "offsides_avg": 1.9, "goal_kicks_avg": 7.2},
     "South Africa": {"base_xg": 1.15, "shots_avg": 10.2, "shots_conceded_avg": 12.4, "shot_accuracy": 0.31, "gk_save_pct": 0.67, "corners_avg": 4.1, "cards_avg": 1.9, "offsides_avg": 1.5, "goal_kicks_avg": 8.8},
     "South Korea": {"base_xg": 1.52, "shots_avg": 12.8, "shots_conceded_avg": 10.1, "shot_accuracy": 0.35, "gk_save_pct": 0.70, "corners_avg": 5.4, "cards_avg": 1.5, "offsides_avg": 2.1, "goal_kicks_avg": 6.9},
@@ -22,83 +22,103 @@ TEAM_STAT_DATABASE = {
     "Bosnia": {"base_xg": 1.22, "shots_avg": 10.8, "shots_conceded_avg": 13.0, "shot_accuracy": 0.32, "gk_save_pct": 0.65, "corners_avg": 4.4, "cards_avg": 2.3, "offsides_avg": 1.8, "goal_kicks_avg": 8.5},
     "USA": {"base_xg": 1.58, "shots_avg": 13.1, "shots_conceded_avg": 9.9, "shot_accuracy": 0.37, "gk_save_pct": 0.74, "corners_avg": 5.6, "cards_avg": 1.7, "offsides_avg": 2.0, "goal_kicks_avg": 7.1},
     "Paraguay": {"base_xg": 1.08, "shots_avg": 9.5, "shots_conceded_avg": 10.8, "shot_accuracy": 0.29, "gk_save_pct": 0.75, "corners_avg": 3.8, "cards_avg": 2.8, "offsides_avg": 1.4, "goal_kicks_avg": 9.0},
-    "Qatar": {"base_xg": 1.20, "shots_avg": 10.5, "shots_conceded_avg": 13.8, "shot_accuracy": 0.32, "gk_save_pct": 0.66, "corners_avg": 4.3, "cards_avg": 1.8, "offsides_avg": 1.9, "goal_kicks_avg": 8.4},
-    "Switzerland": {"base_xg": 1.42, "shots_avg": 12.0, "shots_conceded_avg": 10.5, "shot_accuracy": 0.34, "gk_save_pct": 0.71, "corners_avg": 5.0, "cards_avg": 2.1, "offsides_avg": 1.7, "goal_kicks_avg": 7.6},
-    "France": {"base_xg": 2.12, "shots_avg": 16.6, "shots_conceded_avg": 7.9, "shot_accuracy": 0.42, "gk_save_pct": 0.77, "corners_avg": 6.6, "cards_avg": 1.5, "offsides_avg": 2.4, "goal_kicks_avg": 5.8},
-    "Germany": {"base_xg": 1.98, "shots_avg": 15.9, "shots_conceded_avg": 8.6, "shot_accuracy": 0.39, "gk_save_pct": 0.74, "corners_avg": 6.3, "cards_avg": 1.5, "offsides_avg": 2.0, "goal_kicks_avg": 6.2},
-    "England": {"base_xg": 2.04, "shots_avg": 15.8, "shots_conceded_avg": 8.3, "shot_accuracy": 0.40, "gk_save_pct": 0.75, "corners_avg": 6.3, "cards_avg": 1.4, "offsides_avg": 2.1, "goal_kicks_avg": 6.1},
-    "Spain": {"base_xg": 2.02, "shots_avg": 16.4, "shots_conceded_avg": 8.1, "shot_accuracy": 0.41, "gk_save_pct": 0.75, "corners_avg": 6.5, "cards_avg": 1.4, "offsides_avg": 2.3, "goal_kicks_avg": 6.0},
+    "Haiti": {"base_xg": 1.05, "shots_avg": 9.2, "shots_conceded_avg": 14.1, "shot_accuracy": 0.28, "gk_save_pct": 0.64, "corners_avg": 3.5, "cards_avg": 2.5, "offsides_avg": 1.3, "goal_kicks_avg": 9.4},
+    "Scotland": {"base_xg": 1.28, "shots_avg": 11.2, "shots_conceded_avg": 12.0, "shot_accuracy": 0.32, "gk_save_pct": 0.69, "corners_avg": 4.6, "cards_avg": 2.2, "offsides_avg": 1.5, "goal_kicks_avg": 8.2},
+    "Australia": {"base_xg": 1.31, "shots_avg": 11.8, "shots_conceded_avg": 11.9, "shot_accuracy": 0.33, "gk_save_pct": 0.70, "corners_avg": 4.8, "cards_avg": 1.9, "offsides_avg": 1.6, "goal_kicks_avg": 7.9},
+    "Türkiye": {"base_xg": 1.54, "shots_avg": 13.6, "shots_conceded_avg": 10.4, "shot_accuracy": 0.36, "gk_save_pct": 0.72, "corners_avg": 5.5, "cards_avg": 2.3, "offsides_avg": 1.8, "goal_kicks_avg": 6.8},
     "Brazil": {"base_xg": 2.15, "shots_avg": 16.8, "shots_conceded_avg": 7.8, "shot_accuracy": 0.42, "gk_save_pct": 0.76, "corners_avg": 6.7, "cards_avg": 1.6, "offsides_avg": 2.2, "goal_kicks_avg": 6.0},
-    
-    # England Club Pyramid
-    "Manchester City": {"base_xg": 2.35, "shots_avg": 17.2, "shots_conceded_avg": 7.5, "shot_accuracy": 0.44, "gk_save_pct": 0.74, "corners_avg": 7.2, "cards_avg": 1.4, "offsides_avg": 2.1, "goal_kicks_avg": 5.5},
+    "Morocco": {"base_xg": 1.62, "shots_avg": 13.9, "shots_conceded_avg": 9.5, "shot_accuracy": 0.37, "gk_save_pct": 0.75, "corners_avg": 5.4, "cards_avg": 2.0, "offsides_avg": 1.7, "goal_kicks_avg": 7.1},
+    "Germany": {"base_xg": 1.98, "shots_avg": 15.9, "shots_conceded_avg": 8.6, "shot_accuracy": 0.39, "gk_save_pct": 0.74, "corners_avg": 6.3, "cards_avg": 1.5, "offsides_avg": 2.0, "goal_kicks_avg": 6.2},
+    "Netherlands": {"base_xg": 1.85, "shots_avg": 14.8, "shots_conceded_avg": 9.2, "shot_accuracy": 0.38, "gk_save_pct": 0.75, "corners_avg": 6.0, "cards_avg": 1.6, "offsides_avg": 2.1, "goal_kicks_avg": 6.5},
+    "Japan": {"base_xg": 1.58, "shots_avg": 13.8, "shots_conceded_avg": 10.1, "shot_accuracy": 0.37, "gk_save_pct": 0.72, "corners_avg": 5.6, "cards_avg": 1.1, "offsides_avg": 1.9, "goal_kicks_avg": 6.8},
+    "England": {"base_xg": 2.04, "shots_avg": 15.8, "shots_conceded_avg": 8.3, "shot_accuracy": 0.40, "gk_save_pct": 0.75, "corners_avg": 6.3, "cards_avg": 1.4, "offsides_avg": 2.1, "goal_kicks_avg": 6.1},
+    "Croatia": {"base_xg": 1.60, "shots_avg": 13.4, "shots_conceded_avg": 9.7, "shot_accuracy": 0.36, "gk_save_pct": 0.74, "corners_avg": 5.3, "cards_avg": 1.6, "offsides_avg": 1.8, "goal_kicks_avg": 7.2},
+    "Ghana": {"base_xg": 1.38, "shots_avg": 12.0, "shots_conceded_avg": 11.9, "shot_accuracy": 0.34, "gk_save_pct": 0.70, "corners_avg": 4.8, "cards_avg": 2.4, "offsides_avg": 1.7, "goal_kicks_avg": 7.8},
+    "Panama": {"base_xg": 1.22, "shots_avg": 10.7, "shots_conceded_avg": 12.8, "shot_accuracy": 0.32, "gk_save_pct": 0.68, "corners_avg": 4.3, "cards_avg": 2.1, "offsides_avg": 1.5, "goal_kicks_avg": 8.5},
+    "Argentina": {"base_xg": 2.08, "shots_avg": 16.1, "shots_conceded_avg": 8.0, "shot_accuracy": 0.43, "gk_save_pct": 0.76, "corners_avg": 6.4, "cards_avg": 1.8, "offsides_avg": 2.2, "goal_kicks_avg": 5.9},
+    "Italy": {"base_xg": 1.80, "shots_avg": 14.5, "shots_conceded_avg": 8.8, "shot_accuracy": 0.37, "gk_save_pct": 0.76, "corners_avg": 5.7, "cards_avg": 2.2, "offsides_avg": 1.9, "goal_kicks_avg": 6.6},
+    "Spain": {"base_xg": 2.02, "shots_avg": 16.4, "shots_conceded_avg": 8.1, "shot_accuracy": 0.41, "gk_save_pct": 0.75, "corners_avg": 6.5, "cards_avg": 1.4, "offsides_avg": 2.3, "goal_kicks_avg": 6.0},
+
+    # Club Heavyweights
     "Arsenal": {"base_xg": 2.20, "shots_avg": 16.1, "shots_conceded_avg": 8.0, "shot_accuracy": 0.41, "gk_save_pct": 0.76, "corners_avg": 6.8, "cards_avg": 1.3, "offsides_avg": 2.0, "goal_kicks_avg": 6.4},
-    "Liverpool": {"base_xg": 2.18, "shots_avg": 16.5, "shots_conceded_avg": 8.8, "shot_accuracy": 0.40, "gk_save_pct": 0.73, "corners_avg": 6.5, "cards_avg": 1.6, "offsides_avg": 2.3, "goal_kicks_avg": 6.2},
-    "Leeds United": {"base_xg": 1.55, "shots_avg": 12.9, "shots_conceded_avg": 11.4, "shot_accuracy": 0.34, "gk_save_pct": 0.69, "corners_avg": 5.2, "cards_avg": 2.1, "offsides_avg": 1.8, "goal_kicks_avg": 7.6},
-    "Leicester City": {"base_xg": 1.48, "shots_avg": 12.1, "shots_conceded_avg": 12.0, "shot_accuracy": 0.35, "gk_save_pct": 0.70, "corners_avg": 4.9, "cards_avg": 1.9, "offsides_avg": 1.6, "goal_kicks_avg": 7.9},
-    "Bolton Wanderers": {"base_xg": 1.25, "shots_avg": 10.9, "shots_conceded_avg": 13.1, "shot_accuracy": 0.31, "gk_save_pct": 0.66, "corners_avg": 4.3, "cards_avg": 2.3, "offsides_avg": 1.5, "goal_kicks_avg": 8.4},
-    "Reading": {"base_xg": 1.21, "shots_avg": 10.5, "shots_conceded_avg": 13.5, "shot_accuracy": 0.32, "gk_save_pct": 0.64, "corners_avg": 4.1, "cards_avg": 2.2, "offsides_avg": 1.4, "goal_kicks_avg": 8.9},
-    
-    # Spain Club Pyramid
+    "Chelsea": {"base_xg": 1.72, "shots_avg": 13.5, "shots_conceded_avg": 10.9, "shot_accuracy": 0.35, "gk_save_pct": 0.71, "corners_avg": 5.4, "cards_avg": 2.2, "offsides_avg": 1.7, "goal_kicks_avg": 7.3},
+    "Aston Villa": {"base_xg": 1.78, "shots_avg": 13.8, "shots_conceded_avg": 11.1, "shot_accuracy": 0.36, "gk_save_pct": 0.72, "corners_avg": 5.5, "cards_avg": 2.0, "offsides_avg": 1.8, "goal_kicks_avg": 7.0},
+    "Sunderland": {"base_xg": 1.35, "shots_avg": 11.2, "shots_conceded_avg": 12.5, "shot_accuracy": 0.31, "gk_save_pct": 0.68, "corners_avg": 4.5, "cards_avg": 2.4, "offsides_avg": 1.4, "goal_kicks_avg": 8.0},
+    "Wigan Athletic": {"base_xg": 1.18, "shots_avg": 10.1, "shots_conceded_avg": 13.2, "shot_accuracy": 0.29, "gk_save_pct": 0.65, "corners_avg": 4.0, "cards_avg": 2.3, "offsides_avg": 1.3, "goal_kicks_avg": 8.6},
     "Real Madrid": {"base_xg": 2.30, "shots_avg": 16.9, "shots_conceded_avg": 8.2, "shot_accuracy": 0.43, "gk_save_pct": 0.78, "corners_avg": 6.5, "cards_avg": 1.5, "offsides_avg": 2.2, "goal_kicks_avg": 6.1},
     "Barcelona": {"base_xg": 2.05, "shots_avg": 15.4, "shots_conceded_avg": 9.1, "shot_accuracy": 0.39, "gk_save_pct": 0.73, "corners_avg": 5.9, "cards_avg": 1.9, "offsides_avg": 2.4, "goal_kicks_avg": 6.8},
-    "Atletico Madrid": {"base_xg": 1.85, "shots_avg": 13.2, "shots_conceded_avg": 8.9, "shot_accuracy": 0.38, "gk_save_pct": 0.79, "corners_avg": 5.1, "cards_avg": 2.6, "offsides_avg": 1.9, "goal_kicks_avg": 6.5},
-    "Real Zaragoza": {"base_xg": 1.34, "shots_avg": 11.4, "shots_conceded_avg": 12.1, "shot_accuracy": 0.33, "gk_save_pct": 0.71, "corners_avg": 4.6, "cards_avg": 2.4, "offsides_avg": 1.5, "goal_kicks_avg": 8.1},
-    "Deportivo La Coruña": {"base_xg": 1.15, "shots_avg": 10.1, "shots_conceded_avg": 13.4, "shot_accuracy": 0.30, "gk_save_pct": 0.66, "corners_avg": 4.0, "cards_avg": 2.1, "offsides_avg": 1.3, "goal_kicks_avg": 8.8},
-    
-    # Czech Republic Club Pyramid
+    "Villarreal": {"base_xg": 1.68, "shots_avg": 13.0, "shots_conceded_avg": 11.2, "shot_accuracy": 0.35, "gk_save_pct": 0.70, "corners_avg": 5.0, "cards_avg": 2.2, "offsides_avg": 1.8, "goal_kicks_avg": 7.4},
+    "Levante": {"base_xg": 1.28, "shots_avg": 10.8, "shots_conceded_avg": 12.8, "shot_accuracy": 0.31, "gk_save_pct": 0.67, "corners_avg": 4.2, "cards_avg": 2.1, "offsides_avg": 1.5, "goal_kicks_avg": 8.2},
+    "Castellón": {"base_xg": 1.10, "shots_avg": 9.5, "shots_conceded_avg": 13.9, "shot_accuracy": 0.28, "gk_save_pct": 0.64, "corners_avg": 3.8, "cards_avg": 2.5, "offsides_avg": 1.2, "goal_kicks_avg": 8.8},
     "Slavia Prague": {"base_xg": 1.82, "shots_avg": 14.4, "shots_conceded_avg": 8.5, "shot_accuracy": 0.37, "gk_save_pct": 0.75, "corners_avg": 6.2, "cards_avg": 1.6, "offsides_avg": 1.9, "goal_kicks_avg": 6.5},
     "Sparta Prague": {"base_xg": 1.75, "shots_avg": 13.9, "shots_conceded_avg": 9.0, "shot_accuracy": 0.36, "gk_save_pct": 0.72, "corners_avg": 5.8, "cards_avg": 2.0, "offsides_avg": 1.8, "goal_kicks_avg": 7.0},
     "Viktoria Plzeň": {"base_xg": 1.61, "shots_avg": 12.8, "shots_conceded_avg": 10.2, "shot_accuracy": 0.35, "gk_save_pct": 0.71, "corners_avg": 5.3, "cards_avg": 2.2, "offsides_avg": 1.6, "goal_kicks_avg": 7.4},
     "Zbrojovka Brno": {"base_xg": 1.21, "shots_avg": 10.5, "shots_conceded_avg": 12.9, "shot_accuracy": 0.32, "gk_save_pct": 0.67, "corners_avg": 4.2, "cards_avg": 2.3, "offsides_avg": 1.4, "goal_kicks_avg": 8.3},
-    "Viktoria Žižkov": {"base_xg": 1.05, "shots_avg": 9.2, "shots_conceded_avg": 14.1, "shot_accuracy": 0.29, "gk_save_pct": 0.63, "corners_avg": 3.6, "cards_avg": 2.5, "offsides_avg": 1.2, "goal_kicks_avg": 9.1}
+    "Viktoria Žižkov": {"base_xg": 1.05, "shots_avg": 9.2, "shots_conceded_avg": 14.1, "shot_accuracy": 0.29, "gk_save_pct": 0.63, "corners_avg": 3.6, "cards_avg": 2.5, "offsides_avg": 1.2, "goal_kicks_avg": 9.1},
+    "Al Hilal": {"base_xg": 1.90, "shots_avg": 14.8, "shots_conceded_avg": 9.5, "shot_accuracy": 0.38, "gk_save_pct": 0.72, "corners_avg": 5.9, "cards_avg": 1.8, "offsides_avg": 2.0, "goal_kicks_avg": 6.4},
+    "Yokohama F. Marinos": {"base_xg": 1.65, "shots_avg": 13.2, "shots_conceded_avg": 10.8, "shot_accuracy": 0.36, "gk_save_pct": 0.69, "corners_avg": 5.3, "cards_avg": 1.4, "offsides_avg": 1.7, "goal_kicks_avg": 7.2},
+    "Al Ahly": {"base_xg": 1.70, "shots_avg": 13.5, "shots_conceded_avg": 9.9, "shot_accuracy": 0.37, "gk_save_pct": 0.74, "corners_avg": 5.4, "cards_avg": 2.1, "offsides_avg": 1.6, "goal_kicks_avg": 7.0},
+    "Mamelodi Sundowns": {"base_xg": 1.58, "shots_avg": 12.9, "shots_conceded_avg": 10.3, "shot_accuracy": 0.35, "gk_save_pct": 0.71, "corners_avg": 5.1, "cards_avg": 1.9, "offsides_avg": 1.5, "goal_kicks_avg": 7.5},
+    "River Plate": {"base_xg": 1.85, "shots_avg": 14.6, "shots_conceded_avg": 9.8, "shot_accuracy": 0.38, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 2.2, "offsides_avg": 1.9, "goal_kicks_avg": 6.6},
+    "Palmeiras": {"base_xg": 1.80, "shots_avg": 14.1, "shots_conceded_avg": 9.2, "shot_accuracy": 0.37, "gk_save_pct": 0.75, "corners_avg": 5.6, "cards_avg": 2.4, "offsides_avg": 1.8, "goal_kicks_avg": 6.8}
 }
 
 # =====================================================================
-# 2. REALISTIC WORLDWIDE MATCH REPOSITORY (ALL BRACKETS & LEAGUES)
+# 2. MASTER GLOBAL DATABASE SYSTEM (AUTHENTIC INTEGRATED REALITY BRACKETS)
 # =====================================================================
 GLOBAL_MATCH_DATABASE = [
-    # --- 1. WORLD CUP COMPREHENSIVE RECONSTRUCTION STAGE (ALL BRACKETS) ---
-    {"id": 0, "cat": "WC", "home": "Mexico", "away": "South Africa", "country": "Mexico", "tier": "Group A", "round": "Matchday 1", "date": "11/06", "city": "Mexico City", "hours_to_kick": 4},
-    {"id": 1, "cat": "WC", "home": "South Korea", "away": "Czech Republic", "country": "Mexico", "tier": "Group A", "round": "Matchday 1", "date": "11/06", "city": "Guadalajara", "hours_to_kick": 8},
-    {"id": 2, "cat": "WC", "home": "Canada", "away": "Bosnia", "country": "Canada", "tier": "Group B", "round": "Matchday 1", "date": "12/06", "city": "Toronto", "hours_to_kick": 28},
-    {"id": 3, "cat": "WC", "home": "USA", "away": "Paraguay", "country": "USA", "tier": "Group B", "round": "Matchday 1", "date": "12/06", "city": "Los Angeles", "hours_to_kick": 32},
-    {"id": 4, "cat": "WC", "home": "Qatar", "away": "Switzerland", "country": "USA", "tier": "Group C", "round": "Matchday 1", "date": "13/06", "city": "San Francisco", "hours_to_kick": 52},
-    {"id": 5, "cat": "WC", "home": "Czech Republic", "away": "South Africa", "country": "USA", "tier": "Group A", "round": "Matchday 2", "date": "18/06", "city": "Atlanta", "hours_to_kick": 216},
-    {"id": 6, "cat": "WC", "home": "Mexico", "away": "South Korea", "country": "Mexico", "tier": "Group A", "round": "Matchday 2", "date": "18/06", "city": "Guadalajara", "hours_to_kick": 220},
-    {"id": 7, "cat": "WC", "home": "Czech Republic", "away": "Mexico", "country": "Mexico", "tier": "Group A", "round": "Matchday 3", "date": "24/06", "city": "Mexico City", "hours_to_kick": 360},
-    
-    # --- 2. DOMESTIC LEAGUES CORE PYRAMIDS (3 REAL TIERS PER NATION) ---
-    # ENGLAND PYRAMID
-    {"id": 8, "cat": "Leagues", "home": "Arsenal", "away": "Liverpool", "country": "England", "tier": "Premier League (Tier 1)", "round": "Round 35", "date": "12/06", "city": "London", "hours_to_kick": 14},
-    {"id": 9, "cat": "Leagues", "home": "Leeds United", "away": "Leicester City", "country": "England", "tier": "Championship (Tier 2)", "round": "Round 44", "date": "12/06", "city": "Leeds", "hours_to_kick": 16},
-    {"id": 10, "cat": "Leagues", "home": "Bolton Wanderers", "away": "Reading", "country": "England", "tier": "League One (Tier 3)", "round": "Round 44", "date": "13/06", "city": "Bolton", "hours_to_kick": 38},
-    # SPAIN PYRAMID
-    {"id": 11, "cat": "Leagues", "home": "Real Madrid", "away": "Barcelona", "country": "Spain", "tier": "La Liga (Tier 1)", "round": "Round 32", "date": "13/06", "city": "Madrid", "hours_to_kick": 40},
-    {"id": 12, "cat": "Leagues", "home": "Real Zaragoza", "away": "Deportivo La Coruña", "country": "Spain", "tier": "Segunda División (Tier 2)", "round": "Round 38", "date": "14/06", "city": "Zaragoza", "hours_to_kick": 62},
-    # CZECH PYRAMID
-    {"id": 13, "cat": "Leagues", "home": "Slavia Prague", "away": "Sparta Prague", "country": "Czechia", "tier": "Chance Liga (Tier 1)", "round": "Round 30", "date": "11/06", "city": "Prague", "hours_to_kick": 6},
-    {"id": 14, "cat": "Leagues", "home": "Viktoria Plzeň", "away": "Zbrojovka Brno", "country": "Czechia", "tier": "FNL (Tier 2)", "round": "Round 26", "date": "12/06", "city": "Plzen", "hours_to_kick": 24},
-    
-    # --- 3. DOMESTIC CUPS ARCHITECTURE ---
-    {"id": 15, "cat": "Cup", "home": "Liverpool", "away": "Arsenal", "country": "England", "tier": "FA Cup", "round": "Semifinal", "date": "14/06", "city": "London", "hours_to_kick": 64},
-    {"id": 16, "cat": "Cup", "home": "Real Madrid", "away": "Atletico Madrid", "country": "Spain", "tier": "Copa del Rey", "round": "Final", "date": "14/06", "city": "Madrid", "hours_to_kick": 68},
-    {"id": 17, "cat": "Cup", "home": "Sparta Prague", "away": "Viktoria Plzeň", "country": "Czechia", "tier": "MOL Cup", "round": "Final", "date": "11/06", "city": "Prague", "hours_to_kick": 2},
-    
-    # --- 4. ELITE INTERNATIONAL TOURNAMENTS ---
-    {"id": 18, "cat": "Elite", "home": "Real Madrid", "away": "Arsenal", "country": "Europe", "tier": "UEFA Champions League", "round": "Group Week 1", "date": "15/06", "city": "Madrid", "hours_to_kick": 22},
-    {"id": 19, "cat": "Elite", "home": "Czech Republic", "away": "Germany", "country": "Europe", "tier": "UEFA Euros", "round": "Group Stage", "date": "16/06", "city": "Berlin", "hours_to_kick": 44},
-    
-    # --- 5. INTERNATIONAL FRIENDLIES SLATE ---
-    {"id": 20, "cat": "International", "home": "Brazil", "away": "England", "country": "Global", "tier": "International Friendly", "round": "Friendly Window", "date": "11/06", "city": "Rio de Janeiro", "hours_to_kick": 1}
+    # --- 1. WORLD CUP FULL REALITY BRACKET (GROUPS A TO L) ---
+    {"id": 0, "cat": "WC", "home": "Mexico", "away": "South Africa", "filter1": "Group A", "filter2": "Mexico", "filter3": "11/06", "city": "Mexico City", "hours_to_kick": 4},
+    {"id": 1, "cat": "WC", "home": "South Korea", "away": "Czech Republic", "filter1": "Group A", "filter2": "Czech Republic", "filter3": "11/06", "city": "Guadalajara", "hours_to_kick": 8},
+    {"id": 2, "cat": "WC", "home": "Canada", "away": "Bosnia", "filter1": "Group B", "filter2": "Canada", "filter3": "12/06", "city": "Toronto", "hours_to_kick": 28},
+    {"id": 3, "cat": "WC", "home": "Qatar", "away": "Switzerland", "filter1": "Group B", "filter2": "Switzerland", "filter3": "13/06", "city": "San Francisco", "hours_to_kick": 52},
+    {"id": 4, "cat": "WC", "home": "Haiti", "away": "Scotland", "filter1": "Group C", "filter2": "Scotland", "filter3": "13/06", "city": "Boston", "hours_to_kick": 54},
+    {"id": 5, "cat": "WC", "home": "Brazil", "away": "Morocco", "filter1": "Group C", "filter2": "Brazil", "filter3": "13/06", "city": "New York", "hours_to_kick": 58},
+    {"id": 6, "cat": "WC", "home": "USA", "away": "Paraguay", "filter1": "Group D", "filter2": "USA", "filter3": "12/06", "city": "Los Angeles", "hours_to_kick": 32},
+    {"id": 7, "cat": "WC", "home": "Australia", "away": "Türkiye", "filter1": "Group D", "filter2": "Australia", "filter3": "13/06", "city": "Vancouver", "hours_to_kick": 56},
+    {"id": 8, "cat": "WC", "home": "Germany", "away": "France", "filter1": "Group E", "filter2": "France", "filter3": "14/06", "city": "Houston", "hours_to_kick": 76},
+    {"id": 9, "cat": "WC", "home": "Netherlands", "away": "Japan", "filter1": "Group F", "filter2": "Japan", "filter3": "14/06", "city": "Dallas", "hours_to_kick": 80},
+    {"id": 10, "cat": "WC", "home": "England", "away": "Croatia", "filter1": "Group L", "filter2": "England", "filter3": "17/06", "city": "Miami", "hours_to_kick": 152},
+    {"id": 11, "cat": "WC", "home": "Ghana", "away": "Panama", "filter1": "Group L", "filter2": "Ghana", "filter3": "17/06", "city": "Toronto", "hours_to_kick": 156},
+    {"id": 12, "cat": "WC", "home": "Czech Republic", "away": "South Africa", "filter1": "Group A", "filter2": "Czech Republic", "filter3": "18/06", "city": "Atlanta", "hours_to_kick": 176},
+    {"id": 13, "cat": "WC", "home": "Mexico", "away": "South Korea", "filter1": "Group A", "filter2": "Mexico", "filter3": "18/06", "city": "Guadalajara", "hours_to_kick": 180},
+    {"id": 14, "cat": "WC", "home": "Czech Republic", "away": "Mexico", "filter1": "Group A", "filter2": "Czech Republic", "filter3": "24/06", "city": "Mexico City", "hours_to_kick": 320},
+
+    # --- 2. DOMESTIC LEAGUES COMPREHENSIVE RECONSTRUCTION (3 REAL TIERS PER NATION) ---
+    # England Pyramid
+    {"id": 15, "cat": "Leagues", "home": "Arsenal", "away": "Chelsea", "filter1": "England", "filter2": "Premier League (Tier 1)", "filter3": "Round 36", "date": "12/06", "city": "London", "hours_to_kick": 14},
+    {"id": 16, "cat": "Leagues", "home": "Leeds United", "away": "Aston Villa", "filter1": "England", "filter2": "Championship (Tier 2)", "filter3": "Round 44", "date": "12/06", "city": "Leeds", "hours_to_kick": 16},
+    {"id": 17, "cat": "Leagues", "home": "Sunderland", "away": "Wigan Athletic", "filter1": "England", "filter2": "League One (Tier 3)", "filter3": "Round 44", "date": "13/06", "city": "Sunderland", "hours_to_kick": 38},
+    # Spain Pyramid
+    {"id": 18, "cat": "Leagues", "home": "Real Madrid", "away": "Barcelona", "filter1": "Spain", "filter2": "La Liga (Tier 1)", "filter3": "Round 34", "date": "13/06", "city": "Madrid", "hours_to_kick": 40},
+    {"id": 19, "cat": "Leagues", "home": "Real Zaragoza", "away": "Levante", "filter1": "Spain", "filter2": "Segunda División (Tier 2)", "filter3": "Round 38", "date": "14/06", "city": "Zaragoza", "hours_to_kick": 62},
+    {"id": 20, "cat": "Leagues", "home": "Deportivo La Coruña", "away": "Castellón", "filter1": "Spain", "filter2": "Primera Federación (Tier 3)", "filter3": "Round 38", "date": "14/06", "city": "A Coruna", "hours_to_kick": 64},
+    # Czech Republic Pyramid
+    {"id": 21, "cat": "Leagues", "home": "Slavia Prague", "away": "Sparta Prague", "filter1": "Czechia", "filter2": "Chance Liga (Tier 1)", "filter3": "Round 30", "date": "11/06", "city": "Prague", "hours_to_kick": 6},
+    {"id": 22, "cat": "Leagues", "home": "Viktoria Plzeň", "away": "Zbrojovka Brno", "filter1": "Czechia", "filter2": "FNL (Tier 2)", "filter3": "Round 28", "date": "12/06", "city": "Plzen", "hours_to_kick": 24},
+    {"id": 23, "cat": "Leagues", "home": "Viktoria Žižkov", "away": "Slavia Prague B", "filter1": "Czechia", "filter2": "ČFL (Tier 3)", "filter3": "Round 26", "date": "13/06", "city": "Prague", "hours_to_kick": 48},
+
+    # --- 3. DOMESTIC CUPS COMPREHENSIVE ARCHITECTURE ---
+    {"id": 24, "cat": "Cup", "home": "Arsenal", "away": "Chelsea", "filter1": "England", "filter2": "FA Cup", "filter3": "Semifinal", "date": "14/06", "city": "London", "hours_to_kick": 64},
+    {"id": 25, "cat": "Cup", "home": "Aston Villa", "away": "Liverpool", "filter1": "England", "filter2": "EFL Cup", "filter3": "Final", "date": "15/06", "city": "London", "hours_to_kick": 88},
+    {"id": 26, "cat": "Cup", "home": "Real Madrid", "away": "Barcelona", "filter1": "Spain", "filter2": "Copa del Rey", "filter3": "Final", "date": "14/06", "city": "Madrid", "hours_to_kick": 68},
+    {"id": 27, "cat": "Cup", "home": "Sparta Prague", "away": "Viktoria Plzeň", "filter1": "Czechia", "filter2": "MOL Cup", "filter3": "Final", "date": "11/06", "city": "Prague", "hours_to_kick": 2},
+
+    # --- 4. ELITE COMPETITIONS REALITY PORTFOLIO ---
+    {"id": 28, "cat": "Elite", "home": "Real Madrid", "away": "Arsenal", "filter1": "UEFA Champions League", "filter2": "League Phase", "filter3": "Matchday 1", "date": "15/06", "city": "Madrid", "hours_to_kick": 22},
+    {"id": 29, "cat": "Elite", "home": "Al Hilal", "away": "Yokohama F. Marinos", "filter1": "Asian Champions League", "filter2": "Knockout Stage", "filter3": "Quarter-Final", "date": "16/06", "city": "Riyadh", "hours_to_kick": 44},
+    {"id": 30, "cat": "Elite", "home": "Chelsea", "away": "Villarreal", "filter1": "UEFA Europa League", "filter2": "League Phase", "filter3": "Matchday 1", "date": "16/06", "city": "London", "hours_to_kick": 46},
+    {"id": 31, "cat": "Elite", "home": "South Africa", "away": "Morocco", "filter1": "AFCON", "filter2": "Group Stage", "filter3": "Matchday 1", "date": "17/06", "city": "Johannesburg", "hours_to_kick": 70},
+    {"id": 32, "cat": "Elite", "home": "River Plate", "away": "Palmeiras", "filter1": "Copa Libertadores (South American)", "filter2": "Knockout Phase", "filter3": "Semi-Final", "date": "18/06", "city": "Buenos Aires", "hours_to_kick": 94},
+    {"id": 33, "cat": "Elite", "home": "Mexico", "away": "USA", "filter1": "CONCACAF Champions Cup (North American)", "filter2": "Finals", "filter3": "Final Leg 1", "date": "19/06", "city": "Mexico City", "hours_to_kick": 118},
+
+    # --- 5. INTERNATIONALS WINDOW SEGREGATION ---
+    {"id": 34, "cat": "International", "home": "Brazil", "away": "England", "filter1": "Brazil", "filter2": "Friendlies", "filter3": "June Window", "date": "11/06", "city": "Rio de Janeiro", "hours_to_kick": 1},
+    {"id": 35, "cat": "International", "home": "Italy", "away": "Germany", "filter1": "Italy", "filter2": "Competition (Nations League)", "filter3": "Round 1", "date": "12/06", "city": "Rome", "hours_to_kick": 26}
 ]
 
-ALL_GROUPS = sorted(list(set(m["tier"] for m in GLOBAL_MATCH_DATABASE if m["cat"] in ["WC","Elite"])))
-ALL_TEAMS = sorted(list(set(m["home"] for m in GLOBAL_MATCH_DATABASE) | set(m["away"] for m in GLOBAL_MATCH_DATABASE)))
-ALL_DATES = sorted(list(set(m["date"] for m in GLOBAL_MATCH_DATABASE)), key=lambda x: [int(i) for i in x.split('/')])
-
 # =====================================================================
-# 3. MATHEMATICAL PROBABILITY POISSON CALCULATORS
+# 3. BACKGROUND COMPILERS & MATHEMATICAL POISSON MODELS
 # =====================================================================
 def harvest_live_sports_wire(home_team, away_team):
     scraped_text_blob = ""
@@ -174,7 +194,7 @@ def run_simulation_variant(home_stats, away_stats, venue_status, weather_mod, be
     }
 
 # =====================================================================
-# 4. HIGH-END GRAPHICAL NAVIGATION PLATFORM INTERFACE (HTML/CSS)
+# 4. LUXURY PRESENTATION LAYER DESIGN
 # =====================================================================
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -251,7 +271,6 @@ HTML_TEMPLATE = """
             background: #1c1c1e; border: 1px solid var(--border-card); color: var(--accent-green);
             padding: 6px 12px; font-weight: 700; border-radius: 6px; cursor: pointer; font-size: 13px;
         }
-
         .builder-market-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
         .market-meta { flex: 1; }
         .market-title { font-size: 14px; font-weight: 600; color: #ffffff; }
@@ -315,16 +334,16 @@ HTML_TEMPLATE = """
 
     <div class='filter-row'>
         <div class='filter-menu-box'>
-            <label id='lbl-drop-1'>Filter 1</label>
-            <select class='native-select' id='drop-1-filter' onchange='executeUnifiedCrossFilter("drop1")'></select>
+            <label id='lbl-drop-1'>Dropdown 1</label>
+            <select class='native-select' id='drop-1-filter' onchange='handleDropdownCascadingChange("drop1")'></select>
         </div>
         <div class='filter-menu-box'>
-            <label id='lbl-drop-2'>Filter 2</label>
-            <select class='native-select' id='drop-2-filter' onchange='executeUnifiedCrossFilter("drop2")'></select>
+            <label id='lbl-drop-2'>Dropdown 2</label>
+            <select class='native-select' id='drop-2-filter' onchange='handleDropdownCascadingChange("drop2")'></select>
         </div>
         <div class='filter-menu-box'>
-            <label id='lbl-drop-3'>Filter 3</label>
-            <select class='native-select' id='drop-3-filter' onchange='executeUnifiedCrossFilter("drop3")'></select>
+            <label id='lbl-drop-3'>Dropdown 3</label>
+            <select class='native-select' id='drop-3-filter' onchange='handleDropdownCascadingChange("drop3")'></select>
         </div>
     </div>
 
@@ -445,7 +464,7 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
-        // MASTER DYNAMIC DATA OBJECT ARRAY (ALL WORLD CUP ENTIRE GRID RESTORED SIDE-BY-SIDE WITH GLOBAL LEAGUES)
+        // FULL INTEGRATED STRUCTURAL FIXTURE DATABASE
         const GLOBAL_PYRAMID_CONTEXT_DATA = [
             {% for match in schedule %}
                 {
@@ -458,7 +477,10 @@ HTML_TEMPLATE = """
                     round: "{{ match.round }}",
                     date: "{{ match.date }}",
                     city: "{{ match.city }}",
-                    hoursToKick: {{ match.hours_to_kick }}
+                    hoursToKick: {{ match.hours_to_kick }},
+                    filter1: "{{ match.filter1 }}",
+                    filter2: "{{ match.filter2 }}",
+                    filter3: "{{ match.filter3 }}"
                 }{% if not loop.last %},{% endif %}
             {% endfor %}
         ];
@@ -484,7 +506,7 @@ HTML_TEMPLATE = """
 
         function returnToLandingScreen() { window.location.href = '/'; }
 
-        // EXPLICIT SYSTEM CORRECTION: Fully synchronized labels mapping router channels
+        // EXPLICIT SYSTEM CORRECTION: Fully functional cascading ribbon layout mutation model
         function switchAppScopeCategory(categoryKey) {
             activeAppCategory = categoryKey;
             localStorage.setItem('fc_active_cat', categoryKey);
@@ -496,52 +518,72 @@ HTML_TEMPLATE = """
             const lbl1 = document.getElementById('lbl-drop-1');
             const lbl2 = document.getElementById('lbl-drop-2');
             const lbl3 = document.getElementById('lbl-drop-3');
+
+            const filterRow = document.querySelector('.filter-row');
             
-            if (categoryKey === 'WC' || categoryKey === 'Elite') {
-                lbl1.innerText = "Groups / Bracket"; lbl2.innerText = "Country Venue"; lbl3.innerText = "By Date";
+            if (categoryKey === 'WC') {
+                filterRow.style.display = 'grid';
+                lbl1.innerText = "Groups (A-L)"; lbl2.innerText = "Country Playing"; lbl3.innerText = "Match Date";
             } else if (categoryKey === 'Leagues' || categoryKey === 'Cup') {
-                lbl1.innerText = "Country Base"; lbl2.innerText = "Division Tier / Cup Name"; lbl3.innerText = "Round Selection";
+                filterRow.style.display = 'grid';
+                lbl1.innerText = "Select Country"; lbl2.innerText = "Division Tier / Cup"; lbl3.innerText = "Upcoming Round";
+            } else if (categoryKey === 'Elite') {
+                filterRow.style.display = 'grid';
+                lbl1.innerText = "Elite Tournament"; lbl2.innerText = "Stage / Groups"; lbl3.innerText = "Match Day / Round";
             } else if (categoryKey === 'International') {
-                lbl1.innerText = "Country Focus"; lbl2.innerText = "Match Type"; lbl3.innerText = "By Date";
+                filterRow.style.display = 'grid';
+                lbl1.innerText = "Country Playing"; lbl2.innerText = "Match Classification"; lbl3.innerText = "By Date";
             } else if (categoryKey === 'Upcoming') {
-                lbl1.innerText = "Scope Focus"; lbl2.innerText = "Active League / Tournament"; lbl3.innerText = "Countdown Window";
+                // FIXED: Upcoming forcefully slices out dropdown menus entirely to directly surface 24h matches
+                filterRow.style.display = 'none';
             }
             
-            repopulateDynamicDropdownOptions(categoryKey);
+            repopulateDynamicDropdownOptions(categoryKey, 'init');
         }
 
-        function repopulateDynamicDropdownOptions(category) {
+        // FIXED: Re-engineered dynamic options block generator with cascading dependency links
+        function repopulateDynamicDropdownOptions(category, lifecyclePhase) {
             const d1 = document.getElementById('drop-1-filter');
             const d2 = document.getElementById('drop-2-filter');
             const d3 = document.getElementById('drop-3-filter');
             
-            let set1 = new Set(), set2 = new Set(), set3 = new Set();
-
-            if (category === 'Upcoming') {
-                GLOBAL_PYRAMID_CONTEXT_DATA.forEach(m => {
-                    if (m.hoursToKick <= 24) {
-                        const scopeType = (m.cat === 'Leagues' || m.cat === 'Cup') ? "Domestic Leagues" : "Tournaments / Cups";
-                        set1.add(scopeType); set2.add(m.tier); set3.add(`${m.hoursToKick}h to Kick`);
-                    }
-                });
-                buildSelectOptions(d1, set1, "All 24h Scopes");
-                buildSelectOptions(d2, set2, "All Live Competitions");
-                buildSelectOptions(d3, set3, "All Timelines");
-            } else {
-                let scopeMatches = GLOBAL_PYRAMID_CONTEXT_DATA.filter(m => m.cat === category);
-                scopeMatches.forEach(m => {
-                    if (category === 'Leagues' || category === 'Cup') {
-                        set1.add(m.country); set2.add(m.tier); set3.add(m.round);
-                    } else {
-                        set1.add(m.tier); set2.add(m.country); set3.add(m.date);
-                    }
-                });
-                buildSelectOptions(d1, set1, "All Categories");
-                buildSelectOptions(d2, set2, "All Divisions");
-                buildSelectOptions(d3, set3, "All Steps");
-            }
+            let scopeMatches = GLOBAL_PYRAMID_CONTEXT_DATA.filter(m => m.cat === category);
             
-            executeUnifiedCrossFilter('init');
+            if (lifecyclePhase === 'init') {
+                // Populate the primary driver wheel explicitly
+                let set1 = new Set();
+                scopeMatches.forEach(m => set1.add(m.filter1));
+                buildSelectOptions(d1, set1, "All Options");
+                d1.value = "all";
+            }
+
+            const currentD1Value = d1.value;
+            let filteredByD1 = scopeMatches.filter(m => currentD1Value === 'all' || m.filter1 === currentD1Value);
+
+            // Cascade dependency layer 2
+            if (lifecyclePhase === 'init' || lifecyclePhase === 'drop1') {
+                let set2 = new Set();
+                filteredByD1.forEach(m => set2.add(m.filter2));
+                buildSelectOptions(d2, set2, "All Subsections");
+                d2.value = "all";
+            }
+
+            const currentD2Value = d2.value;
+            let filteredByD2 = filteredByD1.filter(m => currentD2Value === 'all' || m.filter2 === currentD2Value);
+
+            // Cascade dependency layer 3
+            if (lifecyclePhase === 'init' || lifecyclePhase === 'drop1' || lifecyclePhase === 'drop2') {
+                let set3 = new Set();
+                filteredByD2.forEach(m => set3.add(m.filter3));
+                buildSelectOptions(d3, set3, "All Steps");
+                d3.value = "all";
+            }
+
+            executeUnifiedCrossFilter();
+        }
+
+        function handleDropdownCascadingChange(triggerId) {
+            repopulateDynamicDropdownOptions(activeAppCategory, triggerId);
         }
 
         function buildSelectOptions(element, dataSet, defaultLabel) {
@@ -551,7 +593,8 @@ HTML_TEMPLATE = """
             });
         }
 
-        function executeUnifiedCrossFilter(triggerSource) {
+        // FIXED: Advanced cross-filter solver loop that handles live 24h lookup overrides natively
+        function executeUnifiedCrossFilter() {
             const v1 = document.getElementById('drop-1-filter').value;
             const v2 = document.getElementById('drop-2-filter').value;
             const v3 = document.getElementById('drop-3-filter').value;
@@ -562,29 +605,29 @@ HTML_TEMPLATE = """
 
             GLOBAL_PYRAMID_CONTEXT_DATA.forEach(match => {
                 if (activeAppCategory === 'Upcoming') {
-                    if (match.hoursToKick > 24) return;
-                    const scopeType = (match.cat === 'Leagues' || match.cat === 'Cup') ? "Domestic Leagues" : "Tournaments / Cups";
-                    if ((v1 === 'all' || scopeType === v1) && (v2 === 'all' || match.tier === v2) && (v3 === 'all' || `${match.hoursToKick}h to Kick` === v3)) {
+                    // FIXED: Upcoming filter strictly strips clutter to list all matches starting within 24 hours
+                    if (match.hoursToKick <= 24) {
                         const opt = document.createElement('option'); opt.value = match.index;
-                        opt.innerText = `[${match.cat}] ${match.home} vs ${match.away} — (Kickoff in ${match.hoursToKick}h)`;
+                        opt.innerText = `[${match.cat}] ${match.home} vs ${match.away} — Kickoff in ${match.hoursToKick}h (${match.city})`;
                         masterSelect.appendChild(opt); matchedCount++;
                     }
                 } else {
                     if (match.cat !== activeAppCategory) return;
-                    let c1 = (activeAppCategory === 'Leagues' || activeAppCategory === 'Cup') ? match.country : match.tier;
-                    let c2 = (activeAppCategory === 'Leagues' || activeAppCategory === 'Cup') ? match.tier : match.country;
-                    let c3 = (activeAppCategory === 'Leagues' || activeAppCategory === 'Cup') ? match.round : match.date;
+                    
+                    const match1 = (v1 === 'all' || match.filter1 === v1);
+                    const match2 = (v2 === 'all' || match.filter2 === v2);
+                    const match3 = (v3 === 'all' || match.filter3 === v3);
 
-                    if ((v1 === 'all' || c1 === v1) && (v2 === 'all' || c2 === v2) && (v3 === 'all' || c3 === v3)) {
+                    if (match1 && match2 && match3) {
                         const opt = document.createElement('option'); opt.value = match.index;
-                        opt.innerText = `[${match.tier}] ${match.date} | ${match.home} vs ${match.away}`;
-                        if (match.index == rememberedIndex && triggerSource === 'init') opt.selected = true;
+                        opt.innerText = `[${match.filter2}] ${match.home} vs ${match.away} (${match.filter3})`;
+                        if (match.index == rememberedIndex) opt.selected = true;
                         masterSelect.appendChild(opt); matchedCount++;
                     }
                 }
             });
 
-            if (matchedCount === 0) masterSelect.innerHTML = '<option value="-1">No matching fixtures located</option>';
+            if (matchedCount === 0) masterSelect.innerHTML = '<option value="-1">No matching scheduled games found</option>';
         }
 
         function removeSlipItem(index) { currentSlip.splice(index, 1); updateSlipUI(); }
@@ -680,8 +723,8 @@ HTML_TEMPLATE = """
             if (totalPct > 45) fill.style.background = 'var(--accent-green)'; else if (totalPct > 20) fill.style.background = 'var(--accent-orange)'; else fill.style.background = 'var(--accent-red)';
         }
 
-        // FIXED: Re-built DOM event loader layout safely to prevent syntax freezing
-        document.addEventListener('DOMContentLoaded', () => {
+        // FIXED: Premium safe boot window lifecycle initializer closure
+        document.addEventListener('DOMContentLoaded', function() {
             switchAppScopeCategory(activeAppCategory);
             updateSlipUI();
         });
@@ -691,7 +734,7 @@ HTML_TEMPLATE = """
 """
 
 # =====================================================================
-# 5. FIXED RESTORED DATA OVERLAY INDEX ROUTE
+# 5. RESTORED MASTER BRAIN HOME GATEWAY GATE ROUTE
 # =====================================================================
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -700,11 +743,8 @@ def home():
     
     if request.method == 'POST':
         selected_idx = int(request.form['match_idx'])
-        
-        # Match target identification from consolidated database registry
         match = next((m for m in GLOBAL_MATCH_DATABASE if m["id"] == selected_idx), GLOBAL_MATCH_DATABASE[0])
-        h_name, a_name, city, country = match["home"], match["away"], match["city"], match["country"]
-        target_iso = "2026-06-11"
+        h_name, a_name, city, country, target_iso = match["home"], match["away"], match["city"], match["country"], "2026-06-11"
         
         if h_name in TRUE_HOST_NATIONS and h_name.lower().strip() == country.lower().strip():
             venue_status = "TRUE_HOME_HOST"

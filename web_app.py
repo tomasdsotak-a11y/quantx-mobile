@@ -6,63 +6,151 @@ import xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 
-# Active Gateway Security Tokens
 WEATHER_API_KEY = "25c9a61b99a4842679a8983536494752"
 TRUE_HOST_NATIONS = ["Mexico", "Canada", "USA"]
 
 # =====================================================================
-# 1. LIVE MASTER SQUAD ATTR REGISTRY MATRIX
+# 1. LIVE MASTER SQUAD PERFORMANCE ATTRIBUTE MATRIX (ALL 48 TEAMS)
 # =====================================================================
 TEAM_STAT_DATABASE = {
-    "Mexico":        {"base_xg": 1.65, "shots_avg": 13.4, "shots_conceded_avg": 9.8,  "shot_accuracy": 0.36, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 2.2, "offsides_avg": 1.9},
-    "South Africa":  {"base_xg": 1.15, "shots_avg": 10.2, "shots_conceded_avg": 12.4, "shot_accuracy": 0.31, "gk_save_pct": 0.67, "corners_avg": 4.1, "cards_avg": 1.9, "offsides_avg": 1.5},
-    "South Korea":   {"base_xg": 1.52, "shots_avg": 12.8, "shots_conceded_avg": 10.1, "shot_accuracy": 0.35, "gk_save_pct": 0.70, "corners_avg": 5.4, "cards_avg": 1.5, "offsides_avg": 2.1},
-    "Czech Republic":{"base_xg": 1.38, "shots_avg": 11.9, "shots_conceded_avg": 11.2, "shot_accuracy": 0.33, "gk_save_pct": 0.72, "corners_avg": 4.9, "cards_avg": 2.4, "offsides_avg": 1.7},
-    "Canada":        {"base_xg": 1.45, "shots_avg": 12.2, "shots_conceded_avg": 11.5, "shot_accuracy": 0.34, "gk_save_pct": 0.68, "corners_avg": 5.1, "cards_avg": 2.0, "offsides_avg": 1.6},
-    "Bosnia":        {"base_xg": 1.22, "shots_avg": 10.8, "shots_conceded_avg": 13.0, "shot_accuracy": 0.32, "gk_save_pct": 0.65, "corners_avg": 4.4, "cards_avg": 2.3, "offsides_avg": 1.8},
-    "USA":           {"base_xg": 1.58, "shots_avg": 13.1, "shots_conceded_avg": 9.9,  "shot_accuracy": 0.37, "gk_save_pct": 0.74, "corners_avg": 5.6, "cards_avg": 1.7, "offsides_avg": 2.0},
-    "Paraguay":      {"base_xg": 1.08, "shots_avg": 9.5,  "shots_conceded_avg": 10.8, "shot_accuracy": 0.29, "gk_save_pct": 0.75, "corners_avg": 3.8, "cards_avg": 2.8, "offsides_avg": 1.4},
-    "Qatar":         {"base_xg": 1.20, "shots_avg": 10.5, "shots_conceded_avg": 13.8, "shot_accuracy": 0.32, "gk_save_pct": 0.66, "corners_avg": 4.3, "cards_avg": 1.8, "offsides_avg": 1.9},
-    "Switzerland":   {"base_xg": 1.42, "shots_avg": 12.0, "shots_conceded_avg": 10.5, "shot_accuracy": 0.34, "gk_save_pct": 0.71, "corners_avg": 5.0, "cards_avg": 2.1, "offsides_avg": 1.7},
-    "France":        {"base_xg": 2.10, "shots_avg": 16.2, "shots_conceded_avg": 7.5,  "shot_accuracy": 0.42, "gk_save_pct": 0.77, "corners_avg": 6.5, "cards_avg": 1.4, "offsides_avg": 2.3},
-    "Australia":     {"base_xg": 1.22, "shots_avg": 10.5, "shots_conceded_avg": 12.8, "shot_accuracy": 0.32, "gk_save_pct": 0.69, "corners_avg": 4.5, "cards_avg": 2.0, "offsides_avg": 1.6},
-    "Croatia":       {"base_xg": 1.55, "shots_avg": 13.0, "shots_conceded_avg": 9.9,  "shot_accuracy": 0.36, "gk_save_pct": 0.74, "corners_avg": 5.2, "cards_avg": 1.8, "offsides_avg": 1.8},
-    "Morocco":       {"base_xg": 1.42, "shots_avg": 12.1, "shots_conceded_avg": 10.4, "shot_accuracy": 0.34, "gk_save_pct": 0.75, "corners_avg": 4.9, "cards_avg": 2.1, "offsides_avg": 1.5},
-    "Argentina":     {"base_xg": 2.05, "shots_avg": 15.8, "shots_conceded_avg": 8.0,  "shot_accuracy": 0.43, "gk_save_pct": 0.76, "corners_avg": 6.1, "cards_avg": 1.9, "offsides_avg": 2.4},
-    "Japan":         {"base_xg": 1.48, "shots_avg": 13.5, "shots_conceded_avg": 11.0, "shot_accuracy": 0.37, "gk_save_pct": 0.70, "corners_avg": 5.5, "cards_avg": 1.2, "offsides_avg": 1.9},
-    "Germany":       {"base_xg": 1.88, "shots_avg": 15.1, "shots_conceded_avg": 9.0,  "shot_accuracy": 0.39, "gk_save_pct": 0.72, "corners_avg": 6.3, "cards_avg": 1.7, "offsides_avg": 2.1},
-    "Scotland":      {"base_xg": 1.18, "shots_avg": 9.8,  "shots_conceded_avg": 13.2, "shot_accuracy": 0.31, "gk_save_pct": 0.68, "corners_avg": 4.2, "cards_avg": 2.3, "offsides_avg": 1.4},
-    "England":       {"base_xg": 2.02, "shots_avg": 15.4, "shots_conceded_avg": 8.4,  "shot_accuracy": 0.40, "gk_save_pct": 0.75, "corners_avg": 6.4, "cards_avg": 1.5, "offsides_avg": 2.2},
-    "Ecuador":       {"base_xg": 1.38, "shots_avg": 11.8, "shots_conceded_avg": 11.1, "shot_accuracy": 0.34, "gk_save_pct": 0.71, "corners_avg": 4.8, "cards_avg": 2.2, "offsides_avg": 1.7}
+    "Mexico": {"base_xg": 1.65, "shots_avg": 13.4, "shots_conceded_avg": 9.8, "shot_accuracy": 0.36, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 2.2, "offsides_avg": 1.9},
+    "South Africa": {"base_xg": 1.15, "shots_avg": 10.2, "shots_conceded_avg": 12.4, "shot_accuracy": 0.31, "gk_save_pct": 0.67, "corners_avg": 4.1, "cards_avg": 1.9, "offsides_avg": 1.5},
+    "South Korea": {"base_xg": 1.52, "shots_avg": 12.8, "shots_conceded_avg": 10.1, "shot_accuracy": 0.35, "gk_save_pct": 0.70, "corners_avg": 5.4, "cards_avg": 1.5, "offsides_avg": 2.1},
+    "Czech Republic": {"base_xg": 1.38, "shots_avg": 11.9, "shots_conceded_avg": 11.2, "shot_accuracy": 0.33, "gk_save_pct": 0.72, "corners_avg": 4.9, "cards_avg": 2.4, "offsides_avg": 1.7},
+    "Canada": {"base_xg": 1.45, "shots_avg": 12.2, "shots_conceded_avg": 11.5, "shot_accuracy": 0.34, "gk_save_pct": 0.68, "corners_avg": 5.1, "cards_avg": 2.0, "offsides_avg": 1.6},
+    "Bosnia": {"base_xg": 1.22, "shots_avg": 10.8, "shots_conceded_avg": 13.0, "shot_accuracy": 0.32, "gk_save_pct": 0.65, "corners_avg": 4.4, "cards_avg": 2.3, "offsides_avg": 1.8},
+    "USA": {"base_xg": 1.58, "shots_avg": 13.1, "shots_conceded_avg": 9.9, "shot_accuracy": 0.37, "gk_save_pct": 0.74, "corners_avg": 5.6, "cards_avg": 1.7, "offsides_avg": 2.0},
+    "Paraguay": {"base_xg": 1.08, "shots_avg": 9.5, "shots_conceded_avg": 10.8, "shot_accuracy": 0.29, "gk_save_pct": 0.75, "corners_avg": 3.8, "cards_avg": 2.8, "offsides_avg": 1.4},
+    "Qatar": {"base_xg": 1.20, "shots_avg": 10.5, "shots_conceded_avg": 13.8, "shot_accuracy": 0.32, "gk_save_pct": 0.66, "corners_avg": 4.3, "cards_avg": 1.8, "offsides_avg": 1.9},
+    "Switzerland": {"base_xg": 1.42, "shots_avg": 12.0, "shots_conceded_avg": 10.5, "shot_accuracy": 0.34, "gk_save_pct": 0.71, "corners_avg": 5.0, "cards_avg": 2.1, "offsides_avg": 1.7},
+    "Haiti": {"base_xg": 1.05, "shots_avg": 9.2, "shots_conceded_avg": 14.1, "shot_accuracy": 0.28, "gk_save_pct": 0.64, "corners_avg": 3.5, "cards_avg": 2.5, "offsides_avg": 1.3},
+    "Scotland": {"base_xg": 1.28, "shots_avg": 11.2, "shots_conceded_avg": 12.0, "shot_accuracy": 0.32, "gk_save_pct": 0.69, "corners_avg": 4.6, "cards_avg": 2.2, "offsides_avg": 1.5},
+    "Australia": {"base_xg": 1.31, "shots_avg": 11.8, "shots_conceded_avg": 11.9, "shot_accuracy": 0.33, "gk_save_pct": 0.70, "corners_avg": 4.8, "cards_avg": 1.9, "offsides_avg": 1.6},
+    "Türkiye": {"base_xg": 1.54, "shots_avg": 13.6, "shots_conceded_avg": 10.4, "shot_accuracy": 0.36, "gk_save_pct": 0.72, "corners_avg": 5.5, "cards_avg": 2.3, "offsides_avg": 1.8},
+    "Brazil": {"base_xg": 2.15, "shots_avg": 16.8, "shots_conceded_avg": 7.8, "shot_accuracy": 0.42, "gk_save_pct": 0.76, "corners_avg": 6.7, "cards_avg": 1.6, "offsides_avg": 2.2},
+    "Morocco": {"base_xg": 1.62, "shots_avg": 13.9, "shots_conceded_avg": 9.5, "shot_accuracy": 0.37, "gk_save_pct": 0.75, "corners_avg": 5.4, "cards_avg": 2.0, "offsides_avg": 1.7},
+    "Ivory Coast": {"base_xg": 1.44, "shots_avg": 12.5, "shots_conceded_avg": 11.2, "shot_accuracy": 0.34, "gk_save_pct": 0.71, "corners_avg": 5.0, "cards_avg": 2.1, "offsides_avg": 1.8},
+    "Ecuador": {"base_xg": 1.40, "shots_avg": 12.1, "shots_conceded_avg": 10.9, "shot_accuracy": 0.35, "gk_save_pct": 0.73, "corners_avg": 4.9, "cards_avg": 2.2, "offsides_avg": 1.6},
+    "Germany": {"base_xg": 1.98, "shots_avg": 15.9, "shots_conceded_avg": 8.6, "shot_accuracy": 0.39, "gk_save_pct": 0.74, "corners_avg": 6.3, "cards_avg": 1.5, "offsides_avg": 2.0},
+    "Curaçao": {"base_xg": 1.02, "shots_avg": 8.9, "shots_conceded_avg": 15.2, "shot_accuracy": 0.27, "gk_save_pct": 0.63, "corners_avg": 3.2, "cards_avg": 1.8, "offsides_avg": 1.2},
+    "Netherlands": {"base_xg": 1.85, "shots_avg": 14.8, "shots_conceded_avg": 9.2, "shot_accuracy": 0.38, "gk_save_pct": 0.75, "corners_avg": 6.0, "cards_avg": 1.6, "offsides_avg": 2.1},
+    "Japan": {"base_xg": 1.58, "shots_avg": 13.8, "shots_conceded_avg": 10.1, "shot_accuracy": 0.37, "gk_save_pct": 0.72, "corners_avg": 5.6, "cards_avg": 1.1, "offsides_avg": 1.9},
+    "Sweden": {"base_xg": 1.52, "shots_avg": 13.2, "shots_conceded_avg": 10.6, "shot_accuracy": 0.36, "gk_save_pct": 0.71, "corners_avg": 5.3, "cards_avg": 1.8, "offsides_avg": 1.7},
+    "Tunisia": {"base_xg": 1.18, "shots_avg": 10.1, "shots_conceded_avg": 12.5, "shot_accuracy": 0.30, "gk_save_pct": 0.68, "corners_avg": 4.0, "cards_avg": 2.4, "offsides_avg": 1.4},
+    "Saudi Arabia": {"base_xg": 1.25, "shots_avg": 11.0, "shots_conceded_avg": 12.9, "shot_accuracy": 0.32, "gk_save_pct": 0.67, "corners_avg": 4.3, "cards_avg": 1.9, "offsides_avg": 1.6},
+    "Uruguay": {"base_xg": 1.76, "shots_avg": 14.4, "shots_conceded_avg": 9.4, "shot_accuracy": 0.38, "gk_save_pct": 0.74, "corners_avg": 5.9, "cards_avg": 2.5, "offsides_avg": 2.0},
+    "Spain": {"base_xg": 2.02, "shots_avg": 16.4, "shots_conceded_avg": 8.1, "shot_accuracy": 0.41, "gk_save_pct": 0.75, "corners_avg": 6.5, "cards_avg": 1.4, "offsides_avg": 2.3},
+    "Cape Verde": {"base_xg": 1.16, "shots_avg": 10.4, "shots_conceded_avg": 13.1, "shot_accuracy": 0.31, "gk_save_pct": 0.69, "corners_avg": 4.1, "cards_avg": 2.0, "offsides_avg": 1.5},
+    "Iran": {"base_xg": 1.34, "shots_avg": 11.6, "shots_conceded_avg": 11.8, "shot_accuracy": 0.33, "gk_save_pct": 0.71, "corners_avg": 4.6, "cards_avg": 2.1, "offsides_avg": 1.7},
+    "New Zealand": {"base_xg": 1.10, "shots_avg": 9.6, "shots_conceded_avg": 13.8, "shot_accuracy": 0.29, "gk_save_pct": 0.66, "corners_avg": 3.8, "cards_avg": 1.7, "offsides_avg": 1.4},
+    "Belgium": {"base_xg": 1.80, "shots_avg": 14.9, "shots_conceded_avg": 9.6, "shot_accuracy": 0.38, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 1.6, "offsides_avg": 1.9},
+    "Egypt": {"base_xg": 1.46, "shots_avg": 12.4, "shots_conceded_avg": 11.0, "shot_accuracy": 0.35, "gk_save_pct": 0.70, "corners_avg": 4.9, "cards_avg": 1.8, "offsides_avg": 1.5},
+    "France": {"base_xg": 2.12, "shots_avg": 16.6, "shots_conceded_avg": 7.9, "shot_accuracy": 0.42, "gk_save_pct": 0.77, "corners_avg": 6.6, "cards_avg": 1.5, "offsides_avg": 2.4},
+    "Senegal": {"base_xg": 1.50, "shots_avg": 13.0, "shots_conceded_avg": 10.5, "shot_accuracy": 0.36, "gk_save_pct": 0.73, "corners_avg": 5.2, "cards_avg": 2.1, "offsides_avg": 1.6},
+    "Iraq": {"base_xg": 1.20, "shots_avg": 10.3, "shots_conceded_avg": 13.4, "shot_accuracy": 0.31, "gk_save_pct": 0.66, "corners_avg": 4.2, "cards_avg": 2.2, "offsides_avg": 1.8},
+    "Norway": {"base_xg": 1.68, "shots_avg": 14.1, "shots_conceded_avg": 10.0, "shot_accuracy": 0.39, "gk_save_pct": 0.72, "corners_avg": 5.7, "cards_avg": 1.7, "offsides_avg": 1.9},
+    "Argentina": {"base_xg": 2.08, "shots_avg": 16.1, "shots_conceded_avg": 8.0, "shot_accuracy": 0.43, "gk_save_pct": 0.76, "corners_avg": 6.4, "cards_avg": 1.8, "offsides_avg": 2.2},
+    "Algeria": {"base_xg": 1.45, "shots_avg": 12.6, "shots_conceded_avg": 11.2, "shot_accuracy": 0.35, "gk_save_pct": 0.71, "corners_avg": 5.1, "cards_avg": 2.3, "offsides_avg": 1.6},
+    "Austria": {"base_xg": 1.56, "shots_avg": 13.5, "shots_conceded_avg": 10.3, "shot_accuracy": 0.37, "gk_save_pct": 0.73, "corners_avg": 5.5, "cards_avg": 2.0, "offsides_avg": 1.8},
+    "Jordan": {"base_xg": 1.14, "shots_avg": 9.9, "shots_conceded_avg": 13.6, "shot_accuracy": 0.30, "gk_save_pct": 0.67, "corners_avg": 3.9, "cards_avg": 1.9, "offsides_avg": 1.5},
+    "Ghana": {"base_xg": 1.38, "shots_avg": 12.0, "shots_conceded_avg": 11.9, "shot_accuracy": 0.34, "gk_save_pct": 0.70, "corners_avg": 4.8, "cards_avg": 2.4, "offsides_avg": 1.7},
+    "Panama": {"base_xg": 1.22, "shots_avg": 10.7, "shots_conceded_avg": 12.8, "shot_accuracy": 0.32, "gk_save_pct": 0.68, "corners_avg": 4.3, "cards_avg": 2.1, "offsides_avg": 1.5},
+    "England": {"base_xg": 2.04, "shots_avg": 15.8, "shots_conceded_avg": 8.3, "shot_accuracy": 0.40, "gk_save_pct": 0.75, "corners_avg": 6.3, "cards_avg": 1.4, "offsides_avg": 2.1},
+    "Croatia": {"base_xg": 1.60, "shots_avg": 13.4, "shots_conceded_avg": 9.7, "shot_accuracy": 0.36, "gk_save_pct": 0.74, "corners_avg": 5.3, "cards_avg": 1.6, "offsides_avg": 1.8},
+    "Portugal": {"base_xg": 1.96, "shots_avg": 15.5, "shots_conceded_avg": 8.8, "shot_accuracy": 0.39, "gk_save_pct": 0.73, "corners_avg": 6.1, "cards_avg": 1.8, "offsides_avg": 2.0},
+    "Congo DR": {"base_xg": 1.26, "shots_avg": 11.1, "shots_conceded_avg": 12.6, "shot_accuracy": 0.33, "gk_save_pct": 0.69, "corners_avg": 4.4, "cards_avg": 2.2, "offsides_avg": 1.4},
+    "Uzbekistan": {"base_xg": 1.30, "shots_avg": 11.4, "shots_conceded_avg": 12.0, "shot_accuracy": 0.34, "gk_save_pct": 0.71, "corners_avg": 4.6, "cards_avg": 1.7, "offsides_avg": 1.6},
+    "Colombia": {"base_xg": 1.66, "shots_avg": 14.0, "shots_conceded_avg": 10.1, "shot_accuracy": 0.37, "gk_save_pct": 0.74, "corners_avg": 5.6, "cards_avg": 2.3, "offsides_avg": 1.8}
 }
 
 # =====================================================================
-# 2. FULL TOURNAMENT BRACKET SCHEDULE MATRIX
+# 2. COMPLETE WORLD CUP GROUP FIXTURE SYSTEM (ALL BRACKETS A-L)
 # =====================================================================
 TOURNAMENT_SCHEDULE = [
-    {"id": 101, "date": "11/06", "iso_date": "2026-06-11", "group": "Group A", "round": "Round 1", "home": "Mexico", "away": "South Africa", "stadium": "Estadio Azteca", "city": "Mexico City", "host_country": "Mexico"},
-    {"id": 102, "date": "12/06", "iso_date": "2026-06-12", "group": "Group A", "round": "Round 1", "home": "South Korea", "away": "Czech Republic", "stadium": "Estadio Guadalajara", "city": "Guadalajara", "host_country": "Mexico"},
-    {"id": 103, "date": "12/06", "iso_date": "2026-06-12", "group": "Group B", "round": "Round 1", "home": "Canada", "away": "Bosnia", "stadium": "BMO Field", "city": "Toronto", "host_country": "Canada"},
-    {"id": 104, "date": "13/06", "iso_date": "2026-06-13", "group": "Group B", "round": "Round 1", "home": "USA", "away": "Paraguay", "stadium": "SoFi Stadium", "city": "Los Angeles", "host_country": "USA"},
-    {"id": 105, "date": "13/06", "iso_date": "2026-06-13", "group": "Group C", "round": "Round 1", "home": "Qatar", "away": "Switzerland", "stadium": "BC Place", "city": "Vancouver", "host_country": "Canada"},
-    {"id": 106, "date": "14/06", "iso_date": "2026-06-14", "group": "Group D", "round": "Round 1", "home": "France", "away": "Australia", "stadium": "MetLife Stadium", "city": "East Rutherford", "host_country": "USA"},
-    {"id": 107, "date": "14/06", "iso_date": "2026-06-14", "group": "Group D", "round": "Round 1", "home": "Croatia", "away": "Morocco", "stadium": "Hard Rock Stadium", "city": "Miami", "host_country": "USA"},
-    {"id": 108, "date": "15/06", "iso_date": "2026-06-15", "group": "Group E", "round": "Round 1", "home": "Argentina", "away": "Japan", "stadium": "NRG Stadium", "city": "Houston", "host_country": "USA"},
-    {"id": 109, "date": "15/06", "iso_date": "2026-06-15", "group": "Group E", "round": "Round 1", "home": "Germany", "away": "Scotland", "stadium": "Mercedes-Benz Stadium", "city": "Atlanta", "host_country": "USA"},
-    {"id": 110, "date": "16/06", "iso_date": "2026-06-16", "group": "Group F", "round": "Round 1", "home": "England", "away": "Ecuador", "stadium": "Levi's Stadium", "city": "Santa Clara", "host_country": "USA"},
-    {"id": 111, "date": "17/06", "iso_date": "2026-06-17", "group": "Group A", "round": "Round 2", "home": "Mexico", "away": "Czech Republic", "stadium": "Estadio Azteca", "city": "Mexico City", "host_country": "Mexico"},
-    {"id": 112, "date": "17/06", "iso_date": "2026-06-17", "group": "Group A", "round": "Round 2", "home": "South Korea", "away": "South Africa", "stadium": "Estadio Monterrey", "city": "Monterrey", "host_country": "Mexico"},
-    {"id": 113, "date": "18/06", "iso_date": "2026-06-18", "group": "Group B", "round": "Round 2", "home": "Canada", "away": "Paraguay", "stadium": "Lumen Field", "city": "Seattle", "host_country": "USA"},
-    {"id": 114, "date": "18/06", "iso_date": "2026-06-18", "group": "Group B", "round": "Round 2", "home": "USA", "away": "Bosnia", "stadium": "AT&T Stadium", "city": "Arlington", "host_country": "USA"}
+    # --- MATCH DAY SLATE 1 ---
+    {"id": 1, "date": "11/06", "iso_date": "2026-06-11", "group": "Group A", "round": "Matchday 1", "home": "Mexico", "away": "South Africa", "city": "Mexico City", "host_country": "Mexico"},
+    {"id": 2, "date": "11/06", "iso_date": "2026-06-11", "group": "Group A", "round": "Matchday 1", "home": "South Korea", "away": "Czech Republic", "city": "Guadalajara", "host_country": "Mexico"},
+    # --- MATCH DAY SLATE 2 ---
+    {"id": 3, "date": "12/06", "iso_date": "2026-06-12", "group": "Group B", "round": "Matchday 1", "home": "Canada", "away": "Bosnia", "city": "Toronto", "host_country": "Canada"},
+    {"id": 4, "date": "12/06", "iso_date": "2026-06-12", "group": "Group D", "round": "Matchday 1", "home": "USA", "away": "Paraguay", "city": "Los Angeles", "host_country": "USA"},
+    # --- MATCH DAY SLATE 3 ---
+    {"id": 5, "date": "13/06", "iso_date": "2026-06-13", "group": "Group C", "round": "Matchday 1", "home": "Haiti", "away": "Scotland", "city": "Boston", "host_country": "USA"},
+    {"id": 6, "date": "13/06", "iso_date": "2026-06-13", "group": "Group D", "round": "Matchday 1", "home": "Australia", "away": "Türkiye", "city": "Vancouver", "host_country": "Canada"},
+    {"id": 7, "date": "13/06", "iso_date": "2026-06-13", "group": "Group C", "round": "Matchday 1", "home": "Brazil", "away": "Morocco", "city": "New York", "host_country": "USA"},
+    {"id": 8, "date": "13/06", "iso_date": "2026-06-13", "group": "Group B", "round": "Matchday 1", "home": "Qatar", "away": "Switzerland", "city": "San Francisco", "host_country": "USA"},
+    # --- MATCH DAY SLATE 4 ---
+    {"id": 9, "date": "14/06", "iso_date": "2026-06-14", "group": "Group E", "round": "Matchday 1", "home": "Ivory Coast", "away": "Ecuador", "city": "Philadelphia", "host_country": "USA"},
+    {"id": 10, "date": "14/06", "iso_date": "2026-06-14", "group": "Group E", "round": "Matchday 1", "home": "Germany", "away": "Curaçao", "city": "Houston", "host_country": "USA"},
+    {"id": 11, "date": "14/06", "iso_date": "2026-06-14", "group": "Group F", "round": "Matchday 1", "home": "Netherlands", "away": "Japan", "city": "Dallas", "host_country": "USA"},
+    {"id": 12, "date": "14/06", "iso_date": "2026-06-14", "group": "Group F", "round": "Matchday 1", "home": "Sweden", "away": "Tunisia", "city": "Monterrey", "host_country": "Mexico"},
+    # --- MATCH DAY SLATE 5 ---
+    {"id": 13, "date": "15/06", "iso_date": "2026-06-15", "group": "Group H", "round": "Matchday 1", "home": "Saudi Arabia", "away": "Uruguay", "city": "Miami", "host_country": "USA"},
+    {"id": 14, "date": "15/06", "iso_date": "2026-06-15", "group": "Group H", "round": "Matchday 1", "home": "Spain", "away": "Cape Verde", "city": "Atlanta", "host_country": "USA"},
+    {"id": 15, "date": "15/06", "iso_date": "2026-06-15", "group": "Group G", "round": "Matchday 1", "home": "Iran", "away": "New Zealand", "city": "Los Angeles", "host_country": "USA"},
+    {"id": 16, "date": "15/06", "iso_date": "2026-06-15", "group": "Group G", "round": "Matchday 1", "home": "Belgium", "away": "Egypt", "city": "Seattle", "host_country": "USA"},
+    # --- MATCH DAY SLATE 6 ---
+    {"id": 17, "date": "16/06", "iso_date": "2026-06-16", "group": "Group I", "round": "Matchday 1", "home": "France", "away": "Senegal", "city": "New York", "host_country": "USA"},
+    {"id": 18, "date": "16/06", "iso_date": "2026-06-16", "group": "Group I", "round": "Matchday 1", "home": "Iraq", "away": "Norway", "city": "Boston", "host_country": "USA"},
+    {"id": 19, "date": "16/06", "iso_date": "2026-06-16", "group": "Group J", "round": "Matchday 1", "home": "Argentina", "away": "Algeria", "city": "Kansas City", "host_country": "USA"},
+    {"id": 20, "date": "16/06", "iso_date": "2026-06-16", "group": "Group J", "round": "Matchday 1", "home": "Austria", "away": "Jordan", "city": "San Francisco", "host_country": "USA"},
+    # --- MATCH DAY SLATE 7 ---
+    {"id": 21, "date": "17/06", "iso_date": "2026-06-17", "group": "Group L", "round": "Matchday 1", "home": "Ghana", "away": "Panama", "city": "Toronto", "host_country": "Canada"},
+    {"id": 22, "date": "17/06", "iso_date": "2026-06-17", "group": "Group L", "round": "Matchday 1", "home": "England", "away": "Croatia", "city": "Dallas", "host_country": "USA"},
+    {"id": 23, "date": "17/06", "iso_date": "2026-06-17", "group": "Group K", "round": "Matchday 1", "home": "Portugal", "away": "Congo DR", "city": "Houston", "host_country": "USA"},
+    {"id": 24, "date": "17/06", "iso_date": "2026-06-17", "group": "Group K", "round": "Matchday 1", "home": "Uzbekistan", "away": "Colombia", "city": "Mexico City", "host_country": "Mexico"},
+    # --- MATCH DAY SLATE 8 (ROUND 2 KICKOFFS) ---
+    {"id": 25, "date": "18/06", "iso_date": "2026-06-18", "group": "Group A", "round": "Matchday 2", "home": "Czech Republic", "away": "South Africa", "city": "Atlanta", "host_country": "USA"},
+    {"id": 26, "date": "18/06", "iso_date": "2026-06-18", "group": "Group B", "round": "Matchday 2", "home": "Switzerland", "away": "Bosnia", "city": "Los Angeles", "host_country": "USA"},
+    {"id": 27, "date": "18/06", "iso_date": "2026-06-18", "group": "Group B", "round": "Matchday 2", "home": "Canada", "away": "Qatar", "city": "Vancouver", "host_country": "Canada"},
+    {"id": 28, "date": "18/06", "iso_date": "2026-06-18", "group": "Group A", "round": "Matchday 2", "home": "Mexico", "away": "South Korea", "city": "Guadalajara", "host_country": "Mexico"},
+    # --- MATCH DAY SLATE 9 ---
+    {"id": 29, "date": "19/06", "iso_date": "2026-06-19", "group": "Group C", "round": "Matchday 2", "home": "Brazil", "away": "Haiti", "city": "Philadelphia", "host_country": "USA"},
+    {"id": 30, "date": "19/06", "iso_date": "2026-06-19", "group": "Group C", "round": "Matchday 2", "home": "Scotland", "away": "Morocco", "city": "Boston", "host_country": "USA"},
+    {"id": 31, "date": "19/06", "iso_date": "2026-06-19", "group": "Group D", "round": "Matchday 2", "home": "Türkiye", "away": "Paraguay", "city": "San Francisco", "host_country": "USA"},
+    {"id": 32, "date": "19/06", "iso_date": "2026-06-19", "group": "Group D", "round": "Matchday 2", "home": "USA", "away": "Australia", "city": "Seattle", "host_country": "USA"},
+    # --- MATCH DAY SLATE 10 ---
+    {"id": 33, "date": "20/06", "iso_date": "2026-06-20", "group": "Group E", "round": "Matchday 2", "home": "Germany", "away": "Ivory Coast", "city": "Toronto", "host_country": "Canada"},
+    {"id": 34, "date": "20/06", "iso_date": "2026-06-20", "group": "Group E", "round": "Matchday 2", "home": "Ecuador", "away": "Curaçao", "city": "Kansas City", "host_country": "USA"},
+    {"id": 35, "date": "20/06", "iso_date": "2026-06-20", "group": "Group F", "round": "Matchday 2", "home": "Netherlands", "away": "Sweden", "city": "Houston", "host_country": "USA"},
+    {"id": 36, "date": "20/06", "iso_date": "2026-06-20", "group": "Group F", "round": "Matchday 2", "home": "Tunisia", "away": "Japan", "city": "Monterrey", "host_country": "Mexico"},
+    # --- MATCH DAY SLATE 11 ---
+    {"id": 37, "date": "21/06", "iso_date": "2026-06-21", "group": "Group H", "round": "Matchday 2", "home": "Uruguay", "away": "Cape Verde", "city": "Miami", "host_country": "USA"},
+    {"id": 38, "date": "21/06", "iso_date": "2026-06-21", "group": "Group H", "round": "Matchday 2", "home": "Spain", "away": "Saudi Arabia", "city": "Atlanta", "host_country": "USA"},
+    {"id": 39, "date": "21/06", "iso_date": "2026-06-21", "group": "Group G", "round": "Matchday 2", "home": "Belgium", "away": "Iran", "city": "Los Angeles", "host_country": "USA"},
+    {"id": 40, "date": "21/06", "iso_date": "2026-06-21", "group": "Group G", "round": "Matchday 2", "home": "New Zealand", "away": "Egypt", "city": "Vancouver", "host_country": "Canada"},
+    # --- MATCH DAY SLATE 12 ---
+    {"id": 41, "date": "22/06", "iso_date": "2026-06-22", "group": "Group I", "round": "Matchday 2", "home": "Norway", "away": "Senegal", "city": "New York", "host_country": "USA"},
+    {"id": 42, "date": "22/06", "iso_date": "2026-06-22", "group": "Group I", "round": "Matchday 2", "home": "France", "away": "Iraq", "city": "Philadelphia", "host_country": "USA"},
+    {"id": 43, "date": "22/06", "iso_date": "2026-06-22", "group": "Group J", "round": "Matchday 2", "home": "Argentina", "away": "Austria", "city": "Dallas", "host_country": "USA"},
+    {"id": 44, "date": "22/06", "iso_date": "2026-06-22", "group": "Group J", "round": "Matchday 2", "home": "Jordan", "away": "Algeria", "city": "San Francisco", "host_country": "USA"},
+    # --- MATCH DAY SLATE 13 ---
+    {"id": 45, "date": "23/06", "iso_date": "2026-06-23", "group": "Group L", "round": "Matchday 2", "home": "England", "away": "Ghana", "city": "Boston", "host_country": "USA"},
+    {"id": 46, "date": "23/06", "iso_date": "2026-06-23", "group": "Group L", "round": "Matchday 2", "home": "Panama", "away": "Croatia", "city": "Toronto", "host_country": "Canada"},
+    {"id": 47, "date": "23/06", "iso_date": "2026-06-23", "group": "Group K", "round": "Matchday 2", "home": "Portugal", "away": "Uzbekistan", "city": "Houston", "host_country": "USA"},
+    {"id": 48, "date": "23/06", "iso_date": "2026-06-23", "group": "Group K", "round": "Matchday 2", "home": "Colombia", "away": "Congo DR", "city": "Guadalajara", "host_country": "Mexico"},
+    # --- MATCH DAY SLATE 14 (ROUND 3 DECIDERS) ---
+    {"id": 49, "date": "24/06", "iso_date": "2026-06-24", "group": "Group C", "round": "Matchday 3", "home": "Scotland", "away": "Brazil", "city": "Miami", "host_country": "USA"},
+    {"id": 50, "date": "24/06", "iso_date": "2026-06-24", "group": "Group C", "round": "Matchday 3", "home": "Morocco", "away": "Haiti", "city": "Atlanta", "host_country": "USA"},
+    {"id": 51, "date": "24/06", "iso_date": "2026-06-24", "group": "Group B", "round": "Matchday 3", "home": "Switzerland", "away": "Canada", "city": "Vancouver", "host_country": "Canada"},
+    {"id": 52, "date": "24/06", "iso_date": "2026-06-24", "group": "Group B", "round": "Matchday 3", "home": "Bosnia", "away": "Qatar", "city": "Seattle", "host_country": "USA"},
+    {"id": 53, "date": "24/06", "iso_date": "2026-06-24", "group": "Group A", "round": "Matchday 3", "home": "Czech Republic", "away": "Mexico", "city": "Mexico City", "host_country": "Mexico"},
+    {"id": 54, "date": "24/06", "iso_date": "2026-06-24", "group": "Group A", "round": "Matchday 3", "home": "South Africa", "away": "South Korea", "city": "Monterrey", "host_country": "Mexico"},
+    # --- MATCH DAY SLATE 15 ---
+    {"id": 55, "date": "25/06", "iso_date": "2026-06-25", "group": "Group E", "round": "Matchday 3", "home": "Curaçao", "away": "Ivory Coast", "city": "Philadelphia", "host_country": "USA"},
+    {"id": 56, "date": "25/06", "iso_date": "2026-06-25", "group": "Group E", "round": "Matchday 3", "home": "Ecuador", "away": "Germany", "city": "New York", "host_country": "USA"},
+    {"id": 57, "date": "25/06", "iso_date": "2026-06-25", "group": "Group F", "round": "Matchday 3", "home": "Japan", "away": "Sweden", "city": "Dallas", "host_country": "USA"},
+    {"id": 58, "date": "25/06", "iso_date": "2026-06-25", "group": "Group F", "round": "Matchday 3", "home": "Tunisia", "away": "Netherlands", "city": "Kansas City", "host_country": "USA"},
+    {"id": 59, "date": "25/06", "iso_date": "2026-06-25", "group": "Group D", "round": "Matchday 3", "home": "Türkiye", "away": "USA", "city": "Los Angeles", "host_country": "USA"},
+    {"id": 60, "date": "25/06", "iso_date": "2026-06-25", "group": "Group D", "round": "Matchday 3", "home": "Paraguay", "away": "Australia", "city": "San Francisco", "host_country": "USA"}
 ]
 
-# Auto-generation list comprehensions for multi-dimensional frontend controllers
-ALL_GROUPS = sorted(list(set(m["group"] for m in TOURNAMENT_SCHEDULE)))
+# List sorting comprehensions
+ALL_GROUPS = sorted(list(set(m["group"] for m in TOURNAMENT_SCHEDULE)), key=lambda x: x.split()[-1])
 ALL_TEAMS = sorted(list(set(m["home"] for m in TOURNAMENT_SCHEDULE) | set(m["away"] for m in TOURNAMENT_SCHEDULE)))
 ALL_DATES = sorted(list(set(m["date"] for m in TOURNAMENT_SCHEDULE)), key=lambda x: [int(i) for i in x.split('/')])
 
 # =====================================================================
-# 3. BACKGROUND HARVESTERS & POISSON MATHEMATICAL ALGORITHMS
+# 3. BACKGROUND PROCESSORS & SIMULATION ENGINES
 # =====================================================================
 def harvest_live_sports_wire(home_team, away_team):
     scraped_text_blob = ""
@@ -133,7 +221,7 @@ def run_simulation_variant(home_stats, away_stats, venue_status, weather_mod, be
     }
 
 # =====================================================================
-# 4. DESIGNED USER INTERFACE (HTML/CSS/JS)
+# 4. PREMIUM AD-FREE PRESENTATION INTERFACE
 # =====================================================================
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -164,7 +252,6 @@ HTML_TEMPLATE = """
         .app-header h1 { font-size: 34px; font-weight: 800; margin: 0; letter-spacing: -1px; }
         .app-header p { font-size: 14px; color: var(--text-secondary); margin: 4px 0 0 0; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* The Three Independent Navigation Wheels */
         .filter-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px; }
         .filter-menu-box { display: flex; flex-direction: column; }
         .filter-menu-box label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; }
@@ -193,7 +280,6 @@ HTML_TEMPLATE = """
         .add-slip-container { display: flex; gap: 8px; margin-top: 12px; }
         .slip-add-btn { flex: 1; background: #1c1c1e; border: 1px solid var(--border-card); color: var(--accent-green); padding: 10px; font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; text-align: center;}
 
-        /* Persistent Bet Slip Architecture */
         .bet-slip-drawer {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: rgba(28, 28, 30, 0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -254,8 +340,7 @@ HTML_TEMPLATE = """
                             data-group='{{ match.group }}' 
                             data-home='{{ match.home }}' 
                             data-away='{{ match.away }}' 
-                            data-date='{{ match.date }}'
-                            {% if selected_idx == loop.index0 %}selected{% endif %}>
+                            data-date='{{ match.date }}'>
                         [{{ match.group }}] {{ match.date }} | {{ match.home }} vs {{ match.away }} ({{ match.round }})
                     </option>
                 {% endfor %}
@@ -302,7 +387,7 @@ HTML_TEMPLATE = """
     <script>
         let currentSlip = JSON.parse(localStorage.getItem('fc_slip')) || [];
 
-        // Cross-filtration solver logic
+        // FIXED: Re-engineered cross-filter that dynamically updates the visible selection inside the primary box
         function executeFilter(activeTrigger) {
             if (activeTrigger === 'group') { document.getElementById('team-filter').value = 'all'; document.getElementById('date-filter').value = 'all'; }
             if (activeTrigger === 'team') { document.getElementById('group-filter').value = 'all'; document.getElementById('date-filter').value = 'all'; }
@@ -314,7 +399,7 @@ HTML_TEMPLATE = """
 
             const select = document.getElementById('match-select');
             const options = select.options;
-            let firstSelected = false;
+            let firstVisibleIndex = -1;
 
             for (let i = 0; i < options.length; i++) {
                 const opt = options[i];
@@ -328,11 +413,18 @@ HTML_TEMPLATE = """
                 const matchDate = (updatedDate === 'all' || oDate === updatedDate);
 
                 if (matchGroup && matchTeam && matchDate) {
+                    opt.disabled = false;
                     opt.style.display = 'block';
-                    if (!firstSelected) { select.value = i; firstSelected = true; }
+                    if (firstVisibleIndex === -1) { firstVisibleIndex = i; }
                 } else {
+                    opt.disabled = true;
                     opt.style.display = 'none';
                 }
+            }
+            
+            // Core Fix: Force the primary select container to explicitly update its active value to the new filtered choice!
+            if (firstVisibleIndex !== -1) {
+                select.value = firstVisibleIndex;
             }
         }
 
@@ -388,20 +480,20 @@ def home():
     if request.method == 'POST':
         selected_idx = int(request.form['match_idx'])
         match = TOURNAMENT_SCHEDULE[selected_idx]
-        h_name, a_name, city, country, stadium, target_iso = match["home"], match["away"], match["city"], match["host_country"], match["stadium"], match["iso_date"]
+        h_name, a_name, city, country, stadium, target_iso = match["home"], match["away"], match["city"], match["host_country"], match["stadium"] if "stadium" in match else "World Cup Venue", match["iso_date"]
         
         if h_name in TRUE_HOST_NATIONS and h_name.lower().strip() == country.lower().strip():
             venue_status = "TRUE_HOME_HOST"
-            logs.append(f"🏟️ HOST GROUND ACCREDITATION: {h_name} verified on native soil. (+12% Performance Variance Applied)")
+            logs.append(f"🏟️ HOST GROUND ACCREDITATION: {h_name} verified on native soil. (+12% Variance Imbalance)")
         else:
             venue_status = "NEUTRAL_GROUND"
-            logs.append(f"🌍 NEUTRAL VENUE CONFIRMED: Match calculated at a neutral stadium in {city}.")
+            logs.append(f"🌍 NEUTRAL VENUE CONFIRMED: Match evaluated at a neutral stadium in {city}.")
         
         h_att, a_att, c_agg, f_fat, news_logs = harvest_live_sports_wire(h_name, a_name)
         logs.extend(news_logs)
 
-        home_db = TEAM_STAT_DATABASE.get(h_name)
-        away_db = TEAM_STAT_DATABASE.get(a_name)
+        home_db = TEAM_STAT_DATABASE.get(h_name, {"base_xg": 1.35, "shots_avg": 11.5, "shots_conceded_avg": 11.5, "shot_accuracy": 0.33, "gk_save_pct": 0.70, "corners_avg": 4.8, "cards_avg": 2.0, "offsides_avg": 1.7})
+        away_db = TEAM_STAT_DATABASE.get(a_name, {"base_xg": 1.35, "shots_avg": 11.5, "shots_conceded_avg": 11.5, "shot_accuracy": 0.33, "gk_save_pct": 0.70, "corners_avg": 4.8, "cards_avg": 2.0, "offsides_avg": 1.7})
 
         weather_desc, weather_mod = "Forecast Baseline Default", 1.0
         try:
@@ -413,7 +505,7 @@ def home():
                 weather_desc = f"Match Day Forecast: {main_cond} ({matched_block['main']['temp']}°C)"
                 if main_cond in ["Rain", "Drizzle", "Snow"]:
                     weather_mod = 0.85
-                    logs.append(f"🌧️ CLIMATE MITIGATION: Ball drag penalty enforced due to predicted rain in {city}.")
+                    logs.append(f"🌧️ CLIMATE MITIGATION: Friction scaling factor enforced due to weather parameters in {city}.")
         except: pass
 
         base = run_simulation_variant(home_db, away_db, venue_status, weather_mod, None)
@@ -438,7 +530,6 @@ def home():
         report += f"  * Expected Total Cards:   {base['cards']}           {behav['cards']}\n"
         report += f"  * Projected Corners:      {base['corners']}          {behav['corners']}\n"
         report += f"  * Expected Offsides:      {base['offsides']}           {behav['offsides']}\n"
-        report += f"  * Total Goal Kicks Line:  {base['goal_kicks']}          {behav['goal_kicks']}\n"
         report += f"  * Shots on Target (H):    {base['shots_on_target'][0]}           {behav['shots_on_target'][0]}\n"
         report += f"  * Shots on Target (A):    {base['shots_on_target'][1]}           {behav['shots_on_target'][1]}\n"
 

@@ -1,0 +1,49 @@
+import tkinter as tk
+from tkinter import ttk, messagebox
+import math
+import requests
+
+# =====================================================================
+# 1. AUTOMATED TEXT-SCRAPING & BEHAVIORAL DISCOVERY PIPELINE
+# =====================================================================
+class AutomatedBehaviorPipeline:
+    def __init__(self, weather_key):
+        self.weather_key = weather_key
+        self.weather_base_url = "https://api.openweathermap.org/data/2.5/weather"
+        
+        # Mapped World Cup Program Schedule Registry
+        self.tournament_schedule = [
+            {"id": 101, "date": "11/06 — 19:00", "home": "Mexico", "away": "South Africa", "stadium": "Estadio Azteca", "city": "Mexico City", "host_country": "Mexico"},
+            {"id": 102, "date": "12/06 — 02:00", "home": "South Korea", "away": "Czech Republic", "stadium": "Estadio Guadalajara", "city": "Guadalajara", "host_country": "Mexico"},
+            {"id": 103, "date": "12/06 — 19:00", "home": "Canada", "away": "Bosnia", "stadium": "BMO Field", "city": "Toronto", "host_country": "Canada"},
+            {"id": 104, "date": "13/06 — 01:00", "home": "USA", "away": "Paraguay", "stadium": "SoFi Stadium", "city": "Los Angeles", "host_country": "USA"},
+            {"id": 105, "date": "13/06 — 19:00", "home": "Qatar", "away": "Switzerland", "stadium": "BC Place", "city": "Vancouver", "host_country": "Canada"}
+        ]
+
+    def get_wc_fixtures(self):
+        return self.tournament_schedule
+
+    def scan_internet_for_team_behavior(self, home_team, away_team):
+        """
+        Simulates an automated web scraper hitting sports RSS feeds and team press logs.
+        It scans text strings for keywords to automatically discover squad conditions.
+        """
+        simulated_scraped_news_stream = f"""
+        [NEWS] Group A matches reach boiling point: {home_team} face a must-win elimination scenario tonight.
+        [TRAINING LOG] Sensation in camp: Star forward for {home_team} welcomed a newborn baby boy yesterday!
+        [PRESS CONF] {away_team} manager confirms high fitness levels but warns of accumulated tournament fatigue.
+        """
+        
+        discovered_factors = []
+        home_attack_mod = 1.0
+        away_attack_mod = 1.0
+        cards_mod = 1.0
+        accuracy_mod = 1.0
+        
+        text_payload = simulated_scraped_news_stream.lower()
+        
+        if "must-win" in text_payload or "elimination" in text_payload:
+            cards_mod = 1.45
+            home_attack_mod *= 1.15
+            away_attack_mod *= 1.15
+            discovered_factors.append("⚠️ STAKES: Must-Win Elimination Context Detected (+45% Cards,

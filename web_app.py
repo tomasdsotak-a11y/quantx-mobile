@@ -6,12 +6,11 @@ import xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 
-# Active Gateway Security Tokens
 WEATHER_API_KEY = "25c9a61b99a4842679a8983536494752"
 TRUE_HOST_NATIONS = ["Mexico", "Canada", "USA"]
 
 # =====================================================================
-# 1. LIVE MASTER SQUAD ATTR REGISTRY MATRIX
+# 1. LIVE MASTER SQUAD PERFORMANCE ATTRIBUTE MATRIX
 # =====================================================================
 TEAM_STAT_DATABASE = {
     "Mexico":        {"base_xg": 1.65, "shots_avg": 13.4, "shots_conceded_avg": 9.8,  "shot_accuracy": 0.36, "gk_save_pct": 0.73, "corners_avg": 5.8, "cards_avg": 2.2, "offsides_avg": 1.9},
@@ -200,7 +199,7 @@ def run_simulation_variant(home_stats, away_stats, venue_status, weather_mod, be
     }
 
 # =====================================================================
-# 4. LUXURY APPLE PRESENTATION LAYER DESIGN
+# 4. LUXURY PRESENTATION CANVAS WITH INLINE TAP ACTIONS
 # =====================================================================
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -256,7 +255,6 @@ HTML_TEMPLATE = """
         button.action-btn { width: 100%; padding: 14px; border-radius: 10px; background: var(--accent-blue); color: white; font-size: 16px; font-weight: 600; border: none; cursor: pointer; letter-spacing: -0.2px;}
         .log-line { font-size: 13px; color: #e5e5ea; margin-bottom: 6px; }
         
-        /* FIXED: Rebuilt Premium Apple-Style UI Metrics Sheet Components instead of MS-DOS */
         .meta-detail-row { display: flex; justify-content: space-between; font-size: 14px; color: var(--text-secondary); padding: 4px 0; }
         .meta-detail-row span:last-child { color: var(--text-primary); font-weight: 500; }
         
@@ -266,14 +264,22 @@ HTML_TEMPLATE = """
         .matrix-hdr { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; text-align: left; padding-bottom: 8px; }
         .matrix-row { border-bottom: 1px solid rgba(255,255,255,0.04); }
         .matrix-row:last-child { border-bottom: none; }
+        
+        /* FIXED: Added luxury tactile clickable state styling to cell containers */
         .matrix-cell { padding: 10px 0; text-align: left; vertical-align: middle; }
         .cell-label { font-weight: 500; color: #e5e5ea; }
+        
+        /* Interactive numbers styling */
+        .clickable-odds-cell {
+            cursor: pointer; padding: 6px 8px; border-radius: 6px;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03);
+            transition: all 0.1s ease; display: inline-block; min-width: 44px; text-align: center;
+        }
+        .clickable-odds-cell:active { background: rgba(48, 209, 88, 0.15); border-color: var(--accent-green); }
+        
         .cell-val-base { color: var(--text-secondary); font-weight: 400; }
         .cell-val-behav { color: var(--accent-blue); font-weight: 700; }
         .odds-tint { color: var(--accent-green) !important; }
-
-        .add-slip-container { display: flex; gap: 8px; margin-top: 16px; }
-        .slip-add-btn { flex: 1; background: #1c1c1e; border: 1px solid var(--border-card); color: var(--accent-green); padding: 10px; font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; text-align: center;}
 
         .bet-slip-drawer {
             position: fixed; bottom: 0; left: 0; right: 0;
@@ -381,62 +387,42 @@ HTML_TEMPLATE = """
                 </thead>
                 <tbody>
                     <tr class='matrix-row'>
-                        <td class='matrix-cell cell-label'>1 (Home Win)</td>
-                        <td class='matrix-cell cell-val-base odds-tint'>{{ report.b_odds_0 }}</td>
-                        <td class='matrix-cell cell-val-behav odds-tint' style='text-align: right;'>{{ report.behav_odds_0 }}</td>
+                        <td class='matrix-cell cell-label'>1 ({{ report.h_name }} Win)</td>
+                        <td class='matrix-cell'><span class='clickable-odds-cell cell-val-base odds-tint' onclick='addToSlip("{{ report.h_name }} Win (Base)", {{ report.b_odds_0 }}, "outcome", "1")'>{{ report.b_odds_0 }}</span></td>
+                        <td class='matrix-cell' style='text-align: right;'><span class='clickable-odds-cell cell-val-behav odds-tint' onclick='addToSlip("{{ report.h_name }} Win", {{ report.behav_odds_0 }}, "outcome", "1")'>{{ report.behav_odds_0 }}</span></td>
                     </tr>
                     <tr class='matrix-row'>
                         <td class='matrix-cell cell-label'>X (Match Draw)</td>
-                        <td class='matrix-cell cell-val-base odds-tint'>{{ report.b_odds_1 }}</td>
-                        <td class='matrix-cell cell-val-behav odds-tint' style='text-align: right;'>{{ report.behav_odds_1 }}</td>
+                        <td class='matrix-cell'><span class='clickable-odds-cell cell-val-base odds-tint' onclick='addToSlip("Match Draw (Base)", {{ report.b_odds_1 }}, "outcome", "X")'>{{ report.b_odds_1 }}</span></td>
+                        <td class='matrix-cell' style='text-align: right;'><span class='clickable-odds-cell cell-val-behav odds-tint' onclick='addToSlip("Match Draw", {{ report.behav_odds_1 }}, "outcome", "X")'>{{ report.behav_odds_1 }}</span></td>
                     </tr>
                     <tr class='matrix-row'>
-                        <td class='matrix-cell cell-label'>2 (Away Win)</td>
-                        <td class='matrix-cell cell-val-base odds-tint'>{{ report.b_odds_2 }}</td>
-                        <td class='matrix-cell cell-val-behav odds-tint' style='text-align: right;'>{{ report.behav_odds_2 }}</td>
+                        <td class='matrix-cell cell-label'>2 ({{ report.a_name }} Win)</td>
+                        <td class='matrix-cell'><span class='clickable-odds-cell cell-val-base odds-tint' onclick='addToSlip("{{ report.a_name }} Win (Base)", {{ report.b_odds_2 }}, "outcome", "2")'>{{ report.b_odds_2 }}</span></td>
+                        <td class='matrix-cell' style='text-align: right;'><span class='clickable-odds-cell cell-val-behav odds-tint' onclick='addToSlip("{{ report.a_name }} Win", {{ report.behav_odds_2 }}, "outcome", "2")'>{{ report.behav_odds_2 }}</span></td>
                     </tr>
                     <tr class='matrix-row'>
-                        <td class='matrix-cell cell-label'>01 (Double Home)</td>
-                        <td class='matrix-cell cell-val-base'>{{ report.b_dc_0 }}</td>
-                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_dc_0 }}</td>
+                        <td class='matrix-cell cell-label'>01 (Double Home/Draw)</td>
+                        <td class='matrix-cell'><span class='clickable-odds-cell cell-val-base' onclick='addToSlip("Double Home/Draw (Base)", {{ report.b_dc_0 }}, "outcome", "1X")'>{{ report.b_dc_0 }}</span></td>
+                        <td class='matrix-cell' style='text-align: right;'><span class='clickable-odds-cell cell-val-behav' onclick='addToSlip("Double Home/Draw", {{ report.behav_dc_0 }}, "outcome", "1X")'>{{ report.behav_dc_0 }}</span></td>
                     </tr>
                     <tr class='matrix-row'>
-                        <td class='matrix-cell cell-label'>02 (Double Away)</td>
-                        <td class='matrix-cell cell-val-base'>{{ report.b_dc_1 }}</td>
-                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_dc_1 }}</td>
+                        <td class='matrix-cell cell-label'>02 (Double Away/Draw)</td>
+                        <td class='matrix-cell'><span class='clickable-odds-cell cell-val-base' onclick='addToSlip("Double Away/Draw (Base)", {{ report.b_dc_1 }}, "outcome", "2X")'>{{ report.b_dc_1 }}</span></td>
+                        <td class='matrix-cell' style='text-align: right;'><span class='clickable-odds-cell cell-val-behav' onclick='addToSlip("Double Away/Draw", {{ report.behav_dc_1 }}, "outcome", "2X")'>{{ report.behav_dc_1 }}</span></td>
                     </tr>
                     <tr class='matrix-row'>
                         <td class='matrix-cell cell-label'>Expected Cards</td>
-                        <td class='matrix-cell cell-val-base'>{{ report.b_cards }}</td>
-                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_cards }}</td>
+                        <td class='matrix-cell'><span class='clickable-odds-cell cell-val-base' onclick='addToSlip("Cards Baseline", 2.20, "cards", "cards")'>{{ report.b_cards }}</span></td>
+                        <td class='matrix-cell' style='text-align: right;'><span class='clickable-odds-cell cell-val-behav' onclick='addToSlip("Cards Behavioral", 2.50, "cards", "cards")'>{{ report.behav_cards }}</span></td>
                     </tr>
                     <tr class='matrix-row'>
                         <td class='matrix-cell cell-label'>Projected Corners</td>
-                        <td class='matrix-cell cell-val-base'>{{ report.b_corners }}</td>
-                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_corners }}</td>
-                    </tr>
-                    <tr class='matrix-row'>
-                        <td class='matrix-cell cell-label'>Offsides Target</td>
-                        <td class='matrix-cell cell-val-base'>{{ report.b_offsides }}</td>
-                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_offsides }}</td>
-                    </tr>
-                    <tr class='matrix-row'>
-                        <td class='matrix-cell cell-label'>Shots on Target (Home)</td>
-                        <td class='matrix-cell cell-val-base'>{{ report.b_sot_h }}</td>
-                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_sot_h }}</td>
-                    </tr>
-                    <tr class='matrix-row'>
-                        <td class='matrix-cell cell-label'>Shots on Target (Away)</td>
-                        <td class='matrix-cell cell-val-base'>{{ report.b_sot_a }}</td>
-                        <td class='matrix-cell cell-val-behav' style='text-align: right;'>{{ report.behav_sot_a }}</td>
+                        <td class='matrix-cell'><span class='clickable-odds-cell cell-val-base' onclick='addToSlip("Corners Baseline", 1.95, "corners", "corners")'>{{ report.b_corners }}</span></td>
+                        <td class='matrix-cell' style='text-align: right;'><span class='clickable-odds-cell cell-val-behav' onclick='addToSlip("Corners Behavioral", 2.15, "corners", "corners")'>{{ report.behav_corners }}</span></td>
                     </tr>
                 </tbody>
             </table>
-            
-            <div class='add-slip-container'>
-                <button class='slip-add-btn' onclick='addToSlip("{{ report.h_name }} Win", {{ report.behav_odds_0 }})'>+ Add {{ report.h_name }} Win ({{ report.behav_odds_0 }})</button>
-                <button class='slip-add-btn' onclick='addToSlip("{{ report.a_name }} Win", {{ report.behav_odds_2 }})'>+ Add {{ report.a_name }} Win ({{ report.behav_odds_2 }})</button>
-            </div>
         </div>
     {% endif %}
 
@@ -472,6 +458,7 @@ HTML_TEMPLATE = """
 
         let currentSlip = JSON.parse(localStorage.getItem('fc_slip')) || [];
         const rememberedIndex = "{{ selected_idx }}";
+        const currentFixtureName = "{% if report %}{{ report.h_name }} vs {{ report.a_name }}{% endif %}";
 
         function returnToLandingScreen() { window.location.href = '/'; }
 
@@ -502,11 +489,53 @@ HTML_TEMPLATE = """
             });
         }
 
-        function addToSlip(marketName, decimalOdds) {
-            if (currentSlip.some(item => item.market === marketName)) return;
-            currentSlip.push({ market: marketName, odds: parseFloat(decimalOdds) });
+        // FIXED: Complete bet365 compliance evaluation algorithm script
+        function addToSlip(marketLabel, decimalOdds, marketCategory, specificValue) {
+            // 1. Hard maximum limit enforcement rule check
+            if (currentSlip.length >= 20) {
+                alert("bet365 Limitation Enforced: Maximum of 20 lines allowed per Bet Builder slip.");
+                return;
+            }
+
+            const uniqueMarketID = `${currentFixtureName} - ${marketLabel}`;
+
+            // 2. Double-up duplication constraint verification check
+            if (currentSlip.some(item => item.id === uniqueMarketID)) {
+                return; // Silently exit on double-ups to match premium standard
+            }
+
+            // 3. Contradiction Solver Matrix Engine Check
+            if (marketCategory === "outcome") {
+                const conflictingOutcomeDetected = currentSlip.some(item => {
+                    return item.fixture === currentFixtureName && 
+                           item.category === "outcome" && 
+                           item.value !== specificValue;
+                });
+
+                if (conflictingOutcomeDetected) {
+                    alert("Contradiction Blocked: You cannot compound multiple conflicting match outcomes on the same game line.");
+                    return;
+                }
+            }
+
+            // Object blueprint allocation mapping tracking tokens
+            currentSlip.push({
+                id: uniqueMarketID,
+                fixture: currentFixtureName,
+                market: `${currentFixtureName} | ${marketLabel}`,
+                odds: parseFloat(decimalOdds),
+                category: marketCategory,
+                value: specificValue
+            });
+
             updateSlipUI();
         }
+
+        function removeSlipItem(index) {
+            currentSlip.splice(index, 1);
+            updateSlipUI();
+        }
+
         function clearSlip() { currentSlip = []; updateSlipUI(); }
 
         function updateSlipUI() {
@@ -515,12 +544,14 @@ HTML_TEMPLATE = """
             container.innerHTML = '';
             let accumulatedOdds = 1.0, compoundedProb = 1.0;
 
-            currentSlip.forEach(item => {
+            currentSlip.forEach((item, index) => {
                 accumulatedOdds *= item.odds;
                 compoundedProb *= (1.0 / item.odds);
                 
                 const card = document.createElement('div');
                 card.className = 'slip-item-card';
+                // Enabled explicit inline double-tap swipe click deletion action for premium fluidity
+                card.onclick = () => removeSlipItem(index);
                 card.innerHTML = `
                     <div class="slip-card-title">${item.market}</div>
                     <div class="slip-card-odds">@ ${item.odds.toFixed(2)}</div>
@@ -529,7 +560,7 @@ HTML_TEMPLATE = """
             });
 
             if (currentSlip.length === 0) {
-                container.innerHTML = "<div style='color: var(--text-secondary); font-size:12px; padding: 12px 0;'>No selections active in accumulator core.</div>";
+                container.innerHTML = "<div style='color: var(--text-secondary); font-size:12px; padding: 12px 0;'>Tap any value cell above to construct slip layers.</div>";
                 accumulatedOdds = 1.0; compoundedProb = 1.0;
             }
 
@@ -596,7 +627,8 @@ def home():
         base = run_simulation_variant(home_db, away_db, venue_status, weather_mod, None)
         behav = run_simulation_variant(home_db, away_db, venue_status, weather_mod, {'home_attacks': h_att, 'away_attacks': a_att, 'aggression_stakes': c_agg, 'fitness_fatigue': f_fat})
 
-        # Process the nested structured data map dictionary specifically to match our new clean HTML template rows
+        h_odds, a_odds = behav['odds'][0], behav['odds'][2]
+
         report = {
             "h_name": h_name, "a_name": a_name, "city": city, "weather_desc": weather_desc,
             "b_odds_0": f"{base['odds'][0]:.2f}", "behav_odds_0": f"{behav['odds'][0]:.2f}",
@@ -605,10 +637,7 @@ def home():
             "b_dc_0": f"{base['dc_odds'][0]:.2f}", "behav_dc_0": f"{behav['dc_odds'][0]:.2f}",
             "b_dc_1": f"{base['dc_odds'][1]:.2f}", "behav_dc_1": f"{behav['dc_odds'][1]:.2f}",
             "b_cards": f"{base['cards']}", "behav_cards": f"{behav['cards']}",
-            "b_corners": f"{base['corners']}", "behav_corners": f"{behav['corners']}",
-            "b_offsides": f"{base['offsides']}", "behav_offsides": f"{behav['offsides']}",
-            "b_sot_h": f"{base['shots_on_target'][0]}", "behav_sot_h": f"{behav['shots_on_target'][0]}",
-            "b_sot_a": f"{base['shots_on_target'][1]}", "behav_sot_a": f"{behav['shots_on_target'][1]}"
+            "b_corners": f"{base['corners']}", "behav_corners": f"{behav['corners']}"
         }
 
     return render_template_string(HTML_TEMPLATE, schedule=TOURNAMENT_SCHEDULE, groups=ALL_GROUPS, teams=ALL_TEAMS, dates=ALL_DATES, report=report, logs=logs, selected_idx=selected_idx)
